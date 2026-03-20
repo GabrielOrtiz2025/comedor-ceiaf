@@ -3,77 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comedor CEIAF Pro</title>
+    <title>Sistema Comedor CEIAF - Pro</title>
     <style>
-        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .card { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: var(--p); border-bottom: 3px solid var(--a); padding-bottom: 10px; margin-top: 0; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { cursor: pointer; font-weight: bold; border: none; color: white; transition: 0.3s; }
-        .btn-reg { background: var(--a); }
-        .btn-reg:hover { background: #2980b9; }
-        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 95%; z-index: 10; border-radius: 8px; }
+        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: var(--p); border-bottom: 3px solid var(--a); padding-bottom: 10px; }
+        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 10px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        
+        /* Botones Originales */
+        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-reg { background: var(--a); color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-reg:hover { background: #2980b9; transform: translateY(-2px); }
+        
+        /* Búsqueda Predictiva */
+        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 85%; z-index: 10; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .res-item:hover { background: #f0f7ff; }
-        .historial { font-size: 13px; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+
         .loader { display: none; color: var(--a); font-weight: bold; text-align: center; padding: 10px; }
-        .btn-del { background: var(--d); padding: 5px 10px; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>🍴 Gestión Comedor CEIAF</h2>
+<div class="container">
+    <h2>🍴 Sistema de Registro - Comedor</h2>
     
     <div id="loading" class="loader">⌛ Procesando...</div>
 
-    <div class="grid">
-        <div>
-            <h3>🔍 Buscar Estudiante</h3>
-            <div style="position: relative;">
-                <input type="text" id="bus" placeholder="Nombre o ID..." oninput="buscar()">
-                <div id="res" class="search-res"></div>
-            </div>
-            
-            <div id="panel" style="display:none; background: #f0f4f8; padding: 15px; border-radius: 10px; margin-top: 10px;">
-                <p id="estNom" style="font-weight: bold; color: var(--a);"></p>
-                <select id="prod"></select>
-                
-                <label><input type="radio" name="p" value="Efectivo" checked onclick="toggleT(0)"> Efectivo</label>
-                <label><input type="radio" name="p" value="Transferencia" onclick="toggleT(1)"> Transferencia</label>
-                
-                <div id="divT" style="display:none;">
-                    <input type="text" id="numT" placeholder="N° Comprobante">
-                    <input type="text" id="banT" placeholder="Banco">
-                </div>
-                
-                <button class="btn-reg" onclick="guardar()">💾 GUARDAR CONSUMO</button>
-            </div>
+    <div class="section">
+        <h3>🔍 Buscar Estudiante (ID o Nombre)</h3>
+        <div style="position: relative;">
+            <input type="text" id="bus" placeholder="Empieza a escribir..." oninput="buscar()">
+            <div id="res" class="search-res"></div>
         </div>
+        <p id="estSel" style="font-weight: bold; color: var(--a); margin-top: 10px;">Seleccionado: Ninguno</p>
+    </div>
 
-        <div>
-            <h3>📊 Historial del Alumno</h3>
-            <div id="hist" class="historial">Selecciona un estudiante para ver sus consumos...</div>
+    <div class="section">
+        <h3>🛒 Punto de Venta</h3>
+        <div class="grid-buttons">
+            <button class="btn-reg" onclick="prepararEnvio('Almuerzo Completo', 3.50)">Almuerzo ($3.50)</button>
+            <button class="btn-reg" onclick="prepararEnvio('Medio Almuerzo', 2.00)">Medio ($2.00)</button>
+            <button class="btn-reg" onclick="prepararEnvio('Sopa', 1.00)">Sopa ($1.00)</button>
+            <button class="btn-reg" onclick="prepararEnvio('Lunch', 1.50)">Lunch ($1.50)</button>
         </div>
+    </div>
+
+    <div class="section">
+        <h3>📊 Últimos Consumos del Alumno</h3>
+        <div id="hist">Selecciona un alumno para ver su historial...</div>
     </div>
 </div>
 
 <script>
-    // 🔗 PEGA TU LINK DE GOOGLE AQUÍ ABAJO
-    const URL_API = "https://script.google.com/macros/s/AKfycbxhozVDfHvwNkl0IYJmDzcx_PdbwdrJYoOQxhkFGfgF-fHBp9UmkgBNN8vfVe3A_24a/exec"; 
+    // 🔗 REEMPLAZA ESTO CON TU LINK DE GOOGLE
+    const URL_API = "TU_LINK_DE_GOOGLE_AQUÍ"; 
 
-    let dbEst = [], dbProd = [], dbVent = [], selID = "";
+    let dbEst = [], dbVent = [], selID = "", selNom = "";
 
     async function cargar() {
         const r = await fetch(URL_API + "?q=todo");
         const d = await r.json();
-        dbEst = d.est; dbProd = d.prod; dbVent = d.vent;
-        document.getElementById('prod').innerHTML = dbProd.map(p => `<option value="${p.precio}">${p.producto} ($${p.precio})</option>`).join('');
+        dbEst = d.est; dbVent = d.vent;
     }
 
     function buscar() {
@@ -86,46 +81,27 @@
             const d = document.createElement('div');
             d.className = 'res-item';
             d.innerText = `${e.id} | ${e.nombre}`;
-            d.onclick = () => seleccionar(e);
+            d.onclick = () => {
+                selID = e.id; selNom = e.nombre;
+                document.getElementById('estSel').innerText = "Seleccionado: " + selNom;
+                document.getElementById('res').style.display = 'none';
+                document.getElementById('bus').value = '';
+                verHistorial();
+            };
             r.appendChild(d);
         });
         r.style.display = 'block';
     }
 
-    function seleccionar(e) {
-        selID = e.id;
-        document.getElementById('estNom').innerText = e.nombre;
-        document.getElementById('panel').style.display = 'block';
-        document.getElementById('res').style.display = 'none';
-        document.getElementById('bus').value = '';
-        verHistorial();
-    }
-
-    function toggleT(s) { document.getElementById('divT').style.display = s ? 'block' : 'none'; }
-
-    async function guardar() {
-        const met = document.querySelector('input[name="p"]:checked').value;
-        const nT = document.getElementById('numT').value;
-        const bT = document.getElementById('banT').value;
-
-        if(met === 'Transferencia' && (!nT || !bT)) return alert("Completa los datos bancarios");
-
+    async function prepararEnvio(prod, precio) {
+        if(!selID) return alert("❌ Primero busca y selecciona un estudiante");
+        
         document.getElementById('loading').style.display = 'block';
-        const pS = document.getElementById('prod');
-        const fila = {
-            id: selID,
-            nom: document.getElementById('estNom').innerText,
-            prd: pS.options[pS.selectedIndex].text.split(' ($')[0],
-            pre: pS.value,
-            met: met,
-            com: nT || "-",
-            ban: bT || "-"
-        };
+        const fila = { id: selID, nom: selNom, prd: prod, pre: precio, met: "Efectivo", com: "-", ban: "-" };
 
         try {
             await fetch(URL_API, { method: 'POST', body: JSON.stringify(fila) });
-            alert("✅ Registrado");
-            // Actualizar localmente sin recargar
+            alert("✅ ¡Registrado!");
             dbVent.push({fecha: new Date().toLocaleString(), ...fila});
             verHistorial();
         } catch(e) { alert("Error al guardar"); }
@@ -134,20 +110,11 @@
 
     function verHistorial() {
         const f = dbVent.filter(v => v.id == selID);
-        let h = '<table><tr><th>Fecha</th><th>Item</th><th>🗑️</th></tr>';
-        f.reverse().slice(0,10).forEach(v => {
-            h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td><td><button class="btn-del" onclick="borrar('${v.fecha}')">X</button></td></tr>`;
+        let h = '<table><tr><th>Fecha</th><th>Producto</th></tr>';
+        f.reverse().slice(0,5).forEach(v => {
+            h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`;
         });
-        document.getElementById('hist').innerHTML = f.length ? h + '</table>' : 'Sin consumos recientes';
-    }
-
-    async function borrar(fec) {
-        if(!confirm("¿Borrar este consumo?")) return;
-        document.getElementById('loading').style.display = 'block';
-        await fetch(URL_API + "?del=" + encodeURIComponent(fec));
-        dbVent = dbVent.filter(v => v.fecha !== fec);
-        verHistorial();
-        document.getElementById('loading').style.display = 'none';
+        document.getElementById('hist').innerHTML = f.length ? h + '</table>' : 'Sin consumos hoy';
     }
 
     window.onload = cargar;
