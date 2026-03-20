@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comedor CEIAF Pro</title>
+    <style>
+        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .card { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: var(--p); border-bottom: 3px solid var(--a); padding-bottom: 10px; margin-top: 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { cursor: pointer; font-weight: bold; border: none; color: white; transition: 0.3s; }
+        .btn-reg { background: var(--a); }
+        .btn-reg:hover { background: #2980b9; }
+        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 95%; z-index: 10; border-radius: 8px; }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .res-item:hover { background: #f0f7ff; }
+        .historial { font-size: 13px; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+        .loader { display: none; color: var(--a); font-weight: bold; text-align: center; padding: 10px; }
+        .btn-del { background: var(--d); padding: 5px 10px; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🍴 Gestión Comedor CEIAF</h2>
+    
+    <div id="loading" class="loader">⌛ Procesando...</div>
+
+    <div class="grid">
+        <div>
+            <h3>🔍 Buscar Estudiante</h3>
+            <div style="position: relative;">
+                <input type="text" id="bus" placeholder="Nombre o ID..." oninput="buscar()">
+                <div id="res" class="search-res"></div>
+            </div>
+            
+            <div id="panel" style="display:none; background: #f0f4f8; padding: 15px; border-radius: 10px; margin-top: 10px;">
+                <p id="estNom" style="font-weight: bold; color: var(--a);"></p>
+                <select id="prod"></select>
+                
+                <label><input type="radio" name="p" value="Efectivo" checked onclick="toggleT(0)"> Efectivo</label>
+                <label><input type="radio" name="p" value="Transferencia" onclick="toggleT(1)"> Transferencia</label>
+                
+                <div id="divT" style="display:none;">
+                    <input type="text" id="numT" placeholder="N° Comprobante">
+                    <input type="text" id="banT" placeholder="Banco">
+                </div>
+                
+                <button class="btn-reg" onclick="guardar()">💾 GUARDAR CONSUMO</button>
+            </div>
+        </div>
+
+        <div>
+            <h3>📊 Historial del Alumno</h3>
+            <div id="hist" class="historial">Selecciona un estudiante para ver sus consumos...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 🔗 PEGA TU LINK DE GOOGLE AQUÍ ABAJO
+    const URL_API = "https://script.google.com/macros/s/AKfycbxhozVDfHvwNkl0IYJmDzcx_PdbwdrJYoOQxhkFGfgF-fHBp9UmkgBNN8vfVe3A_24a/exec"; 
+
+    let dbEst = [], dbProd = [], dbVent = [], selID = "";
+
+    async function cargar() {
+        const r = await fetch(URL_API + "?q=todo");
+        const d = await r.json();
+        dbEst = d.est; dbProd = d.prod; dbVent = d.vent;
+        document.getElementById('prod').innerHTML = dbProd.map(p => `<option value="${p.precio}">${p.producto} ($${p.precio})</option>`).join('');
+    }
+
+    function buscar() {
+        const v = document.getElementById('bus').value.toLowerCase();
+        const r = document.getElementById('res');
+        r.innerHTML = '';
+        if(v.length < 2) { r.style.display='none'; return; }
+        const f = dbEst.filter(e => e.id.toString().toLowerCase().includes(v) || e.nombre.toLowerCase().includes(v));
+        f.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'res-item';
+            d.innerText = `${e.id} | ${e.nombre}`;
+            d.onclick = () => seleccionar(e);
+            r.appendChild(d);
+        });
+        r.style.display = 'block';
+    }
+
+    function seleccionar(e) {
+        selID = e.id;
+        document.getElementById('estNom').innerText = e.nombre;
+        document.getElementById('panel').style.display = 'block';
+        document.getElementById('res').style.display = 'none';
+        document.getElementById('bus').value = '';
+        verHistorial();
+    }
+
+    function toggleT(s) { document.getElementById('divT').style.display = s ? 'block' : 'none'; }
+
+    async function guardar() {
+        const met = document.querySelector('input[name="p"]:checked').value;
+        const nT = document.getElementById('numT').value;
+        const bT = document.getElementById('banT').value;
+
+        if(met === 'Transferencia' && (!nT || !bT)) return alert("Completa los datos bancarios");
+
+        document.getElementById('loading').style.display = 'block';
+        const pS = document.getElementById('prod');
+        const fila = {
+            id: selID,
+            nom: document.getElementById('estNom').innerText,
+            prd: pS.options[pS.selectedIndex].text.split(' ($')[0],
+            pre: pS.value,
+            met: met,
+            com: nT || "-",
+            ban: bT || "-"
+        };
+
+        try {
+            await fetch(URL_API, { method: 'POST', body: JSON.stringify(fila) });
+            alert("✅ Registrado");
+            // Actualizar localmente sin recargar
+            dbVent.push({fecha: new Date().toLocaleString(), ...fila});
+            verHistorial();
+        } catch(e) { alert("Error al guardar"); }
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    function verHistorial() {
+        const f = dbVent.filter(v => v.id == selID);
+        let h = '<table><tr><th>Fecha</th><th>Item</th><th>🗑️</th></tr>';
+        f.reverse().slice(0,10).forEach(v => {
+            h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td><td><button class="btn-del" onclick="borrar('${v.fecha}')">X</button></td></tr>`;
+        });
+        document.getElementById('hist').innerHTML = f.length ? h + '</table>' : 'Sin consumos recientes';
+    }
+
+    async function borrar(fec) {
+        if(!confirm("¿Borrar este consumo?")) return;
+        document.getElementById('loading').style.display = 'block';
+        await fetch(URL_API + "?del=" + encodeURIComponent(fec));
+        dbVent = dbVent.filter(v => v.fecha !== fec);
+        verHistorial();
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    window.onload = cargar;
+</script>
+</body>
+</html>
