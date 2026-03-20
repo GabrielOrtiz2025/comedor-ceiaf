@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Comedor CEIAF v4.0</title>
+    <title>Panel Comedor CEIAF v5.0</title>
     <style>
-        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --bg: #f4f7f6; }
+        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: auto; }
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1300px; margin: auto; }
         @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
         .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h3 { color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
@@ -15,11 +15,14 @@
         .btn-blue { background: var(--a); color: white; border: none; font-weight: bold; cursor: pointer; }
         .btn-green { background: var(--s); color: white; border: none; font-weight: bold; cursor: pointer; }
         .btn-dark { background: var(--p); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 95%; z-index: 10; }
+        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 95%; z-index: 10; border-radius: 8px; }
         .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .res-item:hover { background: #f0f7ff; }
-        details { margin-bottom: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; }
-        summary { font-weight: bold; cursor: pointer; color: var(--p); }
+        .req { border-left: 5px solid var(--d) !important; }
+        .hidden { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85em; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: var(--p); }
     </style>
 </head>
 <body>
@@ -28,10 +31,10 @@
     <div class="card">
         <h3>📝 Registrar Consumo</h3>
         <div style="position: relative;">
-            <input type="text" id="bus" placeholder="Buscar por Nombre o ID..." oninput="buscar()">
+            <input type="text" id="bus" placeholder="🔎 Buscar por Nombre o ID..." oninput="buscar()">
             <div id="res" class="search-res"></div>
         </div>
-        <p id="estSel" style="font-weight: bold; color: var(--a);">Estudiante: No seleccionado</p>
+        <p id="estSel" style="font-weight: bold; color: var(--a); font-size: 1.1em;">Estudiante: No seleccionado</p>
         
         <select id="prd">
             <option value="Almuerzo">Almuerzo ($3.50)</option>
@@ -40,49 +43,68 @@
             <option value="Lunch">Lunch ($1.50)</option>
         </select>
         
-        <div style="padding: 10px; border: 1px dashed #ccc; border-radius: 8px; margin: 10px 0;">
-            <label><input type="radio" name="met" value="Efectivo" checked> Efectivo</label><br>
-            <label><input type="radio" name="met" value="Transferencia"> Transferencia</label>
+        <div style="padding: 15px; border: 1px solid #eee; border-radius: 10px; margin: 10px 0; background: #fafafa;">
+            <label><input type="radio" name="met" value="Efectivo" checked onclick="toggleTrans(false)"> 💵 Efectivo</label>
+            <label style="margin-left: 20px;"><input type="radio" name="met" value="Transferencia" onclick="toggleTrans(true)"> 📱 Transferencia</label>
+            
+            <div id="extraTrans" class="hidden">
+                <input type="text" id="ban" class="req" placeholder="Institución Financiera (Obligatorio)">
+                <input type="text" id="com" class="req" placeholder="N° Comprobante (Obligatorio)">
+            </div>
         </div>
         
         <button class="btn-blue" onclick="guardarVenta()">💾 GUARDAR REGISTRO</button>
+
+        <h3 style="margin-top:25px;">🕒 Historial Detallado (Alumno)</h3>
+        <div id="tablaHistorial">
+            <p style="color:gray; font-style:italic;">Selecciona un alumno para ver sus últimos movimientos.</p>
+        </div>
     </div>
 
     <div class="card">
-        <h3>⚙️ Configuración</h3>
+        <h3>⚙️ Configuración y Alumnos</h3>
         
-        <details>
-            <summary>▶ Añadir Estudiante</summary>
-            <input type="text" id="nID" placeholder="ID (Cédula)">
-            <input type="text" id="nNom" placeholder="Nombre Completo">
-            <button class="btn-green" onclick="crearAlumno()">Añadir</button>
+        <details open>
+            <summary style="cursor:pointer; font-weight:bold; color: var(--s);">▶ Añadir Nuevo Estudiante</summary>
+            <input type="text" id="nID" placeholder="ID / Cédula">
+            <input type="text" id="nNom" class="req" placeholder="Dos Nombres y Dos Apellidos (Obligatorio)">
+            <button class="btn-green" onclick="crearAlumno()">Registrar Alumno</button>
         </details>
 
-        <details>
-            <summary>▶ Menú y Precios</summary>
-            <input type="text" id="mItem" placeholder="Item">
-            <input type="number" id="mPrecio" placeholder="Precio $">
-            <button class="btn-green">Añadir</button>
+        <details style="margin-top:15px;">
+            <summary style="cursor:pointer; font-weight:bold; color: var(--a);">▶ Editar / Eliminar Seleccionado</summary>
+            <input type="text" id="editID" disabled placeholder="ID Seleccionado">
+            <input type="text" id="editNom" class="req" placeholder="Corregir Nombre Completo">
+            <div style="display:flex; gap:10px;">
+                <button class="btn-blue" style="background:#f39c12" onclick="editEst()">Actualizar</button>
+                <button class="btn-blue" style="background:var(--d)" onclick="delEst()">Eliminar Estudiante</button>
+            </div>
         </details>
 
-        <h3>📊 Reportes</h3>
+        <h3 style="margin-top:25px;">📊 Generar Reportes Excel</h3>
+        <p style="font-size: 0.8em; color: #666;">Selecciona el periodo para la descarga:</p>
         <select id="repTipo">
-            <option value="General">Reporte General</option>
             <option value="Hoy">Consumos de Hoy</option>
+            <option value="Semanal">Reporte de la Semana</option>
+            <option value="Mensual">Reporte del Mes</option>
+            <option value="General">Base de Datos Completa</option>
         </select>
-        <button class="btn-dark" onclick="descargarExcel()">📥 DESCARGAR EXCEL</button>
+        <button class="btn-dark" onclick="descargarExcel()">📥 DESCARGAR REPORTE</button>
     </div>
 </div>
 
 <script>
     const URL_API = "https://script.google.com/macros/s/AKfycbxhozVDfHvwNkl0IYJmDzcx_PdbwdrJYoOQxhkFGfgF-fHBp9UmkgBNN8vfVe3A_24a/exec";
-
-    let dbEst = [], selID = "", selNom = "";
+    let dbEst = [], dbVent = [], selID = "", selNom = "";
 
     async function cargar() {
         const r = await fetch(URL_API + "?q=todo");
         const d = await r.json();
-        dbEst = d.est;
+        dbEst = d.est; dbVent = d.vent;
+    }
+
+    function toggleTrans(show) {
+        document.getElementById('extraTrans').className = show ? "" : "hidden";
     }
 
     function buscar() {
@@ -98,35 +120,58 @@
             d.onclick = () => {
                 selID = e.id; selNom = e.nombre;
                 document.getElementById('estSel').innerText = "Estudiante: " + selNom;
+                document.getElementById('editID').value = selID;
+                document.getElementById('editNom').value = selNom;
                 document.getElementById('res').style.display = 'none';
                 document.getElementById('bus').value = '';
+                dibujarTabla();
             };
             r.appendChild(d);
         });
         r.style.display = 'block';
     }
 
+    function dibujarTabla() {
+        const f = dbVent.filter(v => v.id == selID).reverse();
+        if(f.length === 0) {
+            document.getElementById('tablaHistorial').innerHTML = "<p>Sin historial de consumos.</p>";
+            return;
+        }
+        let h = `<table><tr><th>Fecha</th><th>Producto</th><th>Método</th></tr>`;
+        f.slice(0, 5).forEach(v => {
+            h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td><td>${v.met}</td></tr>`;
+        });
+        document.getElementById('tablaHistorial').innerHTML = h + "</table>";
+    }
+
     async function guardarVenta() {
-        if(!selID) return alert("Selecciona un estudiante");
-        const p = document.getElementById('prd').value;
-        const m = document.querySelector('input[name="met"]:checked').value;
-        await fetch(URL_API, { method: 'POST', body: JSON.stringify({id:selID, nom:selNom, prd:p, met:m}), mode: 'no-cors' });
-        alert("✅ Registro guardado");
+        if(!selID) return alert("❌ Selecciona un estudiante");
+        const met = document.querySelector('input[name="met"]:checked').value;
+        const ban = document.getElementById('ban').value;
+        const com = document.getElementById('com').value;
+
+        if(met === "Transferencia" && (!ban || !com)) {
+            return alert("❌ ERROR: Para transferencias el Banco y Comprobante son obligatorios.");
+        }
+
+        await fetch(URL_API, { method: 'POST', body: JSON.stringify({id:selID, nom:selNom, prd:document.getElementById('prd').value, met:met, ban:ban, com:com}), mode: 'no-cors' });
+        alert("✅ Registro guardado con éxito.");
+        location.reload(); 
     }
 
     async function crearAlumno() {
-        const id = document.getElementById('nID').value;
-        const nom = document.getElementById('nNom').value;
-        if(!id || !nom) return alert("Llena los campos");
-        await fetch(URL_API, { method: 'POST', body: JSON.stringify({action:"newEst", id:id, nom:nom}), mode: 'no-cors' });
-        alert("👤 Alumno añadido");
-        dbEst.push({id:id, nombre:nom});
+        const nom = document.getElementById('nNom').value.trim();
+        if(nom.split(/\s+/).length < 4) return alert("❌ ERROR: Ingrese dos nombres y dos apellidos obligatoriamente.");
+        
+        await fetch(URL_API, { method: 'POST', body: JSON.stringify({action:"newEst", id:document.getElementById('nID').value, nom:nom}), mode: 'no-cors' });
+        alert("👤 Estudiante registrado en el sistema.");
+        location.reload();
     }
 
     function descargarExcel() {
-        // Redirección directa para evitar que se quede en la pantalla blanca de Google
         const tipo = document.getElementById('repTipo').value;
-        window.location.href = URL_API + "?q=excel&tipo=" + tipo;
+        window.open(URL_API + "?q=excel&tipo=" + tipo, '_blank');
+        alert("Generando archivo Excel... Revisa tus descargas.");
     }
 
     window.onload = cargar;
