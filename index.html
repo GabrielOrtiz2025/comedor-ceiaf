@@ -3,58 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión Comedor CEIAF</title>
+    <title>Sistema Comedor CEIAF - Pro</title>
     <style>
-        :root { --p: #2c3e50; --a: #3498db; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; margin: 0; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: var(--p); border-bottom: 3px solid var(--a); padding-bottom: 10px; }
-        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 10px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .btn-reg { background: var(--a); color: white; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-reg:hover { background: #2980b9; transform: scale(1.02); }
-        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 90%; z-index: 10; border-radius: 8px; }
-        .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; max-width: 1200px; margin: auto; }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2, h3 { color: var(--p); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        
+        /* Botones de Venta Rápidos (Los que querías mantener) */
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .btn-v { background: var(--a); color: white; border: none; font-weight: bold; cursor: pointer; padding: 15px; transition: 0.3s; }
+        .btn-v:hover { background: #2980b9; }
+
+        /* Estilo para Configuración (Verde) */
+        .btn-save { background: var(--s); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-report { background: var(--p); color: white; border: none; font-weight: bold; cursor: pointer; }
+        
+        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 95%; z-index: 10; border-radius: 8px; }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .res-item:hover { background: #f0f7ff; }
         .loader { display: none; color: var(--a); font-weight: bold; text-align: center; padding: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🍴 Gestión Comedor CEIAF</h2>
-    <div id="loading" class="loader">⌛ Procesando registro...</div>
-
-    <div class="section">
-        <h3>🔍 Buscar Estudiante</h3>
+<div class="main-grid">
+    <div class="card">
+        <h2>📝 Registrar Consumo</h2>
+        <div id="loading" class="loader">⌛ Procesando...</div>
+        
         <div style="position: relative;">
-            <input type="text" id="bus" placeholder="Escribe nombre o ID..." oninput="buscar()">
+            <input type="text" id="bus" placeholder="Buscar por Nombre o ID..." oninput="buscar()">
             <div id="res" class="search-res"></div>
         </div>
-        <p id="estSel" style="font-weight: bold; color: var(--a); margin-top: 10px;">Seleccionado: Ninguno</p>
-    </div>
+        <p id="estSel" style="font-weight: bold; color: var(--a); font-size: 1.1em;">Estudiante: Ninguno</p>
 
-    <div class="section">
-        <h3>🛒 Punto de Venta</h3>
-        <div class="grid-buttons">
-            <button class="btn-reg" onclick="prepararEnvio('Almuerzo', 3.50)">Almuerzo ($3.50)</button>
-            <button class="btn-reg" onclick="prepararEnvio('Medio', 2.00)">Medio ($2.00)</button>
-            <button class="btn-reg" onclick="prepararEnvio('Sopa', 1.00)">Sopa ($1.00)</button>
-            <button class="btn-reg" onclick="prepararEnvio('Lunch', 1.50)">Lunch ($1.50)</button>
+        <div class="btn-grid">
+            <button class="btn-v" onclick="vender('Almuerzo', 3.50)">ALMUERZO ($3.50)</button>
+            <button class="btn-v" onclick="vender('Medio', 2.00)">MEDIO ($2.00)</button>
+            <button class="btn-v" onclick="vender('Sopa', 1.00)">SOPA ($1.00)</button>
+            <button class="btn-v" onclick="vender('Lunch', 1.50)">LUNCH ($1.50)</button>
         </div>
+
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px dashed #ccc;">
+            <label><input type="radio" name="met" value="Efectivo" checked> Efectivo</label><br>
+            <label><input type="radio" name="met" value="Transferencia"> Transferencia</label>
+            <input type="text" id="com" placeholder="N° Comprobante (si aplica)">
+        </div>
+        <button class="btn-save" style="margin-top:15px; background: var(--a);" onclick="vender('Personalizado', 0)">💾 GUARDAR REGISTRO MANUAL</button>
     </div>
 
-    <div class="section">
-        <h3>📊 Últimos Consumos</h3>
-        <div id="hist">Selecciona un alumno para ver su historial...</div>
+    <div class="card">
+        <h2>⚙️ Configuración</h2>
+        
+        <details open>
+            <summary style="font-weight: bold; cursor: pointer;">➕ Añadir Estudiante</summary>
+            <input type="text" id="nID" placeholder="ID (Cédula)">
+            <input type="text" id="nNom" placeholder="Nombre Completo">
+            <button class="btn-save" onclick="crearAlumno()">Añadir</button>
+        </details>
+
+        <hr>
+
+        <h3>📊 Reportes</h3>
+        <select id="repTipo">
+            <option value="General">Reporte General</option>
+            <option value="Hoy">Consumos de Hoy</option>
+        </select>
+        <button class="btn-report" onclick="descargarExcel()">📥 DESCARGAR EXCEL</button>
+
+        <hr>
+
+        <h3>🕒 Últimos Movimientos</h3>
+        <div id="hist" style="max-height: 200px; overflow-y: auto;">
+            Selecciona un alumno para ver historial...
+        </div>
     </div>
 </div>
 
 <script>
-    // 🔗 REEMPLAZA "TU_LINK_AQUI" CON TU ENLACE DE GOOGLE (LÍNEA 63)
     const URL_API = "https://script.google.com/macros/s/AKfycbxhozVDfHvwNkl0IYJmDzcx_PdbwdrJYoOQxhkFGfgF-fHBp9UmkgBNN8vfVe3A_24a/exec"; 
 
     let dbEst = [], dbVent = [], selID = "", selNom = "";
@@ -64,7 +96,7 @@
             const r = await fetch(URL_API + "?q=todo");
             const d = await r.json();
             dbEst = d.est; dbVent = d.vent;
-        } catch(e) { console.error("Error al cargar"); }
+        } catch(e) { console.error("Error al cargar datos"); }
     }
 
     function buscar() {
@@ -79,7 +111,7 @@
             d.innerText = `${e.id} | ${e.nombre}`;
             d.onclick = () => {
                 selID = e.id; selNom = e.nombre;
-                document.getElementById('estSel').innerText = "✅ Seleccionado: " + selNom;
+                document.getElementById('estSel').innerText = "Estudiante: " + selNom;
                 document.getElementById('res').style.display = 'none';
                 document.getElementById('bus').value = '';
                 verHistorial();
@@ -89,15 +121,33 @@
         r.style.display = 'block';
     }
 
-    async function prepararEnvio(prod, precio) {
-        if(!selID) return alert("❌ Primero selecciona un estudiante");
+    async function vender(p, pr) {
+        if(!selID) return alert("❌ Selecciona un estudiante primero");
         document.getElementById('loading').style.display = 'block';
-        const fila = { id: selID, nom: selNom, prd: prod, pre: precio, met: "Efectivo", com: "-", ban: "-" };
+        const met = document.querySelector('input[name="met"]:checked').value;
+        const com = document.getElementById('com').value || "-";
+        
+        const f = { id: selID, nom: selNom, prd: p, pre: pr, met: met, com: com, ban: "-" };
+        
         try {
-            await fetch(URL_API, { method: 'POST', body: JSON.stringify(fila), mode: 'no-cors' });
-            alert("✅ ¡Registro guardado!");
-            dbVent.push({fecha: new Date().toLocaleString(), ...fila});
+            await fetch(URL_API, { method: 'POST', body: JSON.stringify(f), mode: 'no-cors' });
+            alert("✅ Registro guardado con éxito");
+            dbVent.push({fecha: new Date().toLocaleString(), ...f});
             verHistorial();
+        } catch(e) { alert("Error de conexión"); }
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    async function crearAlumno() {
+        const id = document.getElementById('nID').value;
+        const nom = document.getElementById('nNom').value;
+        if(!id || !nom) return alert("Completa ID y Nombre");
+        document.getElementById('loading').style.display = 'block';
+        try {
+            await fetch(URL_API, { method: 'POST', body: JSON.stringify({action:"newEst", id:id, nom:nom}), mode: 'no-cors' });
+            alert("👤 Alumno añadido correctamente");
+            dbEst.push({id: id, nombre: nom});
+            document.getElementById('nID').value = ''; document.getElementById('nNom').value = '';
         } catch(e) { alert("Error al guardar"); }
         document.getElementById('loading').style.display = 'none';
     }
@@ -108,7 +158,11 @@
         f.reverse().slice(0,5).forEach(v => {
             h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`;
         });
-        document.getElementById('hist').innerHTML = f.length ? h + '</table>' : 'Sin consumos hoy';
+        document.getElementById('hist').innerHTML = f.length ? h + '</table>' : 'Sin consumos recientes';
+    }
+
+    function descargarExcel() {
+        window.open(URL_API + "?q=excel&tipo=" + document.getElementById('repTipo').value);
     }
 
     window.onload = cargar;
