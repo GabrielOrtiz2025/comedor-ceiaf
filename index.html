@@ -61,7 +61,179 @@
 
 <script>
     // 🔗 REEMPLAZA ESTO CON TU LINK DE GOOGLE
-    const URL_API = "TU_LINK_DE_GOOGLE_AQUÍ"; 
+    const URL_API = "<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Comedor CEIAF - Pro Completo</title>
+    <style>
+        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: var(--p); border-bottom: 3px solid var(--a); padding-bottom: 10px; margin-top: 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+        .section { padding: 15px; border: 1px solid #eee; border-radius: 10px; background: #fff; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        
+        /* Botones de Venta */
+        .grid-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-v { background: var(--a); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; padding: 15px; }
+        .btn-v:hover { background: #2980b9; transform: scale(1.02); }
+        
+        /* Registro de Alumno Nuevo */
+        .btn-new { background: var(--s); color: white; border: none; font-weight: bold; }
+        
+        /* Buscador */
+        .search-res { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 90%; z-index: 10; border-radius: 8px; }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .res-item:hover { background: #f0f7ff; }
+
+        .loader { display: none; color: var(--a); font-weight: bold; text-align: center; padding: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+        .btn-del { background: var(--d); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🍴 Gestión Comedor CEIAF - Full Pro</h2>
+    <div id="loading" class="loader">⌛ Procesando...</div>
+
+    <div class="grid">
+        <div class="section">
+            <h3>🔍 1. Buscar Estudiante</h3>
+            <div style="position: relative;">
+                <input type="text" id="bus" placeholder="Nombre o ID..." oninput="buscar()">
+                <div id="res" class="search-res"></div>
+            </div>
+            <p id="estSel" style="font-weight: bold; color: var(--a); margin: 10px 0;">Seleccionado: Ninguno</p>
+
+            <h3>🛒 2. Registrar Consumo</h3>
+            <div class="grid-btns">
+                <button class="btn-v" onclick="vender('Almuerzo', 3.50)">ALMUERZO ($3.50)</button>
+                <button class="btn-v" onclick="vender('Medio', 2.00)">MEDIO ($2.00)</button>
+                <button class="btn-v" onclick="vender('Sopa', 1.00)">SOPA ($1.00)</button>
+                <button class="btn-v" onclick="vender('Lunch', 1.50)">LUNCH ($1.50)</button>
+            </div>
+
+            <div style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 8px;">
+                <label><b>Método:</b></label>
+                <select id="met" onchange="toggleB(this.value)">
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                </select>
+                <div id="divB" style="display:none;">
+                    <input type="text" id="com" placeholder="N° Comprobante">
+                    <input type="text" id="ban" placeholder="Banco">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>👤 Registro de Alumno Nuevo</h3>
+            <input type="text" id="nID" placeholder="ID (Cédula)">
+            <input type="text" id="nNom" placeholder="Nombre Completo">
+            <button class="btn-new" onclick="crearAlumno()">➕ AGREGAR A LA BASE</button>
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <h3>📊 Historial del Alumno</h3>
+            <div id="hist">Selecciona un alumno para ver consumos...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 🔗 TU LINK DE GOOGLE AQUÍ
+    const URL_API = "PEGA_AQUI_TU_LINK_DE_IMPLEMENTACION";
+
+    let dbEst = [], dbVent = [], selID = "", selNom = "";
+
+    async function cargar() {
+        const r = await fetch(URL_API + "?q=todo");
+        const d = await r.json();
+        dbEst = d.est; dbVent = d.vent;
+    }
+
+    function buscar() {
+        const v = document.getElementById('bus').value.toLowerCase();
+        const r = document.getElementById('res');
+        r.innerHTML = '';
+        if(v.length < 2) { r.style.display='none'; return; }
+        const f = dbEst.filter(e => e.id.toString().toLowerCase().includes(v) || e.nombre.toLowerCase().includes(v));
+        f.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'res-item';
+            d.innerText = `${e.id} | ${e.nombre}`;
+            d.onclick = () => {
+                selID = e.id; selNom = e.nombre;
+                document.getElementById('estSel').innerText = "✅ Seleccionado: " + selNom;
+                document.getElementById('res').style.display = 'none';
+                document.getElementById('bus').value = '';
+                verHistorial();
+            };
+            r.appendChild(d);
+        });
+        r.style.display = 'block';
+    }
+
+    function toggleB(v) { document.getElementById('divB').style.display = v === 'Transferencia' ? 'block' : 'none'; }
+
+    async function vender(p, pr) {
+        if(!selID) return alert("❌ Selecciona un estudiante");
+        const m = document.getElementById('met').value;
+        const c = document.getElementById('com').value;
+        const b = document.getElementById('ban').value;
+        if(m === 'Transferencia' && (!c || !b)) return alert("Faltan datos de banco");
+
+        document.getElementById('loading').style.display = 'block';
+        const f = { id: selID, nom: selNom, prd: p, pre: pr, met: m, com: c || "-", ban: b || "-" };
+        
+        await fetch(URL_API, { method: 'POST', body: JSON.stringify(f), mode: 'no-cors' });
+        alert("✅ Registrado");
+        dbVent.push({fecha: new Date().toLocaleString(), ...f});
+        verHistorial();
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    async function crearAlumno() {
+        const id = document.getElementById('nID').value;
+        const nom = document.getElementById('nNom').value;
+        if(!id || !nom) return alert("Completa ID y Nombre");
+
+        document.getElementById('loading').style.display = 'block';
+        await fetch(URL_API, { method: 'POST', body: JSON.stringify({action:"newEst", id:id, nom:nom}), mode: 'no-cors' });
+        alert("👤 Alumno creado. Ya puedes buscarlo.");
+        dbEst.push({id: id, nombre: nom});
+        document.getElementById('nID').value = ''; document.getElementById('nNom').value = '';
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    function verHistorial() {
+        const f = dbVent.filter(v => v.id == selID);
+        let h = '<table><tr><th>Fecha</th><th>Item</th><th>🗑️</th></tr>';
+        f.reverse().slice(0,5).forEach(v => {
+            h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td><td><button class="btn-del" onclick="borrar('${v.fecha}')">X</button></td></tr>`;
+        });
+        document.getElementById('hist').innerHTML = f.length ? h + '</table>' : 'Sin consumos hoy';
+    }
+
+    async function borrar(fec) {
+        if(!confirm("¿Borrar registro?")) return;
+        document.getElementById('loading').style.display = 'block';
+        await fetch(URL_API + "?del=" + encodeURIComponent(fec));
+        dbVent = dbVent.filter(v => v.fecha !== fec);
+        verHistorial();
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    window.onload = cargar;
+</script>
+</body>
+</html>"; 
 
     let dbEst = [], dbVent = [], selID = "", selNom = "";
 
