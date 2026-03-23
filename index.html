@@ -3,216 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Comedor CEIAF - v7.0 Pro</title>
+    <title>Comedor CEIAF v8.0 - Gestión Total</title>
     <style>
         :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1300px; margin: auto; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1400px; margin: auto; }
         @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
         .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
-        .stats-badge { background: var(--p); color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.85em; float: right; font-weight: bold; }
         h3 { color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
-        
-        /* Buscador de Ventas */
-        .search-res { border: 1px solid #ddd; max-height: 200px; overflow-y: auto; display: none; background: white; position: absolute; width: 95%; z-index: 100; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
-        .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
-        .res-item:hover { background: #e8f4fd; color: var(--a); font-weight: bold; }
-
-        .btn-blue { background: var(--a); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .btn-green { background: var(--s); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .btn-red { background: var(--d); color: white; border: none; font-weight: bold; cursor: pointer; }
-        
-        .req { border-left: 5px solid var(--d) !important; }
-        .hidden { display: none; }
-        
-        /* Tablas */
+        .btn { border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin: 5px 0; transition: 0.3s; }
+        .btn-blue { background: var(--a); color: white; }
+        .btn-red { background: var(--d); color: white; }
+        .btn-green { background: var(--s); color: white; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        .search-box { position: relative; }
+        .res-list { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: 100%; z-index: 100; border-radius: 8px; }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .res-item:hover { background: #f0f7ff; }
+        .badge { background: var(--p); color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.8em; float: right; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85em; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; }
-        
-        .loader-overlay { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.9); z-index: 200; border-radius: 15px; text-align: center; padding-top: 60px; font-weight: bold; color: var(--a); }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+        .filter-tabs { display: flex; gap: 5px; margin-bottom: 10px; }
+        .tab { flex: 1; padding: 5px; font-size: 0.75em; cursor: pointer; background: #eee; border-radius: 5px; text-align: center; }
+        .tab.active { background: var(--a); color: white; }
+        .loader { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); z-index: 1000; text-align: center; padding-top: 20%; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="main-grid">
     <div class="card">
-        <div id="loadVenta" class="loader-overlay">⚙️ Procesando Registro...</div>
-        <h3>📝 Registrar Consumo</h3>
-        <div style="position: relative;">
-            <input type="text" id="busVenta" placeholder="🔎 Buscar por Nombre o Apellido..." oninput="buscarVenta()">
-            <div id="resVenta" class="search-res"></div>
+        <div id="loadV" class="loader">Procesando...</div>
+        <h3>📝 Registro de Consumo</h3>
+        <div class="search-box">
+            <input type="text" id="busV" placeholder="🔎 Buscar Estudiante para registrar..." oninput="buscar(this, 'resV')">
+            <div id="resV" class="res-list"></div>
         </div>
-        <p id="estSel" style="font-weight: bold; color: var(--a); margin: 15px 0; font-size: 1.1em; background: #eef7ff; padding: 10px; border-radius: 8px;">Alumno: No seleccionado</p>
+        
+        <p id="selLabel" style="padding:10px; background:#eef7ff; border-radius:8px; font-weight:bold; color:var(--a);">Alumno: Ninguno seleccionado</p>
         
         <select id="prd">
-            <option value="Almuerzo">Almuerzo Completo ($3.50)</option>
-            <option value="Medio">Medio Almuerzo ($2.00)</option>
-            <option value="Sopa">Solo Sopa ($1.00)</option>
-            <option value="Lunch">Lunch / Refrigerio ($1.50)</option>
+            <option value="Almuerzo">Almuerzo ($3.50)</option>
+            <option value="Medio">Medio ($2.00)</option>
+            <option value="Sopa">Sopa ($1.00)</option>
+            <option value="Lunch">Lunch ($1.50)</option>
         </select>
         
-        <div style="padding: 15px; border: 1px solid #eee; border-radius: 10px; margin: 10px 0; background: #fafafa;">
-            <label><input type="radio" name="met" value="Efectivo" checked onclick="toggleTrans(false)"> 💵 Efectivo</label>
-            <label style="margin-left: 20px;"><input type="radio" name="met" value="Transferencia" onclick="toggleTrans(true)"> 📱 Transferencia</label>
-            <div id="extraTrans" class="hidden">
-                <input type="text" id="ban" class="req" placeholder="Institución Financiera (Obligatorio)">
-                <input type="text" id="com" class="req" placeholder="N° Comprobante (Obligatorio)">
-            </div>
-        </div>
-        <button class="btn-blue" style="padding: 18px;" onclick="guardarVenta()">💾 REGISTRAR CONSUMO</button>
+        <button class="btn btn-blue" onclick="registrar()">💾 GUARDAR CONSUMO</button>
 
-        <h3 style="margin-top:25px;">🕒 Historial de Consumo</h3>
-        <div id="tablaHistorial"><p style="color:gray; font-style:italic;">Selecciona un alumno para ver sus registros.</p></div>
+        <h3 style="margin-top:20px;">📊 Historial Individual</h3>
+        <div class="filter-tabs">
+            <div class="tab active" onclick="filtrarH('hoy', this)">Hoy</div>
+            <div class="tab" onclick="filtrarH('semana', this)">Semana</div>
+            <div class="tab" onclick="filtrarH('mes', this)">Mes</div>
+        </div>
+        <div id="hist" style="max-height: 200px; overflow-y: auto;">Selecciona un alumno...</div>
     </div>
 
     <div class="card">
-        <div id="loadAdmin" class="loader-overlay">⚙️ Actualizando Base de Datos...</div>
-        <span class="stats-badge" id="countEst">👥 Alumnos: 0</span>
-        <h3>⚙️ Administración</h3>
+        <div id="loadA" class="loader">Actualizando Base...</div>
+        <span class="badge" id="count">0 Alumnos</span>
+        <h3>⚙️ Gestión de Alumnos</h3>
         
-        <details open>
-            <summary style="cursor:pointer; font-weight:bold; color: var(--s);">▶ Registrar Alumno Nuevo</summary>
-            <input type="text" id="nID" placeholder="N° Cédula / ID">
-            <input type="text" id="nNom" class="req" placeholder="Nombres y Apellidos Completos (Mín. 4 palabras)">
-            <button class="btn-green" onclick="crearAlumno()">✅ AGREGAR ALUMNO</button>
+        <details>
+            <summary style="cursor:pointer; font-weight:bold; color:var(--s)">+ Añadir Nuevo</summary>
+            <input type="text" id="nID" placeholder="ID / Cédula">
+            <input type="text" id="nNom" placeholder="Nombre Completo">
+            <button class="btn btn-green" onclick="nuevoEst()">CREAR ALUMNO</button>
         </details>
 
-        <details style="margin-top:15px;">
-            <summary style="cursor:pointer; font-weight:bold; color: var(--a);">▶ Lista de Alumnos y Edición</summary>
-            <input type="text" id="busLista" placeholder="🔎 Filtrar en la lista..." oninput="filtrarLista()" style="background: #fffef0;">
-            <div id="listaCompleta" style="max-height: 250px; overflow-y: auto; border: 1px solid #eee; margin-top: 10px; border-radius: 8px;">
-                Cargando...
-            </div>
-            <div id="editArea" class="hidden" style="background: #fff4e5; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #ffd8a8;">
-                <input type="text" id="editID" disabled>
-                <input type="text" id="editNom" class="req" placeholder="Nuevo Nombre Completo">
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-blue" style="background:#f39c12" onclick="editEst()">Actualizar</button>
-                    <button class="btn-red" onclick="delEst()">Eliminar</button>
-                </div>
-            </div>
-        </details>
+        <h3 style="margin-top:20px;">🗑️ Eliminar / Editar</h3>
+        <div class="search-box">
+            <input type="text" id="busA" placeholder="🔎 Buscar para eliminar o editar..." oninput="buscar(this, 'resA')">
+            <div id="resA" class="res-list"></div>
+        </div>
+        
+        <div id="editZone" style="display:none; margin-top:15px; padding:15px; border:2px solid var(--d); border-radius:10px;">
+            <p style="margin:0; font-weight:bold;">Estudiante Seleccionado:</p>
+            <input type="text" id="edID" disabled style="background:#f9f9f9">
+            <input type="text" id="edNom">
+            <button class="btn btn-red" onclick="borrarEst()">❌ ELIMINAR DE LA BASE</button>
+        </div>
 
-        <h3 style="margin-top:25px;">📊 Reportes Excel</h3>
-        <select id="repTipo">
-            <option value="Hoy">Consumos de Hoy</option>
-            <option value="Semanal">Reporte de esta Semana</option>
-            <option value="Mensual">Reporte del Mes</option>
-            <option value="General">Base de Datos Completa</option>
-        </select>
-        <button class="btn-dark" style="background: var(--p); color:white; font-weight:bold; cursor:pointer;" onclick="descargarExcel()">📥 DESCARGAR EXCEL</button>
+        <h3 style="margin-top:20px;">📥 Reportes Generales</h3>
+        <button class="btn btn-blue" style="background:var(--p)" onclick="descargar()">DESCARGAR REPORTE EXCEL</button>
     </div>
 </div>
 
 <script>
-    const URL_API = "https://script.google.com/macros/s/AKfycbzKPK6m9Eue_1JcuGRMHiMnjW-D1sL4fu8-orU733HJYNJyHwILhJS-p2fD2KV-M7Ie/exec";
-    let dbEst = [], dbVent = [], selID = "", selNom = "";
+    const URL_API = "https://script.google.com/macros/s/AKfycbz4MFVa_XByObnE2LYJ8aRNqXAZDpDMDt_1s9vr-lQ0xAFlYnpSBeLNDN5UBvJyOtCb/exec"; // REEMPLAZA ESTO
+    let dbEst = [], dbVent = [], sID = "", sNom = "";
 
     async function cargar() {
-        try {
-            const r = await fetch(URL_API + "?q=todo");
-            const d = await r.json();
-            dbEst = d.est; dbVent = d.vent;
-            document.getElementById('countEst').innerText = `👥 Alumnos: ${dbEst.length}`;
-            actualizarListaVisible(dbEst);
-        } catch(e) { console.error("Error al cargar datos"); }
+        const r = await fetch(URL_API + "?q=todo");
+        const d = await r.json();
+        dbEst = d.est; dbVent = d.vent;
+        document.getElementById('count').innerText = dbEst.length + " Alumnos";
     }
 
-    function toggleTrans(show) { document.getElementById('extraTrans').className = show ? "" : "hidden"; }
-
-    function buscarVenta() {
-        const v = document.getElementById('busVenta').value.toLowerCase().trim();
-        const r = document.getElementById('resVenta');
+    function buscar(el, resId) {
+        const v = el.value.toLowerCase();
+        const r = document.getElementById(resId);
         r.innerHTML = '';
         if(v.length < 2) { r.style.display='none'; return; }
-
         const f = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
         f.forEach(e => {
             const d = document.createElement('div');
             d.className = 'res-item';
-            d.innerHTML = `📌 <b>${e.nombre}</b><br><small>ID: ${e.id}</small>`;
+            d.innerText = `${e.id} | ${e.nombre}`;
             d.onclick = () => {
-                selID = e.id; selNom = e.nombre;
-                document.getElementById('estSel').innerText = "✅ Alumno: " + selNom;
-                document.getElementById('resVenta').style.display = 'none';
-                document.getElementById('busVenta').value = '';
-                dibujarHistorial();
+                sID = e.id; sNom = e.nombre;
+                if(resId === 'resV') {
+                    document.getElementById('selLabel').innerText = "✅ Seleccionado: " + sNom;
+                    filtrarH('hoy');
+                } else {
+                    document.getElementById('editZone').style.display = 'block';
+                    document.getElementById('edID').value = sID;
+                    document.getElementById('edNom').value = sNom;
+                }
+                r.style.display = 'none';
+                el.value = '';
             };
             r.appendChild(d);
         });
-        r.style.display = f.length ? 'block' : 'none';
+        r.style.display = 'block';
     }
 
-    function dibujarHistorial() {
-        const f = dbVent.filter(v => v.id == selID).reverse();
-        if(f.length === 0) {
-            document.getElementById('tablaHistorial').innerHTML = "<p>Sin consumos anteriores.</p>";
-            return;
+    function filtrarH(periodo, el) {
+        if(!sID) return;
+        if(el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
         }
-        let h = `<table><tr><th>Fecha</th><th>Producto</th><th>Pago</th></tr>`;
-        f.slice(0, 5).forEach(v => {
-            h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td><td>${v.met}</td></tr>`;
+        const hoy = new Date();
+        const f = dbVent.filter(v => {
+            if(v.id != sID) return false;
+            const fV = new Date(v.fecha);
+            if(periodo === 'hoy') return fV.toDateString() === hoy.toDateString();
+            if(periodo === 'semana') return (hoy - fV) / (1000*60*60*24) <= 7;
+            if(periodo === 'mes') return fV.getMonth() === hoy.getMonth();
+            return true;
         });
-        document.getElementById('tablaHistorial').innerHTML = h + "</table>";
+        
+        let h = "<table><tr><th>Fecha</th><th>Producto</th></tr>";
+        f.reverse().forEach(v => h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`);
+        document.getElementById('hist').innerHTML = f.length ? h + "</table>" : "Sin registros en este periodo.";
     }
 
-    function actualizarListaVisible(lista) {
-        let h = "<table>";
-        lista.slice().reverse().forEach(e => {
-            h += `<tr onclick="prepararEdicion('${e.id}', '${e.nombre}')" style="cursor:pointer;"><td>${e.id}</td><td>${e.nombre}</td></tr>`;
-        });
-        document.getElementById('listaCompleta').innerHTML = h + "</table>";
+    async function registrar() {
+        if(!sID) return alert("Selecciona un alumno primero");
+        document.getElementById('loadV').style.display='block';
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({id:sID, nom:sNom, prd:document.getElementById('prd').value, met:'Efectivo'})});
+        alert("Consumo Guardado");
+        location.reload();
     }
 
-    function filtrarLista() {
-        const v = document.getElementById('busLista').value.toLowerCase();
-        const f = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
-        actualizarListaVisible(f);
+    async function borrarEst() {
+        if(!confirm("¿Seguro que quieres eliminar a este estudiante de la base de datos?")) return;
+        document.getElementById('loadA').style.display='block';
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'delEst', id:sID})});
+        alert("Estudiante Eliminado");
+        location.reload();
     }
 
-    function prepararEdicion(id, nom) {
-        document.getElementById('editArea').className = "";
-        document.getElementById('editID').value = id;
-        document.getElementById('editNom').value = nom;
-    }
-
-    async function crearAlumno() {
+    async function nuevoEst() {
         const id = document.getElementById('nID').value;
-        const nom = document.getElementById('nNom').value.trim();
-        if(nom.split(/\s+/).length < 4) return alert("❌ ERROR: Escriba el nombre completo (mínimo 4 palabras).");
-        
-        document.getElementById('loadAdmin').style.display = 'block';
-        await fetch(URL_API, { method: 'POST', body: JSON.stringify({action:"newEst", id:id, nom:nom}), mode: 'no-cors' });
-        
-        alert("👤 Alumno registrado.");
-        document.getElementById('nID').value = ""; document.getElementById('nNom').value = "";
-        await cargar();
-        document.getElementById('loadAdmin').style.display = 'none';
+        const nom = document.getElementById('nNom').value;
+        if(!id || !nom) return alert("Completa todos los campos");
+        document.getElementById('loadA').style.display='block';
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'newEst', id:id, nom:nom})});
+        location.reload();
     }
 
-    async function guardarVenta() {
-        if(!selID) return alert("❌ Selecciona un estudiante primero.");
-        const met = document.querySelector('input[name="met"]:checked').value;
-        const ban = document.getElementById('ban').value;
-        const com = document.getElementById('com').value;
-
-        if(met === "Transferencia" && (!ban || !com)) return alert("❌ Datos de transferencia obligatorios.");
-
-        document.getElementById('loadVenta').style.display = 'block';
-        await fetch(URL_API, { method: 'POST', body: JSON.stringify({id:selID, nom:selNom, prd:document.getElementById('prd').value, met:met, ban:ban, com:com}), mode: 'no-cors' });
-        
-        alert("✅ Venta registrada con éxito.");
-        await cargar();
-        dibujarHistorial();
-        document.getElementById('loadVenta').style.display = 'none';
-    }
-
-    function descargarExcel() {
-        const tipo = document.getElementById('repTipo').value;
-        window.open(URL_API + "?q=excel&tipo=" + tipo, '_blank');
-    }
+    function descargar() { window.open(URL_API + "?q=excel&tipo=General"); }
 
     window.onload = cargar;
 </script>
