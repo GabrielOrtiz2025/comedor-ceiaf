@@ -1,56 +1,202 @@
-<div class="card">
-    <div id="loadA" class="loader">Actualizando Base...</div>
-    <span class="badge" id="count">0 Alumnos</span>
-    <h3>⚙️ Gestión de Alumnos</h3>
-    
-    <div class="search-box">
-        <input type="text" id="busA" placeholder="🔎 Buscar para editar o eliminar..." oninput="buscar(this, 'resA')">
-        <div id="resA" class="res-list"></div>
-    </div>
-    
-    <div id="editZone" style="display:none; margin-top:15px; padding:15px; border:2px solid #f39c12; border-radius:10px; position:relative;">
-        <button onclick="cerrarEdicion()" style="position:absolute; right:10px; top:10px; border:none; background:none; cursor:pointer; font-weight:bold;">✖</button>
-        <p style="margin:0 0 10px 0; font-weight:bold; color:#d35400;">📝 Editar / Eliminar Alumno</p>
-        <label><small>ID (No editable):</small></label>
-        <input type="text" id="edID" disabled style="background:#f0f0f0; margin-bottom:5px;">
-        <label><small>Nombre Completo:</small></label>
-        <input type="text" id="edNom">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Comedor CEIAF v9.0</title>
+    <style>
+        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; min-height: 400px; }
+        h2 { margin-top: 0; color: var(--p); border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 1.4em; }
+        .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--a); border-radius: 15px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        .btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; margin-top: 5px; }
+        .btn-blue { background: var(--a); color: white; }
+        .btn-blue:hover { background: #2980b9; }
+        .btn-red { background: var(--d); color: white; }
+        .btn-orange { background: #f39c12; color: white; }
+        .res-list { border: 1px solid #ddd; max-height: 200px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 50px); z-index: 110; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 8px; }
+        .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .res-item:hover { background: #f1f9ff; }
+        .badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8em; float: right; }
+        .tabs { display: flex; gap: 5px; margin: 15px 0; }
+        .tab { flex: 1; padding: 8px; text-align: center; background: #eee; cursor: pointer; border-radius: 5px; font-size: 0.9em; }
+        .tab.active { background: var(--a); color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div id="loadV" class="loader" style="display:none;">Procesando...</div>
+        <h2>🍴 Registro de Consumo</h2>
         
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button class="btn" style="background:#f39c12; color:white;" onclick="actualizarEst()">ACTUALIZAR</button>
-            <button class="btn btn-red" onclick="borrarEst()">ELIMINAR</button>
+        <input type="text" id="busV" placeholder="🔎 Buscar Estudiante por nombre o ID..." oninput="buscar(this, 'resV')">
+        <div id="resV" class="res-list"></div>
+        
+        <div id="selLabel" style="padding:15px; background:#e8f4fd; color:#2980b9; border-radius:8px; font-weight:bold; margin-bottom:10px;">
+            Alumno: Ninguno seleccionado
         </div>
+
+        <select id="prd">
+            <option value="Almuerzo Completo ($3.50)">Almuerzo Completo ($3.50)</option>
+            <option value="Medio Almuerzo ($2.00)">Medio Almuerzo ($2.00)</option>
+            <option value="Sopa ($1.00)">Sopa ($1.00)</option>
+            <option value="Lunch ($1.50)">Lunch ($1.50)</option>
+        </select>
+
+        <button class="btn btn-blue" onclick="registrar()">💾 GUARDAR CONSUMO</button>
+
+        <h2 style="margin-top:30px;">📊 Historial Individual</h2>
+        <div class="tabs">
+            <div class="tab active" onclick="filtrarH('hoy', this)">Hoy</div>
+            <div class="tab" onclick="filtrarH('semana', this)">Semana</div>
+            <div class="tab" onclick="filtrarH('mes', this)">Mes</div>
+        </div>
+        <div id="hist">Selecciona un alumno para ver sus registros.</div>
+    </div>
+
+    <div class="card">
+        <div id="loadA" class="loader">Actualizando Base...</div>
+        <span class="badge" id="count">0 Alumnos</span>
+        <h2>⚙️ Gestión de Alumnos</h2>
+
+        <div style="margin-bottom:20px;">
+            <input type="text" id="busA" placeholder="🔎 Buscar para editar o eliminar..." oninput="buscar(this, 'resA')">
+            <div id="resA" class="res-list"></div>
+        </div>
+
+        <div id="editZone" style="display:none; padding:20px; border:2px solid #f39c12; border-radius:12px; background:#fffcf5;">
+            <button onclick="cerrarEdicion()" style="float:right; border:none; background:none; font-size:20px; cursor:pointer;">✖</button>
+            <h3 style="margin-top:0; color:#d35400;">📝 Editar Alumno</h3>
+            <label><small>ID / Cédula:</small></label>
+            <input type="text" id="edID" disabled style="background:#f5f5f5;">
+            <label><small>Nombre Completo:</small></label>
+            <input type="text" id="edNom">
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <button class="btn btn-orange" onclick="actualizarEst()">ACTUALIZAR</button>
+                <button class="btn btn-red" onclick="borrarEst()">ELIMINAR</button>
+            </div>
+        </div>
+
+        <h2 style="margin-top:30px;">📥 Reportes</h2>
+        <button class="btn btn-blue" style="background:#34495e" onclick="descargar()">DESCARGAR REPORTE EXCEL</button>
     </div>
 </div>
 
 <script>
-    const URL_API = "https://script.google.com/macros/s/AKfycbxoT6Cz6ascAEG-zRtO2qdoNi3J1hvbK-iCjKGAXXsRQUvs_ZcTvOodZNREdPDlj5ZE/exec"; // REEMPLAZA ESTO
+    // Configuración
+    const URL_API = "https://script.google.com/macros/s/AKfycbxoT6Cz6ascAEG-zRtO2qdoNi3J1hvbK-iCjKGAXXsRQUvs_ZcTvOodZNREdPDlj5ZE/exec"; 
     let dbEst = [], dbVent = [], sID = "", sNom = "";
 
+    // Carga inicial
     async function cargar() {
+        const loader = document.getElementById('loadA');
         try {
             const r = await fetch(URL_API + "?q=todo");
             const d = await r.json();
-            dbEst = d.est; 
-            dbVent = d.vent; // Carga los consumos
+            dbEst = d.est || []; 
+            dbVent = d.vent || [];
             document.getElementById('count').innerText = dbEst.length + " Alumnos";
-        } catch(e) { console.error("Error al cargar"); }
+            loader.style.display = 'none'; // Desbloquea la pantalla
+        } catch(e) {
+            loader.innerText = "⚠️ Error de conexión";
+        }
+    }
+    window.onload = cargar;
+
+    // Buscador compartido
+    function buscar(el, resId) {
+        const v = el.value.toLowerCase();
+        const r = document.getElementById(resId);
+        r.innerHTML = '';
+        if(v.length < 2) { r.style.display='none'; return; }
+
+        const f = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
+        f.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'res-item';
+            d.innerText = `${e.id} | ${e.nombre}`;
+            d.onclick = () => {
+                sID = e.id; sNom = e.nombre;
+                if(resId === 'resV') {
+                    document.getElementById('selLabel').innerText = "✅ Seleccionado: " + sNom;
+                    filtrarH('hoy'); // Carga historial al seleccionar
+                } else {
+                    document.getElementById('editZone').style.display = 'block';
+                    document.getElementById('edID').value = sID;
+                    document.getElementById('edNom').value = sNom;
+                }
+                r.style.display = 'none';
+                el.value = '';
+            };
+            r.appendChild(d);
+        });
+        r.style.display = 'block';
     }
 
-    function cerrarEdicion() {
-        document.getElementById('editZone').style.display = 'none';
-        sID = ""; sNom = "";
+    // Historial Individual
+    function filtrarH(periodo, el) {
+        if(!sID) return;
+        if(el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        const hoy = new Date();
+        const filtrados = dbVent.filter(v => {
+            if(v.id.toString() !== sID.toString()) return false;
+            const fechaV = new Date(v.fecha);
+            if(periodo === 'hoy') return fechaV.toDateString() === hoy.toDateString();
+            if(periodo === 'semana') return (hoy - fechaV) / (1000*60*60*24) <= 7;
+            if(periodo === 'mes') return fechaV.getMonth() === hoy.getMonth();
+            return true;
+        });
+
+        if(filtrados.length === 0) {
+            document.getElementById('hist').innerHTML = "Sin registros en este periodo.";
+            return;
+        }
+
+        let h = "<table><tr><th>Fecha</th><th>Producto</th></tr>";
+        filtrados.reverse().forEach(v => h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`);
+        document.getElementById('hist').innerHTML = h + "</table>";
     }
+
+    // Acciones de Base de Datos
+    function cerrarEdicion() { document.getElementById('editZone').style.display = 'none'; }
 
     async function actualizarEst() {
-        const nuevoNom = document.getElementById('edNom').value;
-        if(!nuevoNom) return alert("El nombre no puede estar vacío");
+        const n = document.getElementById('edNom').value;
+        if(!n) return alert("Falta nombre");
         document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'editEst', id:sID, nom:nuevoNom})});
-        alert("Datos actualizados correctamente");
+        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'editEst', id:sID, nom:n})});
+        alert("Actualizado correctamente");
         location.reload();
     }
 
-    // El resto de funciones (buscar, registrar, filtrarH) permanecen igual, 
-    // pero asegúrate de que filtrarH use dbVent.filter() correctamente.
+    async function borrarEst() {
+        if(!confirm("¿Borrar permanentemente?")) return;
+        document.getElementById('loadA').style.display='block';
+        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'delEst', id:sID})});
+        location.reload();
+    }
+
+    async function registrar() {
+        if(!sID) return alert("Selecciona alumno");
+        document.getElementById('loadV').style.display='block';
+        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({id:sID, nom:sNom, prd:document.getElementById('prd').value})});
+        location.reload();
+    }
+
+    function descargar() { window.open(URL_API + "?q=excel&tipo=General"); }
 </script>
+
+</body>
+</html>
