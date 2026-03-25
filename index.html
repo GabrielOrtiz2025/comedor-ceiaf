@@ -3,139 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Comedor CEIAF</title>
+    <title>Comedor CEIAF</title>
     <style>
         :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; min-height: 450px; }
-        h2 { margin-top: 0; color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; color: var(--a); border-radius: 15px; text-align: center; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); position: relative; }
+        h2 { color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top:0; }
+        .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--a); border-radius: 15px; }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .btn { border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; color: white; transition: 0.3s; }
+        .btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; margin-top: 5px; }
         .btn-blue { background: var(--a); }
-        .btn-orange { background: #f39c12; }
         .btn-red { background: var(--d); }
-        .res-list { border: 1px solid #ddd; max-height: 180px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 50px); z-index: 110; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .btn-green { background: var(--s); }
+        .res-list { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 50px); z-index: 110; border-radius: 8px; }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .res-item:hover { background: #f1f9ff; }
         .badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8em; float: right; }
         .tabs { display: flex; gap: 5px; margin: 15px 0; }
-        .tab { flex: 1; padding: 12px; text-align: center; background: #eee; cursor: pointer; border-radius: 8px; font-size: 0.9em; font-weight: bold; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: #eee; cursor: pointer; border-radius: 8px; font-size: 0.9em; }
         .tab.active { background: var(--a); color: white; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.85em; }
-        .close-btn { position: absolute; right: 15px; top: 15px; background: #eee; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold; }
+        .form-add { display: none; background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid var(--s); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- SECCIÓN IZQUIERDA: REGISTRO Y HISTORIAL -->
+    <!-- REGISTRO DE CONSUMO -->
     <div class="card">
-        <div id="loadV" class="loader" style="display:none;">Procesando registro...</div>
-        <h2>🍴 Registro de Consumo</h2>
-        
-        <input type="text" id="busV" placeholder="🔎 Buscar Estudiante..." oninput="buscar(this, 'resV')">
+        <div id="loadV" class="loader" style="display:none;">Procesando...</div>
+        <h2>📝 Registro de Consumo</h2>
+        <input type="text" id="busV" placeholder="🔎 Buscar Estudiante para registrar..." oninput="buscar(this, 'resV')">
         <div id="resV" class="res-list"></div>
         
-        <div id="selLabel" style="padding:15px; background:#e8f4fd; color:#2980b9; border-radius:8px; font-weight:bold; margin-bottom:10px; border: 1px solid #bde0fe;">
-            Selecciona un alumno para empezar
+        <div id="selLabel" style="padding:12px; background:#e3f2fd; color:#1565c0; border-radius:8px; font-weight:bold; margin: 10px 0;">
+            Alumno: Ninguno seleccionado
         </div>
 
         <select id="prd">
-            <option value="Almuerzo Completo ($3.50)">Almuerzo Completo ($3.50)</option>
+            <option value="Almuerzo ($3.50)">Almuerzo ($3.50)</option>
             <option value="Medio Almuerzo ($2.00)">Medio Almuerzo ($2.00)</option>
-            <option value="Sopa ($1.00)">Sopa ($1.00)</option>
-            <option value="Lunch ($1.50)">Lunch ($1.50)</option>
         </select>
 
         <button class="btn btn-blue" onclick="registrar()">💾 GUARDAR CONSUMO</button>
 
-        <h2 style="margin-top:35px;">📊 Historial Individual</h2>
+        <h2 style="margin-top:30px;">📊 Historial Individual</h2>
         <div class="tabs">
             <div class="tab active" onclick="filtrarH('hoy', this)">Hoy</div>
             <div class="tab" onclick="filtrarH('semana', this)">Semana</div>
             <div class="tab" onclick="filtrarH('mes', this)">Mes</div>
         </div>
-        <div id="hist" style="max-height: 250px; overflow-y: auto;">
-            Busca un alumno para ver sus últimos consumos.
-        </div>
+        <div id="hist" style="font-size: 0.9em; color: #666;">Selecciona un alumno para ver sus registros.</div>
     </div>
 
-    <!-- SECCIÓN DERECHA: GESTIÓN Y REPORTES -->
+    <!-- GESTIÓN DE ALUMNOS -->
     <div class="card">
-        <div id="loadA" class="loader">🔄 Conectando a la nube...</div>
+        <div id="loadA" class="loader">Cargando datos...</div>
         <span class="badge" id="count">0 Alumnos</span>
-        <h2>⚙️ Administración</h2>
+        <h2>⚙️ Gestión de Alumnos</h2>
 
-        <input type="text" id="busA" placeholder="🔎 Buscar para editar o eliminar..." oninput="buscar(this, 'resA')">
-        <div id="resA" class="res-list"></div>
-
-        <div id="editZone" style="display:none; padding:20px; border:2px solid #f39c12; border-radius:12px; background:#fffcf5; position: relative; margin-top: 15px;">
-            <button class="close-btn" onclick="cerrarEdicion()">✕</button>
-            <h3 style="margin: 0 0 15px 0; color:#d35400;">📝 Editar Alumno</h3>
-            
-            <label><small>Cédula / ID:</small></label>
-            <input type="text" id="edID" disabled style="background:#f5f5f5;">
-            
-            <label><small>Nombre Completo:</small></label>
-            <input type="text" id="edNom">
-            
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <button class="btn btn-orange" onclick="actualizarEst()">ACTUALIZAR</button>
-                <button class="btn btn-red" onclick="borrarEst()">ELIMINAR</button>
-            </div>
+        <p onclick="toggleAdd()" style="color:var(--s); cursor:pointer; font-weight:bold;">▶ + Añadir Nuevo</p>
+        
+        <div id="addForm" class="form-add">
+            <input type="text" id="addID" placeholder="ID / Cédula">
+            <input type="text" id="addNom" placeholder="Nombre Completo">
+            <button class="btn btn-green" onclick="nuevoEst()">AÑADIR A LA BASE</button>
         </div>
 
-        <h2 style="margin-top:40px;">📥 Reportes Generales</h2>
-        <button class="btn" style="background:#34495e" onclick="descargar()">DESCARGAR REPORTE EXCEL (GENERAL)</button>
+        <h3>🗑️ Eliminar / Editar</h3>
+        <input type="text" id="busA" placeholder="🔎 Buscar para eliminar o editar..." oninput="buscar(this, 'resA')">
+        <div id="resA" class="res-list"></div>
+
+        <div id="editZone" style="display:none; margin-top:15px; padding:15px; border: 2px solid var(--d); border-radius: 10px;">
+            <p style="margin:0 0 10px 0; font-weight:bold;">Estudiante Seleccionado:</p>
+            <input type="text" id="edID" disabled style="background:#f0f0f0;">
+            <input type="text" id="edNom">
+            <button class="btn btn-red" onclick="borrarEst()">❌ ELIMINAR DE LA BASE</button>
+            <button class="btn btn-blue" style="margin-top:10px; background:#f39c12;" onclick="actualizarEst()">ACTUALIZAR NOMBRE</button>
+        </div>
+
+        <h2 style="margin-top:30px;">📩 Reportes Generales</h2>
+        <button class="btn" style="background:var(--p)" onclick="window.open(URL_API+'?q=todo')">DESCARGAR REPORTE</button>
     </div>
 </div>
 
 <script>
-    /** CONFIGURACIÓN: PEGA TU ENLACE AQUÍ **/
     const URL_API = "https://script.google.com/macros/s/AKfycbxoT6Cz6ascAEG-zRtO2qdoNi3J1hvbK-iCjKGAXXsRQUvs_ZcTvOodZNREdPDlj5ZE/exec"; 
-    
     let dbEst = [], dbVent = [], sID = "", sNom = "";
 
-    // 1. CARGA INICIAL DESDE GOOGLE
     async function cargar() {
-        const loader = document.getElementById('loadA');
         try {
             const r = await fetch(URL_API + "?q=todo");
-            if (!r.ok) throw new Error();
             const d = await r.json();
-            
-            dbEst = d.est || []; 
-            dbVent = d.vent || [];
-            
+            dbEst = d.est || []; dbVent = d.vent || [];
             document.getElementById('count').innerText = dbEst.length + " Alumnos";
-            loader.style.display = 'none'; 
-        } catch(e) {
-            loader.innerHTML = "⚠️ ERROR DE CONEXIÓN<br><small>Asegúrate de publicar el script como 'Anyone'</small>";
-        }
+            document.getElementById('loadA').style.display = 'none';
+        } catch(e) { document.getElementById('loadA').innerText = "Error de Conexión"; }
     }
     window.onload = cargar;
 
-    // 2. BUSCADOR
+    function toggleAdd() {
+        const f = document.getElementById('addForm');
+        f.style.display = f.style.display === 'block' ? 'none' : 'block';
+    }
+
     function buscar(el, resId) {
         const v = el.value.toLowerCase();
         const r = document.getElementById(resId);
         r.innerHTML = '';
         if(v.length < 2) { r.style.display='none'; return; }
-
-        const filtrados = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
-        filtrados.forEach(e => {
-            const div = document.createElement('div');
-            div.className = 'res-item';
-            div.innerText = `${e.id} | ${e.nombre}`;
-            div.onclick = () => {
+        const f = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
+        f.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'res-item';
+            d.innerText = `${e.id} | ${e.nombre}`;
+            d.onclick = () => {
                 sID = e.id; sNom = e.nombre;
                 if(resId === 'resV') {
-                    document.getElementById('selLabel').innerText = "👤 Alumno: " + sNom;
-                    filtrarH('hoy'); 
+                    document.getElementById('selLabel').innerText = "✅ Seleccionado: " + sNom;
+                    filtrarH('hoy');
                 } else {
                     document.getElementById('editZone').style.display = 'block';
                     document.getElementById('edID').value = sID;
@@ -144,72 +131,54 @@
                 r.style.display = 'none';
                 el.value = '';
             };
-            div.appendChild(r); // Esto estaba mal, corregido:
-            r.appendChild(div);
+            r.appendChild(d);
         });
         r.style.display = 'block';
     }
 
-    // 3. FILTRO DE HISTORIAL INDIVIDUAL
     function filtrarH(periodo, el) {
         if(!sID) return;
         if(el) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
         }
-
         const hoy = new Date();
-        const filtrados = dbVent.filter(v => {
-            if(v.id.toString() !== sID.toString()) return false;
-            const fechaV = new Date(v.fecha);
-            if(periodo === 'hoy') return fechaV.toDateString() === hoy.toDateString();
-            if(periodo === 'semana') return (hoy - fechaV) / (1000*60*60*24) <= 7;
-            if(periodo === 'mes') return fechaV.getMonth() === hoy.getMonth();
-            return true;
-        });
-
-        if(filtrados.length === 0) {
-            document.getElementById('hist').innerHTML = "<p style='color:gray; font-size:13px; text-align:center;'>No hay consumos en este periodo.</p>";
-            return;
-        }
-
-        let tabla = "<table><tr><th>Fecha</th><th>Producto</th></tr>";
-        filtrados.reverse().forEach(v => {
-            tabla += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`;
-        });
-        document.getElementById('hist').innerHTML = tabla + "</table>";
+        const consumos = dbVent.filter(v => v.id.toString() === sID.toString());
+        if(consumos.length === 0) { document.getElementById('hist').innerText = "Sin registros."; return; }
+        let h = "<table style='width:100%'><tr><th>Fecha</th><th>Producto</th></tr>";
+        consumos.reverse().slice(0,5).forEach(v => h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`);
+        document.getElementById('hist').innerHTML = h + "</table>";
     }
 
-    // 4. ACCIONES DE BASE DE DATOS
-    function cerrarEdicion() { document.getElementById('editZone').style.display = 'none'; }
+    async function nuevoEst() {
+        const id = document.getElementById('addID').value;
+        const nom = document.getElementById('addNom').value;
+        if(!id || !nom) return alert("Completa los datos");
+        document.getElementById('loadA').style.display='block';
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'addEst', id:id, nom:nom})});
+        location.reload();
+    }
 
     async function actualizarEst() {
-        const nombre = document.getElementById('edNom').value;
-        if(!nombre) return alert("Escribe un nombre");
+        const nom = document.getElementById('edNom').value;
         document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'editEst', id:sID, nom:nombre})});
-        alert("Alumno actualizado");
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'editEst', id:sID, nom:nom})});
         location.reload();
     }
 
     async function borrarEst() {
-        if(!confirm("¿Seguro que quieres borrar a este alumno?")) return;
+        if(!confirm("¿Borrar permanentemente?")) return;
         document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'delEst', id:sID})});
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'delEst', id:sID})});
         location.reload();
     }
 
     async function registrar() {
-        if(!sID) return alert("Primero selecciona un alumno");
+        if(!sID) return alert("Selecciona alumno");
         document.getElementById('loadV').style.display='block';
-        const producto = document.getElementById('prd').value;
-        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({id:sID, nom:sNom, prd:producto})});
-        alert("¡Registro exitoso!");
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({id:sID, nom:sNom, prd:document.getElementById('prd').value})});
         location.reload();
     }
-
-    function descargar() { window.open(URL_API + "?q=excel"); }
 </script>
-
 </body>
 </html>
