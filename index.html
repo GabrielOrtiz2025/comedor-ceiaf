@@ -96,20 +96,32 @@
     let dbEst = [], dbVent = [], sID = "", sNom = "";
 
     // Carga inicial
-    async function cargar() {
-        const loader = document.getElementById('loadA');
-        try {
-            const r = await fetch(URL_API + "?q=todo");
-            const d = await r.json();
-            dbEst = d.est || []; 
-            dbVent = d.vent || [];
-            document.getElementById('count').innerText = dbEst.length + " Alumnos";
-            loader.style.display = 'none'; // Desbloquea la pantalla
-        } catch(e) {
-            loader.innerText = "⚠️ Error de conexión";
-        }
+   async function cargar() {
+    const loader = document.getElementById('loadA');
+    try {
+        // Añadimos un pequeño retraso para asegurar que el DOM esté listo
+        const r = await fetch(URL_API + "?q=todo", {
+            method: 'GET',
+            redirect: 'follow' // Esto ayuda a manejar los redireccionamientos de Google
+        });
+        
+        if (!r.ok) throw new Error('Respuesta no exitosa');
+        
+        const d = await r.json();
+        dbEst = d.est || []; 
+        dbVent = d.vent || [];
+        
+        document.getElementById('count').innerText = dbEst.length + " Alumnos";
+        loader.style.display = 'none'; 
+    } catch(e) { 
+        console.error("Error detallado:", e);
+        // Cambiamos el mensaje para que sepas si es un tema de permisos
+        loader.innerHTML = `<div style="color:red; text-align:center;">
+            ⚠️ Error de conexión<br>
+            <small>Verifica permisos 'Anyone' en el Script</small>
+        </div>`;
     }
-    window.onload = cargar;
+}
 
     // Buscador compartido
     function buscar(el, resId) {
