@@ -3,51 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Comedor CEIAF</title>
+    <title>Sistema CEIAF v10</title>
     <style>
         :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); position: relative; min-height: 500px;}
-        h2 { color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top:0; display: flex; align-items: center; gap: 10px; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); position: relative; }
+        h2 { color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top:0; }
         .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--a); border-radius: 15px; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-blue { background: var(--a); }
-        .btn-red { background: var(--d); }
-        .btn-dark { background: var(--p); }
-        .res-list { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 50px); z-index: 110; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        .btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; margin-top: 5px; }
+        .btn-blue { background: var(--a); } .btn-red { background: var(--d); } .btn-green { background: var(--s); }
+        .res-list { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 50px); z-index: 110; border-radius: 8px; }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .res-item:hover { background: #f1f9ff; }
         .badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8em; float: right; }
         .tabs { display: flex; gap: 5px; margin: 15px 0; }
-        .tab { flex: 1; padding: 10px; text-align: center; background: #eee; cursor: pointer; border-radius: 8px; font-size: 0.9em; font-weight: bold; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: #eee; cursor: pointer; border-radius: 8px; }
         .tab.active { background: var(--a); color: white; }
-        .selected-box { padding: 12px; background: #e3f2fd; color: #1565c0; border-radius: 8px; font-weight: bold; margin: 10px 0; border: 1px solid #bbdefb; }
-        .form-add { display: none; background: #f9f9f9; padding: 15px; border-radius: 10px; margin: 10px 0; border-left: 5px solid var(--s); }
-        .edit-container { display: none; margin-top: 20px; padding: 15px; border: 2px solid var(--d); border-radius: 12px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+        .form-add { display: none; background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid var(--s); }
+        .scroll-table { max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.85em; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- SECCIÓN IZQUIERDA -->
     <div class="card">
         <div id="loadV" class="loader" style="display:none;">Procesando...</div>
-        <h2>📝 Registro de Consumo</h2>
-        <input type="text" id="busV" placeholder="🔎 Buscar Estudiante para registrar..." oninput="buscar(this, 'resV')">
+        <h2>🍴 Registro de Consumo</h2>
+        <input type="text" id="busV" placeholder="🔎 Buscar por Nombre o ID..." oninput="buscar(this, 'resV')">
         <div id="resV" class="res-list"></div>
         
-        <div id="selLabel" class="selected-box">
-            ✅ Seleccionado: Ninguno
+        <div id="selLabel" style="padding:12px; background:#e3f2fd; color:#1565c0; border-radius:8px; font-weight:bold; margin: 10px 0;">
+            Alumno: Ninguno seleccionado
         </div>
 
         <select id="prd">
             <option value="Almuerzo ($3.50)">Almuerzo ($3.50)</option>
-            <option value="Desayuno ($2.00)">Desayuno ($2.00)</option>
+            <option value="Medio Almuerzo ($2.00)">Medio Almuerzo ($2.00)</option>
         </select>
 
         <button class="btn btn-blue" onclick="registrar()">💾 GUARDAR CONSUMO</button>
@@ -58,59 +54,71 @@
             <div class="tab" onclick="filtrarH('semana', this)">Semana</div>
             <div class="tab" onclick="filtrarH('mes', this)">Mes</div>
         </div>
-        <div id="hist">Sin registros en este periodo.</div>
+        <div id="hist" class="scroll-table">Selecciona un alumno...</div>
+        <button class="btn" style="background:#34495e; margin-top:10px;" onclick="descargarIndividual()">📥 DESCARGAR REPORTE DE ESTE ALUMNO</button>
     </div>
 
-    <!-- SECCIÓN DERECHA -->
     <div class="card">
-        <div id="loadA" class="loader">Conectando...</div>
+        <div id="loadA" class="loader">Cargando...</div>
         <span class="badge" id="count">0 Alumnos</span>
-        <h2>⚙️ Gestión de Alumnos</h2>
+        <h2>⚙️ Gestión y Lista Total</h2>
 
-        <p onclick="toggleAdd()" style="color:var(--s); cursor:pointer; font-weight:bold; margin-bottom: 15px;">▶ + Añadir Nuevo</p>
+        <p onclick="toggleAdd()" style="color:var(--s); cursor:pointer; font-weight:bold;">▶ + Añadir Nuevo Alumno</p>
         
         <div id="addForm" class="form-add">
             <input type="text" id="addID" placeholder="ID / Cédula">
-            <input type="text" id="addNom" placeholder="Nombre Completo">
-            <button class="btn" style="background:var(--s)" onclick="nuevoEst()">AÑADIR A LA BASE</button>
+            <input type="text" id="addNom" placeholder="Ej: JUAN PEREZ LOPEZ GARCIA (2 nombres 2 apellidos)">
+            <button class="btn btn-green" onclick="nuevoEst()">AÑADIR A LA BASE</button>
         </div>
 
-        <h3 style="display:flex; align-items:center; gap:8px;">🗑️ Eliminar / Editar</h3>
-        <input type="text" id="busA" placeholder="🔎 Buscar para eliminar o editar..." oninput="buscar(this, 'resA')">
-        <div id="resA" class="res-list"></div>
+        <h3>📋 Lista Alfabética (Filtrable)</h3>
+        <input type="text" id="busLista" placeholder="🔎 Filtrar lista completa..." oninput="actualizarListaTotal()">
+        <div class="scroll-table" id="listaTotal"></div>
 
-        <div id="editZone" class="edit-container">
-            <p style="margin:0 0 10px 0; font-weight:bold;">Estudiante Seleccionado:</p>
-            <input type="text" id="edID" disabled style="background:#f5f5f5;">
+        <div id="editZone" style="display:none; margin-top:15px; padding:15px; border: 2px solid var(--d); border-radius: 10px;">
+            <p><b>Editar/Eliminar:</b></p>
+            <input type="text" id="edID" disabled style="background:#f0f0f0;">
             <input type="text" id="edNom">
-            <button class="btn btn-red" onclick="borrarEst()">❌ ELIMINAR DE LA BASE</button>
-            <button class="btn" style="background:#f39c12; margin-top:8px;" onclick="actualizarEst()">ACTUALIZAR NOMBRE</button>
+            <button class="btn btn-red" onclick="borrarEst()">❌ ELIMINAR PERMANENTEMENTE</button>
+            <button class="btn btn-blue" style="margin-top:8px; background:#f39c12;" onclick="actualizarEst()">GUARDAR CAMBIOS</button>
         </div>
-
-        <h2 style="margin-top:40px;">📥 Reportes Generales</h2>
-        <button class="btn btn-dark" onclick="window.open(URL_API+'?q=todo')">DESCARGAR REPORTE EXCEL</button>
     </div>
 </div>
 
 <script>
-    // PEGA TU URL DE GOOGLE AQUÍ
     const URL_API = "https://script.google.com/macros/s/AKfycbxoT6Cz6ascAEG-zRtO2qdoNi3J1hvbK-iCjKGAXXsRQUvs_ZcTvOodZNREdPDlj5ZE/exec"; 
-    
     let dbEst = [], dbVent = [], sID = "", sNom = "";
 
     async function cargar() {
         try {
             const r = await fetch(URL_API + "?q=todo");
             const d = await r.json();
-            dbEst = d.est || []; 
-            dbVent = d.vent || [];
+            dbEst = d.est || []; dbVent = d.vent || [];
+            dbEst.sort((a, b) => a.nombre.localeCompare(b.nombre)); // Orden Alfabético
             document.getElementById('count').innerText = dbEst.length + " Alumnos";
+            actualizarListaTotal();
             document.getElementById('loadA').style.display = 'none';
-        } catch(e) { 
-            document.getElementById('loadA').innerText = "⚠️ Error de conexión"; 
-        }
+        } catch(e) { document.getElementById('loadA').innerText = "Error de Conexión"; }
     }
     window.onload = cargar;
+
+    function actualizarListaTotal() {
+        const filtro = document.getElementById('busLista').value.toLowerCase();
+        const lista = dbEst.filter(e => e.nombre.toLowerCase().includes(filtro) || e.id.toString().includes(filtro));
+        let h = "<table><tr><th>ID</th><th>Nombre</th><th>Acción</th></tr>";
+        lista.forEach(e => {
+            h += `<tr><td>${e.id}</td><td>${e.nombre}</td>
+            <td><button onclick="seleccionarParaEditar('${e.id}','${e.nombre}')">⚙️</button></td></tr>`;
+        });
+        document.getElementById('listaTotal').innerHTML = h + "</table>";
+    }
+
+    function seleccionarParaEditar(id, nom) {
+        sID = id; sNom = nom;
+        document.getElementById('editZone').style.display = 'block';
+        document.getElementById('edID').value = id;
+        document.getElementById('edNom').value = nom;
+    }
 
     function toggleAdd() {
         const f = document.getElementById('addForm');
@@ -122,27 +130,35 @@
         const r = document.getElementById(resId);
         r.innerHTML = '';
         if(v.length < 2) { r.style.display='none'; return; }
-        const filtrados = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
-        filtrados.forEach(e => {
-            const div = document.createElement('div');
-            div.className = 'res-item';
-            div.innerText = `${e.id} | ${e.nombre}`;
-            div.onclick = () => {
+        const f = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
+        f.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'res-item';
+            d.innerText = `${e.id} | ${e.nombre}`;
+            d.onclick = () => {
                 sID = e.id; sNom = e.nombre;
                 if(resId === 'resV') {
-                    document.getElementById('selLabel').innerText = "✅ Seleccionado: " + sNom;
+                    document.getElementById('selLabel').innerText = "✅ " + sNom;
                     filtrarH('hoy');
-                } else {
-                    document.getElementById('editZone').style.display = 'block';
-                    document.getElementById('edID').value = sID;
-                    document.getElementById('edNom').value = sNom;
                 }
                 r.style.display = 'none';
                 el.value = '';
             };
-            r.appendChild(div);
+            r.appendChild(d);
         });
         r.style.display = 'block';
+    }
+
+    async function nuevoEst() {
+        const id = document.getElementById('addID').value;
+        const nom = document.getElementById('addNom').value.trim();
+        // VALIDACIÓN: Al menos 4 palabras (2 nombres + 2 apellidos)
+        const palabras = nom.split(/\s+/);
+        if(!id || palabras.length < 4) return alert("¡ERROR! Debes ingresar obligatoriamente los 2 NOMBRES y 2 APELLIDOS del alumno.");
+        
+        document.getElementById('loadA').style.display='block';
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'addEst', id:id, nom:nom})});
+        location.reload();
     }
 
     function filtrarH(periodo, el) {
@@ -152,53 +168,41 @@
             el.classList.add('active');
         }
         const hoy = new Date();
-        const filtrados = dbVent.filter(v => {
-            if(v.id.toString() !== sID.toString()) return false;
-            const fV = new Date(v.fecha);
-            if(periodo === 'hoy') return fV.toDateString() === hoy.toDateString();
-            if(periodo === 'semana') return (hoy - fV) / (1000*60*60*24) <= 7;
-            if(periodo === 'mes') return fV.getMonth() === hoy.getMonth();
-            return true;
-        });
-
-        if(filtrados.length === 0) {
-            document.getElementById('hist').innerHTML = "Sin registros en este periodo.";
-            return;
-        }
-
+        const consumos = dbVent.filter(v => v.id.toString() === sID.toString());
+        if(consumos.length === 0) { document.getElementById('hist').innerText = "Sin registros."; return; }
         let h = "<table><tr><th>Fecha</th><th>Producto</th></tr>";
-        filtrados.reverse().slice(0,10).forEach(v => h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`);
+        consumos.reverse().forEach(v => h += `<tr><td>${v.fecha.split(',')[0]}</td><td>${v.prd}</td></tr>`);
         document.getElementById('hist').innerHTML = h + "</table>";
     }
 
-    async function nuevoEst() {
-        const id = document.getElementById('addID').value;
-        const nom = document.getElementById('addNom').value;
-        if(!id || !nom) return alert("Completa los datos");
+    function descargarIndividual() {
+        if(!sID) return alert("Selecciona un alumno primero");
+        const csv = dbVent.filter(v => v.id.toString() === sID.toString())
+                    .map(v => `${v.fecha},${v.id},${v.nom},${v.prd}`).join('\n');
+        const blob = new Blob(["Fecha,ID,Nombre,Producto\n" + csv], {type: 'text/csv'});
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `Reporte_${sNom}.csv`; a.click();
+    }
+
+    async function borrarEst() {
+        if(!confirm("¿Seguro? Se borrará de la base definitivamente.")) return;
         document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'addEst', id:id, nom:nom})});
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'delEst', id:sID})});
         location.reload();
     }
 
     async function actualizarEst() {
         const nom = document.getElementById('edNom').value;
-        if(!nom) return;
         document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'editEst', id:sID, nom:nom})});
-        location.reload();
-    }
-
-    async function borrarEst() {
-        if(!confirm("¿Eliminar permanentemente?")) return;
-        document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'delEst', id:sID})});
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'editEst', id:sID, nom:nom})});
         location.reload();
     }
 
     async function registrar() {
         if(!sID) return alert("Selecciona alumno");
         document.getElementById('loadV').style.display='block';
-        await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({id:sID, nom:sNom, prd:document.getElementById('prd').value})});
+        await fetch(URL_API, {method:'POST', body:JSON.stringify({id:sID, nom:sNom, prd:document.getElementById('prd').value})});
         location.reload();
     }
 </script>
