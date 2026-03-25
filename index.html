@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Comedor CEIAF v9.0</title>
+    <title>Comedor CEIAF - Gestión Total</title>
     <style>
         :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; min-height: 400px; }
-        h2 { margin-top: 0; color: var(--p); border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 1.4em; }
-        .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--a); border-radius: 15px; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        .btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; margin-top: 5px; }
-        .btn-blue { background: var(--a); color: white; }
-        .btn-blue:hover { background: #2980b9; }
-        .btn-red { background: var(--d); color: white; }
-        .btn-orange { background: #f39c12; color: white; }
-        .res-list { border: 1px solid #ddd; max-height: 200px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 50px); z-index: 110; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 8px; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); position: relative; min-height: 450px; }
+        h2 { margin-top: 0; color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--a); border-radius: 15px; text-align: center; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; color: white; transition: 0.3s; }
+        .btn-blue { background: var(--a); }
+        .btn-orange { background: #f39c12; }
+        .btn-red { background: var(--d); }
+        .res-list { border: 1px solid #ddd; max-height: 180px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 50px); z-index: 110; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
         .res-item:hover { background: #f1f9ff; }
         .badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.8em; float: right; }
         .tabs { display: flex; gap: 5px; margin: 15px 0; }
-        .tab { flex: 1; padding: 8px; text-align: center; background: #eee; cursor: pointer; border-radius: 5px; font-size: 0.9em; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: #eee; cursor: pointer; border-radius: 8px; font-size: 0.9em; font-weight: bold; }
         .tab.active { background: var(--a); color: white; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.85em; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- SECCIÓN DE CONSUMO -->
     <div class="card">
         <div id="loadV" class="loader" style="display:none;">Procesando...</div>
         <h2>🍴 Registro de Consumo</h2>
         
-        <input type="text" id="busV" placeholder="🔎 Buscar Estudiante por nombre o ID..." oninput="buscar(this, 'resV')">
+        <input type="text" id="busV" placeholder="🔎 Buscar Alumno (Nombre o ID)..." oninput="buscar(this, 'resV')">
         <div id="resV" class="res-list"></div>
         
         <div id="selLabel" style="padding:15px; background:#e8f4fd; color:#2980b9; border-radius:8px; font-weight:bold; margin-bottom:10px;">
@@ -52,78 +52,72 @@
 
         <button class="btn btn-blue" onclick="registrar()">💾 GUARDAR CONSUMO</button>
 
-        <h2 style="margin-top:30px;">📊 Historial Individual</h2>
+        <h2 style="margin-top:30px;">📊 Historial de <span id="nombreHistorial">Estudiante</span></h2>
         <div class="tabs">
             <div class="tab active" onclick="filtrarH('hoy', this)">Hoy</div>
             <div class="tab" onclick="filtrarH('semana', this)">Semana</div>
             <div class="tab" onclick="filtrarH('mes', this)">Mes</div>
         </div>
-        <div id="hist">Selecciona un alumno para ver sus registros.</div>
+        <div id="hist" style="max-height: 200px; overflow-y: auto; border: 1px solid #f0f0f0; padding: 10px; border-radius: 8px;">
+            Selecciona un alumno para ver sus registros.
+        </div>
     </div>
 
+    <!-- SECCIÓN DE ADMINISTRACIÓN -->
     <div class="card">
-        <div id="loadA" class="loader">Actualizando Base...</div>
+        <div id="loadA" class="loader">Conectando con la base...</div>
         <span class="badge" id="count">0 Alumnos</span>
-        <h2>⚙️ Gestión de Alumnos</h2>
+        <h2>⚙️ Administración</h2>
 
         <div style="margin-bottom:20px;">
             <input type="text" id="busA" placeholder="🔎 Buscar para editar o eliminar..." oninput="buscar(this, 'resA')">
             <div id="resA" class="res-list"></div>
         </div>
 
-        <div id="editZone" style="display:none; padding:20px; border:2px solid #f39c12; border-radius:12px; background:#fffcf5;">
-            <button onclick="cerrarEdicion()" style="float:right; border:none; background:none; font-size:20px; cursor:pointer;">✖</button>
-            <h3 style="margin-top:0; color:#d35400;">📝 Editar Alumno</h3>
-            <label><small>ID / Cédula:</small></label>
-            <input type="text" id="edID" disabled style="background:#f5f5f5;">
+        <div id="editZone" style="display:none; padding:20px; border:2px solid #f39c12; border-radius:12px; background:#fffcf5; position: relative;">
+            <button onclick="cerrarEdicion()" style="position: absolute; right: 10px; top: 10px; border: none; background: #ddd; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold;">✕</button>
+            <h3 style="margin: 0 0 15px 0; color:#d35400;">📝 Editar Datos</h3>
+            
+            <label><small>ID / Cédula (No editable):</small></label>
+            <input type="text" id="edID" disabled style="background:#f5f5f5; color: #777;">
+            
             <label><small>Nombre Completo:</small></label>
             <input type="text" id="edNom">
             
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top: 10px;">
                 <button class="btn btn-orange" onclick="actualizarEst()">ACTUALIZAR</button>
                 <button class="btn btn-red" onclick="borrarEst()">ELIMINAR</button>
             </div>
         </div>
 
         <h2 style="margin-top:30px;">📥 Reportes</h2>
-        <button class="btn btn-blue" style="background:#34495e" onclick="descargar()">DESCARGAR REPORTE EXCEL</button>
+        <button class="btn" style="background:#34495e" onclick="descargar()">DESCARGAR REPORTE EXCEL</button>
     </div>
 </div>
 
 <script>
-    // Configuración
+    // REEMPLAZA ESTE ENLACE POR TU NUEVO /EXEC
     const URL_API = "https://script.google.com/macros/s/AKfycbxoT6Cz6ascAEG-zRtO2qdoNi3J1hvbK-iCjKGAXXsRQUvs_ZcTvOodZNREdPDlj5ZE/exec"; 
     let dbEst = [], dbVent = [], sID = "", sNom = "";
 
-    // Carga inicial
-   async function cargar() {
-    const loader = document.getElementById('loadA');
-    try {
-        // Añadimos un pequeño retraso para asegurar que el DOM esté listo
-        const r = await fetch(URL_API + "?q=todo", {
-            method: 'GET',
-            redirect: 'follow' // Esto ayuda a manejar los redireccionamientos de Google
-        });
-        
-        if (!r.ok) throw new Error('Respuesta no exitosa');
-        
-        const d = await r.json();
-        dbEst = d.est || []; 
-        dbVent = d.vent || [];
-        
-        document.getElementById('count').innerText = dbEst.length + " Alumnos";
-        loader.style.display = 'none'; 
-    } catch(e) { 
-        console.error("Error detallado:", e);
-        // Cambiamos el mensaje para que sepas si es un tema de permisos
-        loader.innerHTML = `<div style="color:red; text-align:center;">
-            ⚠️ Error de conexión<br>
-            <small>Verifica permisos 'Anyone' en el Script</small>
-        </div>`;
+    async function cargar() {
+        const loader = document.getElementById('loadA');
+        try {
+            const r = await fetch(URL_API + "?q=todo");
+            if (!r.ok) throw new Error();
+            const d = await r.json();
+            
+            dbEst = d.est || []; 
+            dbVent = d.vent || [];
+            
+            document.getElementById('count').innerText = dbEst.length + " Alumnos";
+            loader.style.display = 'none'; 
+        } catch(e) {
+            loader.innerHTML = "⚠️ Error de conexión<br><small>Verifica permisos 'Anyone' en el Script</small>";
+        }
     }
-}
+    window.onload = cargar;
 
-    // Buscador compartido
     function buscar(el, resId) {
         const v = el.value.toLowerCase();
         const r = document.getElementById(resId);
@@ -139,7 +133,8 @@
                 sID = e.id; sNom = e.nombre;
                 if(resId === 'resV') {
                     document.getElementById('selLabel').innerText = "✅ Seleccionado: " + sNom;
-                    filtrarH('hoy'); // Carga historial al seleccionar
+                    document.getElementById('nombreHistorial').innerText = sNom.split(' ')[0];
+                    filtrarH('hoy'); 
                 } else {
                     document.getElementById('editZone').style.display = 'block';
                     document.getElementById('edID').value = sID;
@@ -153,7 +148,6 @@
         r.style.display = 'block';
     }
 
-    // Historial Individual
     function filtrarH(periodo, el) {
         if(!sID) return;
         if(el) {
@@ -164,15 +158,15 @@
         const hoy = new Date();
         const filtrados = dbVent.filter(v => {
             if(v.id.toString() !== sID.toString()) return false;
-            const fechaV = new Date(v.fecha);
-            if(periodo === 'hoy') return fechaV.toDateString() === hoy.toDateString();
-            if(periodo === 'semana') return (hoy - fechaV) / (1000*60*60*24) <= 7;
-            if(periodo === 'mes') return fechaV.getMonth() === hoy.getMonth();
+            const fV = new Date(v.fecha);
+            if(periodo === 'hoy') return fV.toDateString() === hoy.toDateString();
+            if(periodo === 'semana') return (hoy - fV) / (1000*60*60*24) <= 7;
+            if(periodo === 'mes') return fV.getMonth() === hoy.getMonth();
             return true;
         });
 
         if(filtrados.length === 0) {
-            document.getElementById('hist').innerHTML = "Sin registros en este periodo.";
+            document.getElementById('hist').innerHTML = "<p style='color:gray; font-size:12px;'>Sin consumos en este periodo.</p>";
             return;
         }
 
@@ -181,29 +175,29 @@
         document.getElementById('hist').innerHTML = h + "</table>";
     }
 
-    // Acciones de Base de Datos
     function cerrarEdicion() { document.getElementById('editZone').style.display = 'none'; }
 
     async function actualizarEst() {
         const n = document.getElementById('edNom').value;
-        if(!n) return alert("Falta nombre");
+        if(!n) return alert("El nombre no puede estar vacío");
         document.getElementById('loadA').style.display='block';
         await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'editEst', id:sID, nom:n})});
-        alert("Actualizado correctamente");
+        alert("¡Alumno actualizado!");
         location.reload();
     }
 
     async function borrarEst() {
-        if(!confirm("¿Borrar permanentemente?")) return;
+        if(!confirm("¿Eliminar permanentemente de la base?")) return;
         document.getElementById('loadA').style.display='block';
         await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'delEst', id:sID})});
         location.reload();
     }
 
     async function registrar() {
-        if(!sID) return alert("Selecciona alumno");
+        if(!sID) return alert("Selecciona un alumno");
         document.getElementById('loadV').style.display='block';
         await fetch(URL_API, {method:'POST', mode:'no-cors', body:JSON.stringify({id:sID, nom:sNom, prd:document.getElementById('prd').value})});
+        alert("Consumo registrado");
         location.reload();
     }
 
