@@ -3,51 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA BAR CEIAF - V5</title>
+    <title>SISTEMA BAR CEIAF - COMPLETO</title>
     <style>
         :root { --p: #2C3E50; --a: #3498DB; --s: #2ECC71; --d: #E74C3C; --bg: #F4F7F6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); text-transform: uppercase; font-size: 11px; margin: 0; }
-        .navbar { background: var(--p); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .container { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; padding: 0 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .navbar { background: var(--p); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .container { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; padding: 0 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
         
-        /* Selección Múltiple */
-        .prd-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 15px 0; max-height: 400px; overflow-y: auto; border: 1px solid #EEE; padding: 10px; border-radius: 8px; }
-        .prd-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #F0F0F0; background: #FFF; }
-        .prd-info { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .prd-controls { display: flex; align-items: center; gap: 8px; }
-        .qty-btn { width: 30px; height: 30px; border-radius: 5px; border: 1px solid #DDD; cursor: pointer; background: white; font-weight: bold; }
-        .fecha-mod { font-size: 8px; color: #999; display: block; margin-top: 2px; }
+        /* Buscador Predictivo */
+        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: calc(100% - 40px); z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #EEE; }
+        .res-item:hover { background: #E3F2FD; }
 
+        /* Selección Múltiple */
+        .prd-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; max-height: 350px; overflow-y: auto; border: 1px solid #EEE; padding: 10px; border-radius: 8px; }
+        .prd-item { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid #F0F0F0; }
+        .qty-controls { display: flex; align-items: center; gap: 5px; }
+        .qty-btn { width: 28px; height: 28px; border: 1px solid #DDD; background: white; cursor: pointer; border-radius: 4px; }
+        .fecha-mod { font-size: 8px; color: #999; display: block; }
+
+        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; color: white; margin: 5px 0; }
+        .btn-blue { background: var(--a); } .btn-green { background: var(--s); } .btn-red { background: var(--d); }
+        .hidden { display: none; }
         .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:2000; }
         .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; text-align: center; }
-        
-        .badge-id { font-family: monospace; background: #EEE; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: var(--p); }
-        .hidden { display: none; }
-        input[type="checkbox"] { transform: scale(1.5); cursor: pointer; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #DDD; border-radius: 6px; text-transform: uppercase; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
-    <b>BAR CEIAF - GESTIÓN DE CONSUMOS</b>
-    <button style="background:#34495E; color:white; border:none; padding:8px; cursor:pointer;" onclick="toggle('modalAdmin')">⚙️ ADM. PERIODO</button>
+    <div style="font-weight: bold; font-size: 14px;">CEIAF - GESTIÓN INTEGRAL BAR</div>
+    <button style="background:#34495E; color:white; border:none; padding:8px 15px; cursor:pointer; border-radius:4px;" onclick="toggle('modalAdmin')">⚙️ OPCIONES DE ADMINISTRADOR</button>
 </div>
 
 <div class="container">
+    <!-- REGISTRO DE CONSUMOS -->
     <div class="card">
-        <h2>🛒 REGISTRO MÚLTIPLE</h2>
-        <input type="text" id="busV" placeholder="🔎 BUSCAR ALUMNO (NOMBRE, APELLIDO O NIVEL)..." oninput="buscarInteligente(this)">
-        <div id="resV" style="position:absolute; background:white; z-index:100; width:300px; border:1px solid #DDD; display:none;"></div>
+        <h2>🍴 REGISTRO DE CONSUMO</h2>
+        <input type="text" id="busV" placeholder="🔎 BUSCAR: 9C CARLOS HUERTAS..." oninput="buscarInteligente(this)">
+        <div id="resV" class="search-results"></div>
         
-        <div id="selLabel" style="padding:15px; background:#E3F2FD; color:#1565C0; font-weight:bold; margin:10px 0; border-radius:6px;">
+        <div id="selLabel" style="padding:12px; background:#E3F2FD; color:#1565C0; font-weight:bold; margin:10px 0; border-radius:6px; border: 1px solid #A2CFEF;">
             ALUMNO: NO SELECCIONADO
         </div>
 
-        <h3>SELECCIONE PRODUCTOS:</h3>
-        <div id="contenedorProductos" class="prd-grid">
-            <!-- Cargado dinámicamente -->
-        </div>
+        <h3>MENÚ (SELECCIÓN MÚLTIPLE)</h3>
+        <div id="contPrd" class="prd-grid"></div>
 
         <select id="pagoMetodo" onchange="togglePagoExtra()">
             <option value="EFECTIVO">PAGO: EFECTIVO</option>
@@ -58,35 +61,74 @@
             <input type="text" id="pagoCompro" placeholder="COMPROBANTE">
         </div>
 
-        <button class="btn btn-blue" style="background:var(--s); padding:15px; margin-top:10px;" onclick="preConfirmar()">✔️ REVISAR Y GUARDAR CONSUMO</button>
+        <button class="btn btn-blue" style="background:var(--s); padding:15px;" onclick="preConfirmar()">✔️ REVISAR Y GUARDAR REGISTRO</button>
     </div>
 
+    <!-- GESTIÓN Y LISTADOS -->
     <div class="card">
-        <h2>📦 GESTIÓN DE PRODUCTOS</h2>
-        <div id="listaPrdAdmin" class="prd-grid"></div>
-        <hr>
-        <h4>AÑADIR NUEVO PLATO</h4>
-        <input type="text" id="newPNom" placeholder="NOMBRE">
-        <input type="number" id="newPPre" placeholder="PRECIO">
-        <button class="btn btn-blue" onclick="crearPrd()">AÑADIR AL SISTEMA</button>
-    </div>
-</div>
+        <h2>⚙️ GESTIÓN DE DATOS</h2>
+        
+        <button class="btn btn-blue" onclick="toggle('dropAlumnos')">▼ LISTADO DE ALUMNOS (EDITAR)</button>
+        <div id="dropAlumnos" class="hidden" style="margin-bottom:15px;">
+            <input type="text" id="fLista" placeholder="FILTRAR LISTA..." oninput="renderAlumnos()">
+            <div id="listaAlumnosCont" style="max-height:200px; overflow-y:auto; border:1px solid #EEE;"></div>
+        </div>
 
-<!-- MODAL DE CONFIRMACIÓN -->
-<div id="modalConfirma" class="modal">
-    <div class="modal-content">
-        <h3>🚨 CONFIRMAR PEDIDO</h3>
-        <div id="detalleConfirma" style="text-align:left; background:#F9F9F9; padding:15px; border-radius:8px; margin:15px 0;"></div>
-        <p>CÓDIGO ÚNICO: <span id="codUnicoDisplay" class="badge-id">---</span></p>
-        <div style="display:flex; gap:10px;">
-            <button class="btn btn-red" onclick="toggle('modalConfirma')">CANCELAR</button>
-            <button class="btn btn-green" onclick="finalizarGuardado()">CONFIRMAR Y GUARDAR</button>
+        <button class="btn btn-green" onclick="toggle('dropNuevo')">+ REGISTRAR NUEVO ALUMNO (4 CAMPOS)</button>
+        <div id="dropNuevo" class="hidden" style="background:#F9F9F9; padding:15px; border-radius:8px;">
+            <div style="display:flex; gap:5px;">
+                <input type="number" id="nNiv" placeholder="NIVEL">
+                <input type="text" id="nPar" placeholder="PARALELO">
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                <input type="text" id="nN1" placeholder="1ER NOMBRE">
+                <input type="text" id="nN2" placeholder="2DO NOMBRE">
+                <input type="text" id="nA1" placeholder="APELLIDO PATERNO">
+                <input type="text" id="nA2" placeholder="APELLIDO MATERNO">
+            </div>
+            <input type="number" id="nTelf" placeholder="TELÉFONO (10 DÍGITOS)">
+            <button class="btn btn-green" onclick="crearAlumno()">GUARDAR NUEVO ALUMNO</button>
+        </div>
+
+        <button class="btn btn-blue" onclick="toggle('dropPrd')">🍲 GESTIONAR MENÚ / PRECIOS</button>
+        <div id="dropPrd" class="hidden">
+            <div id="listaPrdAdmin" class="prd-grid"></div>
+            <hr>
+            <input type="text" id="newPN" placeholder="NOMBRE DEL PLATO">
+            <input type="number" id="newPP" placeholder="PRECIO">
+            <button class="btn btn-blue" onclick="crearPrd()">AÑADIR AL MENÚ</button>
         </div>
     </div>
 </div>
 
+<!-- MODALES -->
+<div id="modalConfirma" class="modal">
+    <div class="modal-content">
+        <h3>🚨 DETALLE DEL PEDIDO</h3>
+        <div id="detalleConfirma" style="text-align:left; background:#F4F4F4; padding:15px; border-radius:8px; margin-bottom:10px;"></div>
+        <p>CÓDIGO ÚNICO: <b id="codUnicoDisplay">---</b></p>
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-red" onclick="toggle('modalConfirma')">CANCELAR</button>
+            <button class="btn btn-green" onclick="finalizarGuardado()">CONFIRMAR GUARDADO</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalAdmin" class="modal">
+    <div class="modal-content">
+        <h3>ADMINISTRACIÓN DE PERÍODOS</h3>
+        <input type="text" id="rangoPeriodo" placeholder="RANGO: 2026-2027">
+        <button class="btn btn-red" onclick="reestablecerPeriodo()">GENERAR NUEVO PERÍODO ACADÉMICO</button>
+        <hr>
+        <h4>DESCARGAR REPORTES</h4>
+        <input type="date" id="dDesde"> A <input type="date" id="dHasta">
+        <button class="btn" style="background:var(--p)" onclick="descargarGeneral()">DESCARGAR REPORTE GENERAL</button>
+        <button class="btn btn-blue" onclick="toggle('modalAdmin')">CERRAR</button>
+    </div>
+</div>
+
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec";
+    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec"; 
     let dbEst = [], dbVent = [], dbPrd = [], sID = "", sNom = "", itemsSeleccionados = {};
 
     async function cargar() {
@@ -95,123 +137,125 @@
         dbEst = d.est; dbVent = d.vent; dbPrd = d.prd;
         renderProductos();
         renderAdminPrd();
+        renderAlumnos();
     }
     window.onload = cargar;
 
+    function buscarInteligente(el) {
+        const tokens = el.value.toUpperCase().split(" ").filter(t => t !== "");
+        const res = document.getElementById('resV');
+        res.innerHTML = '';
+        if(tokens.length === 0) { res.style.display='none'; return; }
+
+        const filtrados = dbEst.filter(e => tokens.every(t => (e.id + " " + e.nombre).includes(t)));
+        filtrados.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'res-item';
+            d.innerText = `[${e.id}] ${e.nombre}`;
+            d.onclick = () => {
+                sID = e.id; sNom = e.nombre;
+                document.getElementById('selLabel').innerText = "✅ " + sNom;
+                res.style.display='none'; el.value = '';
+            };
+            res.appendChild(d);
+        });
+        res.style.display = 'block';
+    }
+
     function renderProductos() {
-        const cont = document.getElementById('contenedorProductos');
+        const cont = document.getElementById('contPrd');
         cont.innerHTML = dbPrd.map(p => {
-            const fecha = p.fechaMod ? new Date(p.fechaMod).toLocaleDateString() : '---';
+            const f = p.fechaMod ? new Date(p.fechaMod).toLocaleDateString() : 'SIN FECHA';
             return `
                 <div class="prd-item">
-                    <div class="prd-info">
+                    <div>
                         <input type="checkbox" id="chk_${p.nombre}" onchange="toggleItem('${p.nombre}')">
-                        <div>
-                            <b>${p.nombre}</b> <span style="color:var(--s)">$${p.precio}</span>
-                            <span class="fecha-mod">ACTUALIZACIÓN: ${fecha}</span>
-                        </div>
+                        <b>${p.nombre} ($${p.precio})</b>
+                        <span class="fecha-mod">Modificado: ${f}</span>
                     </div>
-                    <div class="prd-controls">
+                    <div class="qty-controls">
                         <button class="qty-btn" onclick="modQty('${p.nombre}', -1)">-</button>
                         <b id="qty_${p.nombre}">1</b>
                         <button class="qty-btn" onclick="modQty('${p.nombre}', 1)">+</button>
                     </div>
-                </div>
-            `;
+                </div>`;
         }).join('');
     }
 
-    function toggleItem(nom) {
-        if(document.getElementById(`chk_${nom}`).checked) {
-            itemsSeleccionados[nom] = parseInt(document.getElementById(`qty_${nom}`).innerText);
-        } else {
-            delete itemsSeleccionados[nom];
-        }
+    function toggleItem(n) {
+        if(document.getElementById(`chk_${n}`).checked) itemsSeleccionados[n] = parseInt(document.getElementById(`qty_${n}`).innerText);
+        else delete itemsSeleccionados[n];
     }
 
-    function modQty(nom, val) {
-        const el = document.getElementById(`qty_${nom}`);
-        let n = Math.max(1, parseInt(el.innerText) + val);
-        el.innerText = n;
-        if(itemsSeleccionados[nom]) itemsSeleccionados[nom] = n;
-    }
-
-    function generarCodigo() {
-        return 'CEIAF-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    function modQty(n, v) {
+        const el = document.getElementById(`qty_${n}`);
+        let num = Math.max(1, parseInt(el.innerText) + v);
+        el.innerText = num;
+        if(itemsSeleccionados[n]) itemsSeleccionados[n] = num;
     }
 
     function preConfirmar() {
-        if(!sID) return alert("SELECCIONE UN ALUMNO");
-        if(Object.keys(itemsSeleccionados).length === 0) return alert("SELECCIONE AL MENOS UN PRODUCTO");
-
-        let html = `<b>ALUMNO:</b> ${sNom}<br><br><b>RESUMEN:</b><br>`;
-        for(let prd in itemsSeleccionados) {
-            html += `• ${prd} (x${itemsSeleccionados[prd]})<br>`;
-        }
-        
-        document.getElementById('detalleConfirma').innerHTML = html;
-        document.getElementById('codUnicoDisplay').innerText = generarCodigo();
+        if(!sID) return alert("SELECCIONE ALUMNO");
+        if(Object.keys(itemsSeleccionados).length === 0) return alert("SELECCIONE PRODUCTOS");
+        let h = `ALUMNO: ${sNom}<br><br>ITEMS:<br>`;
+        for(let k in itemsSeleccionados) h += `- ${k} (x${itemsSeleccionados[k]})<br>`;
+        document.getElementById('detalleConfirma').innerHTML = h;
+        document.getElementById('codUnicoDisplay').innerText = 'CEIAF-' + Math.random().toString(36).substr(2, 7).toUpperCase();
         toggle('modalConfirma');
     }
 
     async function finalizarGuardado() {
-        const cod = document.getElementById('codUnicoDisplay').innerText;
-        const itemsParaEnviar = [];
-        for(let prd in itemsSeleccionados) {
-            itemsParaEnviar.push({ prd: prd, cant: itemsSeleccionados[prd] });
-        }
-
+        const items = [];
+        for(let k in itemsSeleccionados) items.push({prd: k, cant: itemsSeleccionados[k]});
         await fetch(API, {method:'POST', body: JSON.stringify({
-            action: 'addVentasMultiple',
-            id: sID, nom: sNom, 
-            items: itemsParaEnviar,
-            codigoUnico: cod,
+            action: 'addVentasMultiple', id: sID, nom: sNom, items: items,
+            codigoUnico: document.getElementById('codUnicoDisplay').innerText,
             metodo: document.getElementById('pagoMetodo').value,
             banco: document.getElementById('pagoBanco').value,
             compro: document.getElementById('pagoCompro').value
         })});
-
-        alert("REGISTRO EXITOSO CON CÓDIGO: " + cod);
+        alert("REGISTRO GUARDADO");
         location.reload();
     }
 
-    // GESTIÓN DE PRODUCTOS (EDICIÓN)
-    function renderAdminPrd() {
-        const cont = document.getElementById('listaPrdAdmin');
-        cont.innerHTML = dbPrd.map(p => `
-            <div class="prd-item">
-                <span>${p.nombre} ($${p.precio})</span>
-                <button onclick="editarPrd('${p.nombre}', '${p.precio}')">✏️ EDITAR</button>
-            </div>
-        `).join('');
+    async function crearAlumno() {
+        const n1 = document.getElementById('nN1').value;
+        const n2 = document.getElementById('nN2').value;
+        const a1 = document.getElementById('nA1').value;
+        const a2 = document.getElementById('nA2').value;
+        const t = document.getElementById('nTelf').value;
+        const id = document.getElementById('nNiv').value + document.getElementById('nPar').value.toUpperCase();
+        if(!n1 || !n2 || !a1 || !a2 || t.length !== 10) return alert("TODOS LOS CAMPOS SON OBLIGATORIOS (10 DÍGITOS TELF)");
+        await fetch(API, {method:'POST', body: JSON.stringify({action:'addEst', n1, n2, a1, a2, telf: t, id})});
+        alert("ALUMNO CREADO"); cargar();
     }
 
     async function editarPrd(oldNom, oldPre) {
-        const newNom = prompt("NUEVO NOMBRE:", oldNom);
-        const newPre = prompt("NUEVO PRECIO:", oldPre);
-        if(newNom && newPre) {
-            await fetch(API, {method:'POST', body: JSON.stringify({
-                action: 'editPrd', oldNom: oldNom, newNom: newNom, newPre: newPre
-            })});
+        const nNom = prompt("NUEVO NOMBRE:", oldNom);
+        const nPre = prompt("NUEVO PRECIO:", oldPre);
+        if(nNom && nPre) {
+            await fetch(API, {method:'POST', body: JSON.stringify({action:'editPrd', oldNom, newNom: nNom, newPre: nPre})});
             cargar();
         }
     }
 
-    // Funciones de búsqueda y auxiliares (Se mantienen de la v4)
-    function buscarInteligente(el) {
-        const b = el.value.toUpperCase().split(" ");
-        const r = document.getElementById('resV');
-        r.innerHTML = '';
-        if(!el.value) { r.style.display='none'; return; }
-        const f = dbEst.filter(e => b.every(t => (e.id + " " + e.nombre).includes(t)));
-        f.forEach(e => {
-            const d = document.createElement('div');
-            d.style.padding='10px'; d.style.borderBottom='1px solid #EEE'; d.style.cursor='pointer';
-            d.innerText = `[${e.id}] ${e.nombre}`;
-            d.onclick = () => { sID=e.id; sNom=e.nombre; document.getElementById('selLabel').innerText="✅ "+sNom; r.style.display='none'; el.value=''; };
-            r.appendChild(d);
-        });
-        r.style.display='block';
+    function renderAdminPrd() {
+        document.getElementById('listaPrdAdmin').innerHTML = dbPrd.map(p => `
+            <div class="prd-item"><span>${p.nombre} ($${p.precio})</span><button onclick="editarPrd('${p.nombre}','${p.precio}')">✏️</button></div>
+        `).join('');
+    }
+
+    function renderAlumnos() {
+        const f = document.getElementById('fLista').value.toUpperCase();
+        const l = dbEst.filter(e => e.nombre.includes(f) || e.id.includes(f));
+        document.getElementById('listaAlumnosCont').innerHTML = "<table>" + l.map(e => `<tr><td>${e.nombre}</td><td><button onclick="alert('Use la opción de edición completa para ID: ${e.id}')">✏️</button></td></tr>`).join('') + "</table>";
+    }
+
+    async function reestablecerPeriodo() {
+        const r = document.getElementById('rangoPeriodo').value;
+        if(!r || !confirm("¿SEGURO? ESTO ARCHIVA TODO.")) return;
+        await fetch(API, {method:'POST', body: JSON.stringify({action:'nuevoPeriodo', rango: r})});
+        location.reload();
     }
 
     function toggle(id) {
@@ -219,6 +263,12 @@
         x.style.display = (x.style.display === 'flex' || x.style.display === 'block') ? 'none' : (id.includes('modal') ? 'flex' : 'block');
     }
     function togglePagoExtra() { document.getElementById('extraPago').classList.toggle('hidden', document.getElementById('pagoMetodo').value !== 'TRANSFERENCIA'); }
+    function descargarGeneral() {
+        let csv = "FECHA,ID,NOMBRE,PRODUCTO,CANTIDAD,CODIGO\n";
+        dbVent.forEach(v => csv += `${v.fecha},${v.id},${v.nom},${v.prd},${v.cant},${v.cod}\n`);
+        const blob = new Blob([csv], {type: 'text/csv'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "REPORTE.csv"; a.click();
+    }
 </script>
 </body>
 </html>
