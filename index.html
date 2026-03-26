@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Comedor Pro - CEIAF</title>
+    <title>Control de Bar - CEIAF</title>
     <style>
-        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; --w: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        :root { --p: #2c3e50; --a: #3498db; --s: #2ecc71; --d: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--p); }
         .container { max-width: 1200px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
-        .card { background: var(--w); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); position: relative; }
-        h2 { color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top:0; font-size: 1.4em; }
-        .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 12px; }
-        input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; color: white; margin-top: 5px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
+        .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: bold; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.3s; }
         .btn-blue { background: var(--a); } .btn-red { background: var(--d); } .btn-green { background: var(--s); }
-        .res-list { border: 1px solid #ddd; max-height: 150px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 40px); z-index: 110; border-radius: 6px; }
+        .res-list { border: 1px solid #ddd; max-height: 200px; overflow-y: auto; display: none; background: white; position: absolute; width: calc(100% - 40px); z-index: 110; }
         .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .res-item:hover { background: #f1f9ff; }
-        .tabs { display: flex; gap: 4px; margin: 15px 0; }
-        .tab { flex: 1; padding: 8px; text-align: center; background: #eee; cursor: pointer; border-radius: 6px; font-size: 0.9em; font-weight: bold; }
-        .tab.active { background: var(--a); color: white; }
-        .scroll-table { max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.85em; }
-        th { background: #f8f9fa; position: sticky; top: 0; }
-        .del-x { color: var(--d); cursor: pointer; font-weight: bold; font-size: 1.2em; border:none; background:none; }
-        .del-x:hover { transform: scale(1.2); }
+        .tabs { display: flex; gap: 5px; margin: 15px 0; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: #eee; cursor: pointer; border-radius: 8px; }
+        .tab.active { background: var(--a); color: white; font-weight: bold; }
+        .table-wrap { max-height: 300px; overflow-y: auto; border: 1px solid #eee; margin-top: 10px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .btn-del-row { color: var(--d); background: none; border: none; font-size: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -35,220 +32,192 @@
     <div class="card">
         <div id="loadV" class="loader" style="display:none;">Procesando...</div>
         <h2>🍴 Registro de Consumo</h2>
-        <input type="text" id="busV" placeholder="🔎 Buscar por Nombre o ID..." oninput="buscar(this, 'resV')">
+        <input type="text" id="busV" placeholder="🔎 Buscar niño por ID o Nombre..." oninput="buscar(this, 'resV')">
         <div id="resV" class="res-list"></div>
         
-        <div id="selLabel" style="padding:10px; background:#e3f2fd; color:#1565c0; border-radius:6px; font-weight:bold; margin: 8px 0; border: 1px solid #bbdefb;">
+        <div id="selLabel" style="padding:15px; background:#e3f2fd; color:#1565c0; border-radius:8px; font-weight:bold; margin: 10px 0; border: 1px solid #a2cfef;">
             Alumno: Ninguno seleccionado
         </div>
 
         <select id="prdSelect"></select>
-        <button class="btn btn-blue" onclick="registrar()">💾 GUARDAR CONSUMO</button>
+        <button class="btn btn-blue" onclick="registrarConsumo()">💾 GUARDAR CONSUMO</button>
 
-        <h2 style="margin-top:25px;">📊 Detalle Individual</h2>
+        <h2 style="margin-top:30px;">📊 Historial del Alumno</h2>
         <div class="tabs">
-            <div id="tHoy" class="tab active" onclick="cambiarTab('hoy')">Hoy</div>
-            <div id="tSem" class="tab" onclick="cambiarTab('semana')">Semana</div>
-            <div id="tMes" class="tab" onclick="cambiarTab('mes')">Mes</div>
+            <div id="tab-hoy" class="tab active" onclick="setPeriodo('hoy')">Hoy</div>
+            <div id="tab-semana" class="tab" onclick="setPeriodo('semana')">Semana</div>
+            <div id="tab-mes" class="tab" onclick="setPeriodo('mes')">Mes</div>
         </div>
-        <div id="hist" class="scroll-table">Busca un alumno para ver sus consumos diarios.</div>
-        <button class="btn" style="background:#34495e; margin-top:10px;" onclick="descargarIndividual()">📥 DESCARGAR REPORTE INDIVIDUAL</button>
+        <div class="table-wrap" id="histCont">
+            <p style="padding:10px;">Selecciona un alumno para ver su detalle diario.</p>
+        </div>
     </div>
 
     <div class="card">
-        <div id="loadA" class="loader">Sincronizando...</div>
-        <h2>⚙️ Gestión del Sistema</h2>
+        <div id="loadA" class="loader">Sincronizando con Google...</div>
+        <h2>⚙️ Administración</h2>
         
-        <p onclick="toggle('addF')" style="color:var(--s); cursor:pointer; font-weight:bold; margin: 5px 0;">▶ + Añadir Nuevo Alumno</p>
-        <div id="addF" style="display:none; background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:15px;">
-            <input type="text" id="aID" placeholder="ID / Cédula">
-            <input type="text" id="aNom" placeholder="Nombres y Apellidos (Mín. 4 palabras)">
-            <button class="btn btn-green" onclick="nuevoEst()">GUARDAR ALUMNO</button>
+        <button class="btn btn-green" onclick="toggle('formEst')">+ Nuevo Alumno</button>
+        <div id="formEst" style="display:none; padding:10px; background:#f9f9f9; border-radius:8px; margin-top:10px;">
+            <input type="text" id="niID" placeholder="ID/Cédula">
+            <input type="text" id="niNom" placeholder="Nombre Completo">
+            <button class="btn btn-green" onclick="addAlumno()">Registrar Alumno</button>
         </div>
 
-        <p onclick="toggle('prdF')" style="color:var(--a); cursor:pointer; font-weight:bold; margin: 5px 0;">▶ 🍲 Menú y Precios</p>
-        <div id="prdF" style="display:none; background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:15px;">
-            <input type="text" id="npN" placeholder="Nombre del plato">
-            <input type="number" id="npP" placeholder="Precio (ej: 3.50)" step="0.01">
-            <button class="btn btn-blue" onclick="nuevoPrd()">AÑADIR AL MENÚ</button>
-            <div id="listaPrd" class="scroll-table" style="max-height:150px;"></div>
+        <button class="btn btn-blue" style="margin-top:10px;" onclick="toggle('formPrd')">🍲 Gestionar Menú</button>
+        <div id="formPrd" style="display:none; padding:10px; background:#f9f9f9; border-radius:8px; margin-top:10px;">
+            <input type="text" id="pN" placeholder="Nombre del producto">
+            <input type="number" id="pP" placeholder="Precio ($)">
+            <button class="btn btn-blue" onclick="addProducto()">Añadir al Menú</button>
+            <div id="listaPrd" class="table-wrap" style="max-height:150px;"></div>
         </div>
 
-        <h3>📋 Lista de Alumnos</h3>
-        <input type="text" id="busLista" placeholder="🔎 Filtrar lista completa..." oninput="actualizarListaTotal()">
-        <div id="listaTotal" class="scroll-table" style="max-height:200px;"></div>
-        
-        <div id="editZone" style="display:none; margin-top:10px; padding:10px; border: 2px solid var(--d); border-radius: 8px;">
-            <input type="text" id="edID" disabled style="background:#f0f0f0;">
-            <input type="text" id="edNom">
-            <button class="btn btn-red" onclick="borrarEst()">❌ ELIMINAR ALUMNO DEFINITIVAMENTE</button>
-        </div>
+        <h3>Lista General de Estudiantes</h3>
+        <input type="text" id="fLista" placeholder="Filtrar lista..." oninput="renderListaEst()">
+        <div id="listaEst" class="table-wrap"></div>
     </div>
 </div>
 
 <script>
-    const URL_API = "https://script.google.com/macros/s/TU_NUEVA_URL_AQUI/exec"; 
-    let dbEst = [], dbVent = [], dbPrd = [], sID = "", sNom = "", tabActual = "hoy";
+    // IMPORTANTE: Pon aquí tu URL de la nueva implementación
+    const API = "TU_NUEVA_URL_AQUI"; 
+    
+    let ESTUDIANTES = [], VENTAS = [], PRODUCTOS = [], SEL_ID = "", SEL_NOM = "", PERIODO = "hoy";
 
-    async function cargar() {
+    async function init() {
         try {
-            const r = await fetch(URL_API + "?q=todo");
-            const d = await r.json();
-            dbEst = d.est || []; dbVent = d.vent || []; dbPrd = d.prd || [];
-            dbEst.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            actualizarListaTotal(); actualizarComboPrd(); actualizarListaPrd();
-            if(sID) filtrarH(); // Refrescar historial si hay alguien seleccionado
+            const res = await fetch(API);
+            const data = await res.json();
+            ESTUDIANTES = data.est; VENTAS = data.vent; PRODUCTOS = data.prd;
+            renderListaEst();
+            renderComboPrd();
+            renderListaPrd();
+            if(SEL_ID) renderHistorial();
             document.getElementById('loadA').style.display = 'none';
-        } catch(e) { document.getElementById('loadA').innerText = "Error de Conexión"; }
+        } catch(e) { 
+            document.getElementById('loadA').innerHTML = "<b style='color:red'>Error de Conexión: Revisa la URL y los permisos en Google Script.</b>"; 
+        }
     }
-    window.onload = cargar;
+    window.onload = init;
 
     function toggle(id) {
-        const f = document.getElementById(id);
-        f.style.display = f.style.display === 'block' ? 'none' : 'block';
+        const x = document.getElementById(id);
+        x.style.display = x.style.display === 'none' ? 'block' : 'none';
     }
 
-    function cambiarTab(periodo) {
-        tabActual = periodo;
+    function setPeriodo(p) {
+        PERIODO = p;
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(periodo === 'hoy' ? 'tHoy' : periodo === 'semana' ? 'tSem' : 'tMes').classList.add('active');
-        filtrarH();
+        document.getElementById('tab-'+p).classList.add('active');
+        renderHistorial();
     }
 
-    function filtrarH() {
-        if(!sID) return;
-        const ahora = new Date();
-        const consumos = dbVent.filter(v => {
-            if(v.id.toString() !== sID.toString()) return false;
-            const fV = new Date(v.fecha);
-            const diffDias = (ahora - fV) / (1000*60*60*24);
-            
-            if(tabActual === 'hoy') return fV.toDateString() === ahora.toDateString();
-            if(tabActual === 'semana') return diffDias <= 7;
-            if(tabActual === 'mes') return diffDias <= 30;
-            return true;
-        });
-
-        if(consumos.length === 0) {
-            document.getElementById('hist').innerHTML = "<p style='padding:10px;'>Sin consumos en este periodo.</p>";
-            return;
-        }
-
-        let h = "<table><tr><th>Fecha</th><th>Producto</th><th>Acción</th></tr>";
-        consumos.reverse().forEach(v => {
-            const fCorta = new Date(v.fecha).toLocaleDateString();
-            h += `<tr>
-                <td>${fCorta}</td>
-                <td>${v.prd}</td>
-                <td><button class="del-x" onclick="borrarConsumo(${v.row})">✕</button></td>
-            </tr>`;
-        });
-        document.getElementById('hist').innerHTML = h + "</table>";
-    }
-
-    async function borrarConsumo(fila) {
-        if(!confirm("¿Borrar este registro de consumo por error?")) return;
-        document.getElementById('loadV').style.display = 'block';
-        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'delVent', row:fila})});
-        cargar(); // Recargar todo
-        document.getElementById('loadV').style.display = 'none';
-    }
-
-    async function registrar() {
-        if(!sID) return alert("Selecciona un alumno");
-        document.getElementById('loadV').style.display = 'block';
-        await fetch(URL_API, {method:'POST', body:JSON.stringify({id:sID, nom:sNom, prd:document.getElementById('prdSelect').value})});
-        cargar();
-        document.getElementById('loadV').style.display = 'none';
-    }
-
-    // --- FUNCIONES DE APOYO ---
-    function buscar(el, resId) {
-        const v = el.value.toLowerCase();
+    // --- BÚSQUEDA Y SELECCIÓN ---
+    function buscar(input, resId) {
+        const v = input.value.toLowerCase();
         const r = document.getElementById(resId);
         r.innerHTML = '';
         if(v.length < 2) { r.style.display='none'; return; }
-        const f = dbEst.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
+        const f = ESTUDIANTES.filter(e => e.nombre.toLowerCase().includes(v) || e.id.toString().includes(v));
         f.forEach(e => {
             const d = document.createElement('div');
             d.className = 'res-item';
-            d.innerText = `${e.id} | ${e.nombre}`;
+            d.innerText = `${e.id} - ${e.nombre}`;
             d.onclick = () => {
-                sID = e.id; sNom = e.nombre;
-                document.getElementById('selLabel').innerText = "✅ " + sNom;
-                filtrarH();
-                r.style.display = 'none'; el.value = '';
+                SEL_ID = e.id; SEL_NOM = e.nombre;
+                document.getElementById('selLabel').innerText = "✅ " + SEL_NOM;
+                renderHistorial();
+                r.style.display = 'none'; input.value = '';
             };
             r.appendChild(d);
         });
         r.style.display = 'block';
     }
 
-    function actualizarListaTotal() {
-        const filtro = document.getElementById('busLista').value.toLowerCase();
-        const lista = dbEst.filter(e => e.nombre.toLowerCase().includes(filtro) || e.id.toString().includes(filtro));
-        let h = "<table><tr><th>ID</th><th>Nombre</th><th>🔧</th></tr>";
-        lista.forEach(e => {
-            h += `<tr><td>${e.id}</td><td>${e.nombre}</td>
-            <td><button onclick="seleccionarParaEditar('${e.id}','${e.nombre}')">🔧</button></td></tr>`;
+    // --- RENDERIZADO DE HISTORIAL ---
+    function renderHistorial() {
+        if(!SEL_ID) return;
+        const hoy = new Date();
+        const filtradas = VENTAS.filter(v => {
+            if (v.id.toString() !== SEL_ID.toString()) return false;
+            const fechaV = new Date(v.fecha);
+            if (PERIODO === 'hoy') return fechaV.toDateString() === hoy.toDateString();
+            if (PERIODO === 'semana') return (hoy - fechaV) / (1000*60*60*24) <= 7;
+            if (PERIODO === 'mes') return (hoy - fechaV) / (1000*60*60*24) <= 30;
+            return true;
         });
-        document.getElementById('listaTotal').innerHTML = h + "</table>";
+
+        if(filtradas.length === 0) {
+            document.getElementById('histCont').innerHTML = "<p style='padding:10px;'>No hay consumos en este periodo.</p>";
+            return;
+        }
+
+        let h = "<table><tr><th>Fecha</th><th>Producto</th><th>Acción</th></tr>";
+        filtradas.reverse().forEach(v => {
+            h += `<tr>
+                <td>${new Date(v.fecha).toLocaleDateString()}</td>
+                <td>${v.prd}</td>
+                <td><button class="btn-del-row" onclick="eliminarConsumo(${v.row})">🗑️</button></td>
+            </tr>`;
+        });
+        document.getElementById('histCont').innerHTML = h + "</table>";
     }
 
-    function seleccionarParaEditar(id, nom) {
-        sID = id; sNom = nom;
-        document.getElementById('editZone').style.display = 'block';
-        document.getElementById('edID').value = id;
-        document.getElementById('edNom').value = nom;
+    // --- ACCIONES API ---
+    async function registrarConsumo() {
+        if(!SEL_ID) return alert("Selecciona un alumno primero");
+        document.getElementById('loadV').style.display = 'block';
+        await fetch(API, {method:'POST', body: JSON.stringify({id:SEL_ID, nom:SEL_NOM, prd: document.getElementById('prdSelect').value})});
+        await init(); // Recargar datos
+        document.getElementById('loadV').style.display = 'none';
     }
 
-    async function nuevoEst() {
-        const id = document.getElementById('aID').value;
-        const nom = document.getElementById('aNom').value.trim();
-        if(!id || nom.split(/\s+/).length < 4) return alert("Error: ID y Nombre completo (2 nombres, 2 apellidos) obligatorios.");
-        document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'addEst', id:id, nom:nom})});
-        location.reload();
+    async function eliminarConsumo(row) {
+        if(!confirm("¿Borrar este registro?")) return;
+        document.getElementById('loadV').style.display = 'block';
+        await fetch(API, {method:'POST', body: JSON.stringify({action:'delVent', row: row})});
+        await init();
+        document.getElementById('loadV').style.display = 'none';
     }
 
-    async function borrarEst() {
-        if(!confirm("¿Eliminar alumno definitivamente?")) return;
-        document.getElementById('loadA').style.display='block';
-        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'delEst', id:sID})});
-        location.reload();
+    // --- GESTIÓN DE ALUMNOS Y PRODUCTOS ---
+    function renderListaEst() {
+        const f = document.getElementById('fLista').value.toLowerCase();
+        const lista = ESTUDIANTES.filter(e => e.nombre.toLowerCase().includes(f));
+        let h = "<table>";
+        lista.forEach(e => h += `<tr><td>${e.nombre}</td><td><button onclick="borrarEst('${e.id}')">❌</button></td></tr>`);
+        document.getElementById('listaEst').innerHTML = h + "</table>";
     }
 
-    function actualizarComboPrd() {
-        document.getElementById('prdSelect').innerHTML = dbPrd.map(p => `<option value="${p.nombre} ($${p.precio})">${p.nombre} ($${p.precio})</option>`).join('');
+    function renderComboPrd() {
+        document.getElementById('prdSelect').innerHTML = PRODUCTOS.map(p => `<option value="${p.nombre} ($${p.precio})">${p.nombre} ($${p.precio})</option>`).join('');
     }
 
-    function actualizarListaPrd() {
-        let h = "<table><tr><th>Plato</th><th>Precio</th><th>🗑️</th></tr>";
-        dbPrd.forEach(p => h += `<tr><td>${p.nombre}</td><td>$${p.precio}</td><td><button onclick="borrarPrd('${p.nombre}')">🗑️</button></td></tr>`);
+    function renderListaPrd() {
+        let h = "<table>";
+        PRODUCTOS.forEach(p => h += `<tr><td>${p.nombre}</td><td>$${p.precio}</td><td><button onclick="borrarPrd('${p.nombre}')">🗑️</button></td></tr>`);
         document.getElementById('listaPrd').innerHTML = h + "</table>";
     }
 
-    async function nuevoPrd() {
-        const n = document.getElementById('npN').value; const p = document.getElementById('npP').value;
-        if(!n || !p) return;
-        await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'addPrd', nombre:n, precio:p})});
+    async function addAlumno() {
+        const id = document.getElementById('niID').value;
+        const nom = document.getElementById('niNom').value;
+        if(!id || !nom) return;
+        await fetch(API, {method:'POST', body: JSON.stringify({action:'addEst', id, nom})});
         location.reload();
     }
 
-    async function borrarPrd(n) {
-        if(confirm("¿Borrar plato?")) {
-            await fetch(URL_API, {method:'POST', body:JSON.stringify({action:'delPrd', nombre:n})});
-            location.reload();
-        }
+    async function addProducto() {
+        const nombre = document.getElementById('pN').value;
+        const precio = document.getElementById('pP').value;
+        if(!nombre || !precio) return;
+        await fetch(API, {method:'POST', body: JSON.stringify({action:'addPrd', nombre, precio})});
+        location.reload();
     }
-
-    function descargarIndividual() {
-        if(!sID) return alert("Selecciona un alumno");
-        const csv = dbVent.filter(v => v.id.toString() === sID.toString()).map(v => `${new Date(v.fecha).toLocaleString()},${v.id},${v.nom},${v.prd}`).join('\n');
-        const blob = new Blob(["Fecha,ID,Nombre,Producto\n" + csv], {type: 'text/csv'});
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `Historial_${sNom}.csv`; a.click();
-    }
+    
+    async function borrarEst(id) { if(confirm("¿Eliminar?")) { await fetch(API, {method:'POST', body: JSON.stringify({action:'delEst', id})}); location.reload(); } }
+    async function borrarPrd(nombre) { if(confirm("¿Eliminar?")) { await fetch(API, {method:'POST', body: JSON.stringify({action:'delPrd', nombre})}); location.reload(); } }
 </script>
+
 </body>
 </html>
