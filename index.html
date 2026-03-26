@@ -3,214 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA BAR CEIAF - ROBUSTO V.FINAL</title>
+    <title>CEIAF PRO - CONTROL FINANCIERO BAR</title>
     <style>
-        :root { --p: #2C3E50; --a: #3498DB; --s: #2ECC71; --d: #E74C3C; --bg: #F4F7F6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); text-transform: uppercase; font-size: 11px; margin: 0; }
-        .navbar { background: var(--p); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .container { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: 450px; z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #EEE; }
-        .res-item:hover { background: #E3F2FD; }
-        .prd-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; max-height: 250px; overflow-y: auto; border: 1px solid #EEE; padding: 10px; border-radius: 8px; }
-        .prd-item { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid #F0F0F0; }
-        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; color: white; margin: 5px 0; }
+        :root { --p: #2C3E50; --a: #3498DB; --s: #2ECC71; --d: #E74C3C; --bg: #F4F7F6; --w: #FFFFFF; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); text-transform: uppercase; font-size: 11px; margin: 0; }
+        .navbar { background: var(--p); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .container { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; padding: 0 15px; }
+        .card { background: var(--w); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--a); }
+        
+        /* Buscador Smart */
+        .search-box { position: relative; }
+        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: 100%; z-index: 100; max-height: 250px; overflow-y: auto; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 0 0 8px 8px; }
+        .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #EEE; transition: 0.2s; }
+        .res-item:hover { background: #E3F2FD; color: var(--a); font-weight: bold; }
+
+        /* Registro e Historial */
+        .prd-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; max-height: 280px; overflow-y: auto; border: 1px solid #EEE; padding: 10px; border-radius: 8px; background: #fafafa; }
+        .prd-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: white; border-radius: 6px; border: 1px solid #EEE; }
+        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.3s; margin: 5px 0; }
+        .btn:active { transform: scale(0.98); }
         .btn-blue { background: var(--a); } .btn-green { background: var(--s); } .btn-red { background: var(--d); }
         .hidden { display: none; }
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:2000; }
-        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; }
-        .tabs { display: flex; gap: 5px; margin: 15px 0; }
-        .tab { flex: 1; padding: 10px; text-align: center; background: #EEE; cursor: pointer; border-radius: 8px; font-weight: bold; }
-        .tab.active { background: var(--a); color: white; }
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #DDD; border-radius: 6px; text-transform: uppercase; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #EEE; }
+        
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center; z-index:2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 550px; position: relative; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        th { background: #F8F9FA; color: var(--p); }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #EEE; }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
+        .badge-cod { background: #EEE; color: #555; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
-    <div style="font-weight: bold; font-size: 14px;">CEIAF - PANEL DE CONTROL INTEGRAL</div>
-    <button style="background:#34495E; color:white; border:none; padding:8px 15px; cursor:pointer; border-radius:4px;" onclick="toggle('modalAdmin')">⚙️ ADMINISTRACIÓN</button>
+    <div style="font-weight: bold; letter-spacing: 1px;">SISTEMA DE AUDITORÍA BAR CEIAF</div>
+    <button class="btn-blue" style="width:auto; padding:8px 20px;" onclick="toggle('modalAdmin')">⚙️ PANEL ADMINISTRADOR</button>
 </div>
 
 <div class="container">
-    <!-- PANEL IZQUIERDO: VENTAS E HISTORIAL -->
+    <!-- REGISTRO Y VENTAS -->
     <div class="card">
-        <h2>🍴 REGISTRO DE CONSUMO</h2>
-        <div style="position:relative;">
-            <input type="text" id="busV" placeholder="🔎 BUSCAR ALUMNO (EJ: 9C RAFAEL)..." oninput="buscarInteligente(this)">
+        <h2 style="color:var(--p)">🛒 PUNTO DE VENTA</h2>
+        <div class="search-box">
+            <input type="text" id="busV" placeholder="🔎 ESCRIBA NOMBRE, APELLIDO O ID (EJ: 10B JUAN PEREZ)..." oninput="buscadorSmart(this)">
             <div id="resV" class="search-results"></div>
         </div>
         
-        <div id="selLabel" style="padding:15px; background:#E3F2FD; color:#1565C0; font-weight:bold; margin: 10px 0; border-radius: 6px; border: 1px solid #A2CFEF;">ALUMNO: NO SELECCIONADO</div>
-
-        <h3>MENÚ DEL DÍA</h3>
-        <div id="contPrd" class="prd-grid"></div>
-
-        <select id="pagoMetodo" onchange="togglePagoExtra()">
-            <option value="EFECTIVO">PAGO: EFECTIVO</option>
-            <option value="TRANSFERENCIA">PAGO: TRANSFERENCIA</option>
-        </select>
-        <div id="extraPago" class="hidden">
-            <input type="text" id="pagoBanco" placeholder="BANCO">
-            <input type="text" id="pagoCompro" placeholder="NÚMERO COMPROBANTE">
+        <div id="selLabel" style="padding:15px; background:#e8f4fd; color:#2980b9; font-weight:bold; margin: 15px 0; border-radius: 8px; border-left: 5px solid var(--a);">
+            ALUMNO NO SELECCIONADO
         </div>
 
-        <button class="btn btn-green" style="padding:15px; font-size:14px;" onclick="preConfirmar()">✔️ PROCESAR REGISTRO</button>
+        <div id="seccionVenta" class="hidden">
+            <h3 style="font-size:12px; border-bottom: 1px solid #EEE; padding-bottom:5px;">SELECCIÓN DE PRODUCTOS</h3>
+            <div id="contPrd" class="prd-grid"></div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <select id="pagoMetodo" onchange="togglePagoExtra()">
+                    <option value="EFECTIVO">💰 EFECTIVO</option>
+                    <option value="TRANSFERENCIA">📱 TRANSFERENCIA</option>
+                </select>
+                <div id="extraPago" class="hidden">
+                    <input type="text" id="pagoCompro" placeholder="N° COMPROBANTE">
+                </div>
+            </div>
+            <button class="btn btn-green" onclick="preConfirmar()">💾 GUARDAR CONSUMO</button>
+        </div>
 
-        <hr style="margin:20px 0;">
+        <hr style="margin:25px 0; border:0; border-top:1px solid #EEE;">
         
-        <h2>📊 REGISTRO DE CONSUMOS DEL ALUMNO</h2>
-        <div class="tabs">
-            <div id="t-hoy" class="tab active" onclick="setPeriodo('hoy')">HOY</div>
-            <div id="t-semana" class="tab" onclick="setPeriodo('semana')">SEMANA</div>
-            <div id="t-mes" class="tab" onclick="setPeriodo('mes')">MES</div>
+        <h2 style="color:var(--p)">📋 AUDITORÍA INDIVIDUAL</h2>
+        <div style="display:flex; gap:5px; margin-bottom:10px;">
+            <button class="tab btn-blue" style="flex:1" onclick="renderHistorial('hoy')">HOY</button>
+            <button class="tab btn-blue" style="flex:1" onclick="renderHistorial('mes')">MES</button>
+            <button class="tab btn-blue" style="flex:1" onclick="renderHistorial('todo')">TODO</button>
         </div>
-        <div style="max-height: 200px; overflow-y: auto; border: 1px solid #EEE;">
-            <table id="tablaHistorial"><thead><tr><th>FECHA</th><th>PRODUCTO</th><th>CANT</th><th>ID</th></tr></thead><tbody id="histBody"></tbody></table>
+        <div style="max-height: 250px; overflow-y: auto; background:white;">
+            <table>
+                <thead><tr><th>FECHA</th><th>PRODUCTO</th><th>CANT</th><th>CÓDIGO</th><th>ACCIÓN</th></tr></thead>
+                <tbody id="histBody"></tbody>
+            </table>
         </div>
-        <button id="btnDescargaInd" class="btn hidden" style="background:#2C3E50" onclick="descargarIndividual()">📥 DESCARGAR REGISTRO DE CONSUMOS</button>
+        <button id="btnDescargaInd" class="btn hidden" style="background:var(--p)" onclick="descargarIndividual()">📥 DESCARGAR HISTORIAL DEL ALUMNO</button>
     </div>
 
-    <!-- PANEL DERECHO: GESTIÓN -->
-    <div class="card">
-        <h2>👥 GESTIÓN DE ALUMNOS</h2>
-        <button class="btn btn-blue" onclick="toggle('dropNuevo')">+ REGISTRAR NUEVO ALUMNO</button>
-        <div id="dropNuevo" class="hidden" style="background:#F9F9F9; padding:15px; border-radius:8px; border:1px solid #DDD;">
+    <!-- GESTIÓN DE BASE DE DATOS -->
+    <div class="card" style="border-top-color: var(--s);">
+        <h2 style="color:var(--p)">👥 REGISTRO DE ALUMNOS</h2>
+        <p style="color:var(--d); font-size:9px;">* TODOS LOS CAMPOS DE NOMBRE SON OBLIGATORIOS PARA EVITAR DUPLICADOS LEGAlES</p>
+        
+        <div style="background:#fdfdfd; padding:15px; border-radius:10px; border:1px solid #EEE;">
             <div style="display:flex; gap:5px;">
-                <input type="number" id="nNiv" placeholder="NIVEL">
-                <input type="text" id="nPar" placeholder="PARALELO">
+                <input type="number" id="nNiv" placeholder="NIVEL (1-10)">
+                <input type="text" id="nPar" placeholder="PARALELO (A-B)">
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                <input type="text" id="nN1" placeholder="1ER NOMBRE">
-                <input type="text" id="nN2" placeholder="2DO NOMBRE">
-                <input type="text" id="nA1" placeholder="APELLIDO PAT.">
-                <input type="text" id="nA2" placeholder="APELLIDO MAT.">
+                <input type="text" id="nN1" placeholder="* PRIMER NOMBRE">
+                <input type="text" id="nN2" placeholder="* SEGUNDO NOMBRE">
+                <input type="text" id="nA1" placeholder="* APELLIDO PATERNO">
+                <input type="text" id="nA2" placeholder="* APELLIDO MATERNO">
             </div>
-            <input type="number" id="nTelf" placeholder="TELÉFONO (10 DÍGITOS)">
-            <button class="btn btn-green" onclick="crearAlumno()">GUARDAR NUEVO ALUMNO</button>
+            <input type="number" id="nTelf" placeholder="TELÉFONO DE REPRESENTANTE">
+            <button class="btn btn-green" onclick="crearAlumno()">✅ REGISTRAR ALUMNO LEGALMENTE</button>
         </div>
 
-        <button class="btn btn-blue" onclick="toggle('dropLista')">📋 LISTADO Y EDICIÓN DE ALUMNOS</button>
-        <div id="dropLista" class="hidden">
-            <input type="text" id="fLista" placeholder="FILTRAR..." oninput="renderAlumnos()">
-            <div id="listaAlumnosCont" style="max-height:200px; overflow-y:auto;"></div>
+        <h2 style="margin-top:25px; color:var(--p)">📂 BASE DE DATOS</h2>
+        <button class="btn btn-blue" onclick="toggle('dropLista')">🔍 VER / ELIMINAR ESTUDIANTES</button>
+        <div id="dropLista" class="hidden" style="margin-top:10px;">
+            <input type="text" id="fLista" placeholder="FILTRAR EN LISTA..." oninput="renderAlumnos()">
+            <div id="listaAlumnosCont" style="max-height:200px; overflow-y:auto; border:1px solid #EEE;"></div>
         </div>
 
-        <h2 style="margin-top:20px;">🍲 GESTIÓN DE PRODUCTOS</h2>
-        <button class="btn btn-blue" onclick="toggle('dropPrd')">📦 VER/EDITAR PRECIOS DEL MENÚ</button>
+        <button class="btn btn-blue" onclick="toggle('dropPrd')">🍲 CONFIGURAR PRECIOS DEL MENÚ</button>
         <div id="dropPrd" class="hidden">
             <div id="listaPrdAdmin" class="prd-grid"></div>
-            <h4>NUEVO PRODUCTO</h4>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="newPN" placeholder="NOMBRE">
-                <input type="number" id="newPP" placeholder="PRECIO">
-            </div>
-            <button class="btn btn-blue" onclick="crearPrd()">AÑADIR AL MENÚ</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL CONFIRMACIÓN -->
+<!-- MODAL DE CONFIRMACIÓN DE VENTA -->
 <div id="modalConfirma" class="modal">
     <div class="modal-content">
-        <h3 style="color:var(--p)">REVISIÓN DE TRANSACCIÓN</h3>
-        <div id="detalleConfirma" style="background:#EEE; padding:15px; border-radius:8px; line-height:1.6;"></div>
-        <p>CÓDIGO ÚNICO: <b id="codUnicoDisplay" style="color:var(--d)">---</b></p>
+        <h2 style="margin-top:0">⚠️ VERIFICAR CONSUMO</h2>
+        <div id="detalleConfirma" style="background:#F4F7F6; padding:15px; border-radius:8px; line-height:1.6;"></div>
+        <p>CÓDIGO DE OPERACIÓN: <b id="codUnicoDisplay" style="color:var(--d); font-size:14px;">---</b></p>
         <div style="display:flex; gap:10px;">
-            <button class="btn btn-red" onclick="toggle('modalConfirma')">CANCELAR</button>
-            <button class="btn btn-green" onclick="finalizarGuardado()">CONFIRMAR Y GUARDAR</button>
+            <button class="btn btn-red" onclick="toggle('modalConfirma')">REVISAR NUEVAMENTE</button>
+            <button class="btn btn-green" onclick="finalizarGuardado()">SÍ, GUARDAR EN BASE DE DATOS</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL ADMIN -->
+<!-- MODAL ADMINISTRADOR -->
 <div id="modalAdmin" class="modal">
-    <div class="modal-content">
-        <h3>HERRAMIENTAS DE ADMINISTRADOR</h3>
+    <div class="modal-content" style="max-width:400px; text-align:center;">
+        <h2 style="margin-top:0">⚙️ CONTROL DE DUEÑO</h2>
         <hr>
-        <h4>NUEVO PERÍODO (RESET DE VENTAS)</h4>
-        <input type="text" id="rangoPeriodo" placeholder="EJ: SEPT-2026">
-        <button class="btn btn-red" onclick="reestablecerPeriodo()">ARCHIVAR Y LIMPIAR VENTAS</button>
+        <div style="padding:15px 0;">
+            <h3>REPORTES GLOBALES</h3>
+            <button class="btn" style="background:var(--p)" onclick="descargarGeneral()">📊 DESCARGAR TODA LA DATA (PARA SRI/CONTROL)</button>
+        </div>
         <hr>
-        <h4>DESCARGA GLOBAL</h4>
-        <button class="btn btn-blue" onclick="generarCSV(dbVent, 'REGISTRO_GLOBAL_VENTAS')">DESCARGAR TODA LA DATA (CSV)</button>
-        <button class="btn btn-red" style="margin-top:20px;" onclick="toggle('modalAdmin')">CERRAR</button>
+        <div style="padding:15px 0; background:#fff5f5; border-radius:10px;">
+            <h3 style="color:var(--d)">ZONA DE PELIGRO</h3>
+            <p style="font-size:9px;">ARCHIVARÁ LAS VENTAS ACTUALES Y LIMPIARÁ EL SISTEMA</p>
+            <input type="text" id="rangoPeriodo" placeholder="NOMBRE PERÍODO (EJ: MARZO-2026)">
+            <button class="btn btn-red" onclick="reestablecerPeriodo()">⚠️ ARCHIVAR Y LIMPIAR VENTAS</button>
+        </div>
+        <button class="btn btn-blue" style="margin-top:20px;" onclick="toggle('modalAdmin')">SALIR</button>
     </div>
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec";
-    let dbEst = [], dbVent = [], dbPrd = [], sID = "", sNom = "", PERIODO = "hoy", itemsSeleccionados = {};
+    // PREVENCIÓN DE SALIDA ACCIDENTAL
+    window.onbeforeunload = function() { return "¿ESTÁ SEGURO DE ABANDONAR EL SITIO? SE PERDERÁN LOS CAMBIOS NO GUARDADOS."; };
+
+    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec"; 
+    let dbEst = [], dbVent = [], dbPrd = [], sID = "", sNom = "", itemsSeleccionados = {};
 
     async function cargar() {
-        const r = await fetch(API);
-        const d = await r.json();
-        dbEst = d.est; dbVent = d.vent; dbPrd = d.prd;
-        renderProductos();
-        renderAdminPrd();
-        renderAlumnos();
-        if(sID) renderHistorial();
+        try {
+            const r = await fetch(API);
+            const d = await r.json();
+            dbEst = d.est; dbVent = d.vent; dbPrd = d.prd;
+            renderProductos();
+            renderAdminPrd();
+            renderAlumnos();
+            if(sID) renderHistorial('todo');
+        } catch(e) { alert("ERROR DE CONEXIÓN CON LA BASE DE DATOS"); }
     }
     window.onload = cargar;
 
-    function buscarInteligente(el) {
-        const tks = el.value.toUpperCase().split(" ").filter(t => t !== "");
+    // BUSCADOR SMART (PREDICTIVO POR TOKENS)
+    function buscadorSmart(el) {
+        const busqueda = el.value.toUpperCase().trim();
+        const tokens = busqueda.split(" ").filter(t => t !== "");
         const res = document.getElementById('resV');
         res.innerHTML = '';
-        if(tks.length === 0) { res.style.display='none'; return; }
-        const filt = dbEst.filter(e => tks.every(t => (e.id + " " + e.nombre).includes(t)));
+        
+        if(tokens.length === 0) { res.style.display='none'; return; }
+
+        const filt = dbEst.filter(e => {
+            const fullStr = (e.id + " " + e.nombre).toUpperCase();
+            return tokens.every(token => fullStr.includes(token));
+        });
+
         filt.forEach(e => {
             const d = document.createElement('div');
             d.className = 'res-item';
-            d.innerText = `[${e.id}] ${e.nombre}`;
+            d.innerHTML = `<small style="color:#888">${e.id}</small> | <b>${e.nombre}</b>`;
             d.onclick = () => {
                 sID = e.id; sNom = e.nombre;
-                document.getElementById('selLabel').innerText = "✅ SELECCIONADO: " + sNom;
+                document.getElementById('selLabel').innerText = "✅ CLIENTE: " + sNom + " (" + sID + ")";
+                document.getElementById('seccionVenta').classList.remove('hidden');
                 document.getElementById('btnDescargaInd').classList.remove('hidden');
-                res.style.display='none'; el.value = ''; renderHistorial();
+                res.style.display='none'; 
+                el.value = ''; 
+                renderHistorial('todo');
             };
             res.appendChild(d);
         });
         res.style.display = filt.length > 0 ? 'block' : 'none';
     }
 
+    // REGISTRO DE ALUMNOS CON VALIDACIÓN ESTRICTA
+    async function crearAlumno() {
+        const n1 = document.getElementById('nN1').value.trim();
+        const n2 = document.getElementById('nN2').value.trim();
+        const a1 = document.getElementById('nA1').value.trim();
+        const a2 = document.getElementById('nA2').value.trim();
+        const niv = document.getElementById('nNiv').value;
+        const par = document.getElementById('nPar').value.toUpperCase();
+        const tel = document.getElementById('nTelf').value;
+        const id = niv + par;
+
+        if(!n1 || !n2 || !a1 || !a2 || !niv || !par) {
+            return alert("¡ERROR LEGAL! LOS 2 NOMBRES Y 2 APELLIDOS SON OBLIGATORIOS PARA EVITAR DUPLICADOS.");
+        }
+
+        const res = await fetch(API, {method:'POST', body: JSON.stringify({
+            action:'addEst', n1, n2, a1, a2, telf: tel, id: id
+        })});
+        const txt = await res.text();
+        
+        if(txt === "DUPLICADO") alert("EL ID " + id + " YA EXISTE. NO PUEDE HABER DOS ALUMNOS CON EL MISMO ID.");
+        else { alert("ALUMNO REGISTRADO EXITOSAMENTE"); location.reload(); }
+    }
+
+    // ELIMINACIÓN DE ESTUDIANTE
+    async function eliminarAlumno(id, nombre) {
+        if(!confirm("¿ESTÁ SEGURO DE ELIMINAR A " + nombre + "? ESTA ACCIÓN ES IRREVERSIBLE Y AFECTARÁ LOS REGISTROS.")) return;
+        await fetch(API, {method:'POST', body: JSON.stringify({action:'delEst', id: id})});
+        alert("ALUMNO ELIMINADO"); cargar();
+    }
+
+    // ELIMINACIÓN DE CONSUMO
+    async function eliminarConsumo(cod) {
+        if(!confirm("¿ELIMINAR ESTE REGISTRO DE CONSUMO? EL SALDO SERÁ AJUSTADO EN EL REPORTE.")) return;
+        await fetch(API, {method:'POST', body: JSON.stringify({action:'delVent', cod: cod})});
+        alert("REGISTRO ELIMINADO"); cargar();
+    }
+
+    // SELECCIÓN MÚLTIPLE DE PRODUCTOS
     function renderProductos() {
         document.getElementById('contPrd').innerHTML = dbPrd.map(p => `
             <div class="prd-item">
                 <div>
-                    <input type="checkbox" id="chk_${p.nombre}" onchange="toggleItem('${p.nombre}')">
-                    <b>${p.nombre} ($${p.precio})</b>
+                    <input type="checkbox" id="chk_${p.nombre}" onchange="actSel('${p.nombre}')">
+                    <b>${p.nombre}</b> <small>($${p.precio})</small>
                 </div>
                 <div>
-                    <button onclick="modQty('${p.nombre}', -1)">-</button>
-                    <b id="qty_${p.nombre}" style="margin:0 10px;">1</b>
-                    <button onclick="modQty('${p.nombre}', 1)">+</button>
+                    <button onclick="modQ('${p.nombre}', -1)">-</button>
+                    <b id="qty_${p.nombre}" style="margin:0 8px;">1</b>
+                    <button onclick="modQ('${p.nombre}', 1)">+</button>
                 </div>
             </div>`).join('');
     }
 
-    function toggleItem(n) {
+    function modQ(n, v) {
+        const el = document.getElementById(`qty_${n}`);
+        el.innerText = Math.max(1, parseInt(el.innerText) + v);
+        if(itemsSeleccionados[n]) itemsSeleccionados[n] = parseInt(el.innerText);
+    }
+
+    function actSel(n) {
         if(document.getElementById(`chk_${n}`).checked) itemsSeleccionados[n] = parseInt(document.getElementById(`qty_${n}`).innerText);
         else delete itemsSeleccionados[n];
     }
 
-    function modQty(n, v) {
-        const el = document.getElementById(`qty_${n}`);
-        let val = Math.max(1, parseInt(el.innerText) + v);
-        el.innerText = val;
-        if(itemsSeleccionados[n]) itemsSeleccionados[n] = val;
-    }
-
     function preConfirmar() {
-        if(!sID) return alert("SELECCIONE UN ALUMNO");
         if(Object.keys(itemsSeleccionados).length === 0) return alert("SELECCIONE PRODUCTOS");
-        let h = `<b>ALUMNO:</b> ${sNom}<br><b>DETALLE:</b><br>`;
-        for(let k in itemsSeleccionados) h += `- ${k} x ${itemsSeleccionados[k]}<br>`;
+        let h = `ALUMNO: <b>${sNom}</b><br><hr>`;
+        for(let k in itemsSeleccionados) h += `• ${k} x ${itemsSeleccionados[k]}<br>`;
         document.getElementById('detalleConfirma').innerHTML = h;
-        document.getElementById('codUnicoDisplay').innerText = 'TX-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        document.getElementById('codUnicoDisplay').innerText = 'OP-' + Math.random().toString(36).substr(2, 7).toUpperCase();
         toggle('modalConfirma');
     }
 
@@ -221,85 +288,93 @@
             action: 'addVentasMultiple', id: sID, nom: sNom, items: its,
             codigoUnico: document.getElementById('codUnicoDisplay').innerText,
             metodo: document.getElementById('pagoMetodo').value,
-            banco: document.getElementById('pagoBanco').value,
             compro: document.getElementById('pagoCompro').value
         })});
+        alert("REGISTRO LEGAL GUARDADO");
         location.reload();
     }
 
-    function setPeriodo(p) {
-        PERIODO = p;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('t-'+p).classList.add('active');
-        renderHistorial();
-    }
-
-    function renderHistorial() {
-        const hoy = new Date();
+    // AUDITORÍA E HISTORIAL
+    function renderHistorial(filtro) {
+        if(!sID) return;
+        const hoy = new Date().toDateString();
         const filt = dbVent.filter(v => {
             if(v.id.toString() !== sID.toString()) return false;
-            const fV = new Date(v.fecha);
-            if(PERIODO === 'hoy') return fV.toDateString() === hoy.toDateString();
-            if(PERIODO === 'semana') return (hoy - fV) / 864e5 <= 7;
-            if(PERIODO === 'mes') return (hoy - fV) / 864e5 <= 30;
+            if(filtro === 'hoy') return new Date(v.fecha).toDateString() === hoy;
+            if(filtro === 'mes') return new Date(v.fecha).getMonth() === new Date().getMonth();
             return true;
         });
+
         document.getElementById('histBody').innerHTML = filt.reverse().map(v => `
-            <tr><td>${new Date(v.fecha).toLocaleDateString()}</td><td>${v.prd}</td><td>${v.cant}</td><td>${v.cod || '-'}</td></tr>
+            <tr>
+                <td>${new Date(v.fecha).toLocaleDateString()}</td>
+                <td>${v.prd}</td>
+                <td>${v.cant}</td>
+                <td><span class="badge badge-cod">${v.cod}</span></td>
+                <td><button onclick="eliminarConsumo('${v.cod}')" style="color:red; background:none; border:none; cursor:pointer;">🗑️</button></td>
+            </tr>
         `).join('');
     }
 
+    // DESCARGAS DE REPORTES
     function descargarIndividual() {
         const filt = dbVent.filter(v => v.id.toString() === sID.toString());
-        generarCSV(filt, `CONSUMOS_${sNom}`);
+        generarCSV(filt, `REPORTE_${sNom.replace(/ /g, "_")}`);
+    }
+
+    function descargarGeneral() {
+        generarCSV(dbVent, "REPORTE_GENERAL_BAR_CEIAF");
     }
 
     function generarCSV(datos, titulo) {
-        let csv = "FECHA,ID,ALUMNO,PRODUCTO,CANT,METODO,BANCO,COMPROBANTE,CODIGO\n";
-        datos.forEach(v => { csv += `"${v.fecha}","${v.id}","${v.nom}","${v.prd}","${v.cant}","${v.metodo}","${v.banco}","${v.compro}","${v.cod}"\n`; });
-        const b = new Blob([csv], {type:'text/csv'});
+        let csv = "\uFEFFFECHA,ID,ALUMNO,PRODUCTO,CANTIDAD,METODO,COMPROBANTE,CODIGO_OP\n";
+        datos.forEach(v => {
+            csv += `"${new Date(v.fecha).toLocaleString()}","${v.id}","${v.nom}","${v.prd}","${v.cant}","${v.metodo}","${v.compro}","${v.cod}"\n`;
+        });
+        const b = new Blob([csv], {type:'text/csv;charset=utf-8'});
         const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = titulo + ".csv"; a.click();
     }
 
-    async function crearAlumno() {
-        const d = { action:'addEst', n1: document.getElementById('nN1').value, n2: document.getElementById('nN2').value, a1: document.getElementById('nA1').value, a2: document.getElementById('nA2').value, telf: document.getElementById('nTelf').value, id: document.getElementById('nNiv').value + document.getElementById('nPar').value.toUpperCase() };
-        if(!d.n1 || !d.a1 || d.telf.length < 9) return alert("DATOS INCOMPLETOS");
-        await fetch(API, {method:'POST', body: JSON.stringify(d)}); cargar(); toggle('dropNuevo');
-    }
-
-    async function editarPrd(oldNom, oldPre) {
-        const nN = prompt("NUEVO NOMBRE:", oldNom), nP = prompt("NUEVO PRECIO:", oldPre);
-        if(nN && nP) { await fetch(API, {method:'POST', body: JSON.stringify({action:'editPrd', oldNom, newNom:nN, newPre:nP})}); cargar(); }
-    }
-
-    function renderAdminPrd() {
-        document.getElementById('listaPrdAdmin').innerHTML = dbPrd.map(p => `<div class="prd-item"><span>${p.nombre} ($${p.precio})</span><button onclick="editarPrd('${p.nombre}','${p.precio}')">EDITAR</button></div>`).join('');
+    // ADMINISTRACIÓN
+    async function reestablecerPeriodo() {
+        const r = document.getElementById('rangoPeriodo').value;
+        if(!r) return alert("POR FAVOR INDIQUE EL NOMBRE DEL PERÍODO");
+        if(confirm("¿ESTÁ ABSOLUTAMENTE SEGURO? ESTA ACCIÓN MOVERÁ TODAS LAS VENTAS A UN ARCHIVO Y LIMPIARÁ EL PANEL DE CONTROL.")){
+            await fetch(API, {method:'POST', body: JSON.stringify({action:'nuevoPeriodo', rango: r})});
+            alert("SISTEMA DEPURADO Y ARCHIVADO EXITOSAMENTE");
+            location.reload();
+        }
     }
 
     function renderAlumnos() {
         const f = document.getElementById('fLista').value.toUpperCase();
         const l = dbEst.filter(e => e.nombre.includes(f) || e.id.includes(f));
-        document.getElementById('listaAlumnosCont').innerHTML = "<table>" + l.map(e => `<tr><td>${e.nombre}</td><td><button onclick="editarAl('${e.id}','${e.nombre}','${e.telf}')">✏️</button></td></tr>`).join('') + "</table>";
+        document.getElementById('listaAlumnosCont').innerHTML = l.map(e => `
+            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #EEE;">
+                <span>${e.nombre} (${e.id})</span>
+                <button onclick="eliminarAlumno('${e.id}','${e.nombre}')" style="background:none; border:none; color:red; cursor:pointer;">❌ ELIMINAR</button>
+            </div>`).join('');
     }
 
-    async function editarAl(id, nom, tel) {
-        const nN = prompt("NOMBRE:", nom), nT = prompt("TEL:", tel);
-        if(nN && nT) { await fetch(API, {method:'POST', body: JSON.stringify({action:'editEst', oldId:id, newId:id, newNom:nN, newTelf:nT})}); cargar(); }
+    function renderAdminPrd() {
+        document.getElementById('listaPrdAdmin').innerHTML = dbPrd.map(p => `
+            <div class="prd-item">
+                <span>${p.nombre} ($${p.precio})</span>
+                <button onclick="editPrd('${p.nombre}','${p.precio}')">✏️</button>
+            </div>`).join('');
     }
 
-    function toggle(id) { 
-        const el = document.getElementById(id); 
-        el.style.display = (el.style.display==='block' || el.style.display==='flex') ? 'none' : (id.includes('modal')?'flex':'block'); 
+    async function editPrd(on, op) {
+        const nn = prompt("NUEVO NOMBRE:", on);
+        const np = prompt("NUEVO PRECIO:", op);
+        if(nn && np) { await fetch(API, {method:'POST', body: JSON.stringify({action:'editPrd', oldNom:on, newNom:nn, newPre:np})}); cargar(); }
+    }
+
+    function toggle(id) {
+        const x = document.getElementById(id);
+        x.style.display = (x.style.display === 'flex' || x.style.display === 'block') ? 'none' : (id.includes('modal') ? 'flex' : 'block');
     }
     function togglePagoExtra() { document.getElementById('extraPago').classList.toggle('hidden', document.getElementById('pagoMetodo').value !== 'TRANSFERENCIA'); }
-    async function reestablecerPeriodo() { 
-        const r = document.getElementById('rangoPeriodo').value;
-        if(r && confirm("¿ARCHIVAR TODO?")) { await fetch(API, {method:'POST', body: JSON.stringify({action:'nuevoPeriodo', rango:r})}); location.reload(); }
-    }
-    async function crearPrd() {
-        const n = document.getElementById('newPN').value, p = document.getElementById('newPP').value;
-        if(n && p) { await fetch(API, {method:'POST', body: JSON.stringify({action:'addPrd', nombre:n, precio:p})}); cargar(); }
-    }
 </script>
 </body>
 </html>
