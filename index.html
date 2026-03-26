@@ -3,53 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA BAR CEIAF - COMPLETO</title>
+    <title>SISTEMA BAR CEIAF - ROBUSTO V.FINAL</title>
     <style>
         :root { --p: #2C3E50; --a: #3498DB; --s: #2ECC71; --d: #E74C3C; --bg: #F4F7F6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); text-transform: uppercase; font-size: 11px; margin: 0; }
         .navbar { background: var(--p); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .container { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; padding: 0 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
-        
-        /* Buscador Predictivo */
-        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: calc(100% - 40px); z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .container { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: 450px; z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #EEE; }
         .res-item:hover { background: #E3F2FD; }
-
-        /* Selección Múltiple */
-        .prd-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; max-height: 350px; overflow-y: auto; border: 1px solid #EEE; padding: 10px; border-radius: 8px; }
+        .prd-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; max-height: 250px; overflow-y: auto; border: 1px solid #EEE; padding: 10px; border-radius: 8px; }
         .prd-item { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid #F0F0F0; }
-        .qty-controls { display: flex; align-items: center; gap: 5px; }
-        .qty-btn { width: 28px; height: 28px; border: 1px solid #DDD; background: white; cursor: pointer; border-radius: 4px; }
-        .fecha-mod { font-size: 8px; color: #999; display: block; }
-
         .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; color: white; margin: 5px 0; }
         .btn-blue { background: var(--a); } .btn-green { background: var(--s); } .btn-red { background: var(--d); }
         .hidden { display: none; }
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:2000; }
-        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; text-align: center; }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:2000; }
+        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; }
+        .tabs { display: flex; gap: 5px; margin: 15px 0; }
+        .tab { flex: 1; padding: 10px; text-align: center; background: #EEE; cursor: pointer; border-radius: 8px; font-weight: bold; }
+        .tab.active { background: var(--a); color: white; }
         input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #DDD; border-radius: 6px; text-transform: uppercase; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #EEE; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
-    <div style="font-weight: bold; font-size: 14px;">CEIAF - GESTIÓN INTEGRAL BAR</div>
-    <button style="background:#34495E; color:white; border:none; padding:8px 15px; cursor:pointer; border-radius:4px;" onclick="toggle('modalAdmin')">⚙️ OPCIONES DE ADMINISTRADOR</button>
+    <div style="font-weight: bold; font-size: 14px;">CEIAF - PANEL DE CONTROL INTEGRAL</div>
+    <button style="background:#34495E; color:white; border:none; padding:8px 15px; cursor:pointer; border-radius:4px;" onclick="toggle('modalAdmin')">⚙️ ADMINISTRACIÓN</button>
 </div>
 
 <div class="container">
-    <!-- REGISTRO DE CONSUMOS -->
+    <!-- PANEL IZQUIERDO: VENTAS E HISTORIAL -->
     <div class="card">
         <h2>🍴 REGISTRO DE CONSUMO</h2>
-        <input type="text" id="busV" placeholder="🔎 BUSCAR: 9C CARLOS HUERTAS..." oninput="buscarInteligente(this)">
-        <div id="resV" class="search-results"></div>
-        
-        <div id="selLabel" style="padding:12px; background:#E3F2FD; color:#1565C0; font-weight:bold; margin:10px 0; border-radius:6px; border: 1px solid #A2CFEF;">
-            ALUMNO: NO SELECCIONADO
+        <div style="position:relative;">
+            <input type="text" id="busV" placeholder="🔎 BUSCAR ALUMNO (EJ: 9C RAFAEL)..." oninput="buscarInteligente(this)">
+            <div id="resV" class="search-results"></div>
         </div>
+        
+        <div id="selLabel" style="padding:15px; background:#E3F2FD; color:#1565C0; font-weight:bold; margin: 10px 0; border-radius: 6px; border: 1px solid #A2CFEF;">ALUMNO: NO SELECCIONADO</div>
 
-        <h3>MENÚ (SELECCIÓN MÚLTIPLE)</h3>
+        <h3>MENÚ DEL DÍA</h3>
         <div id="contPrd" class="prd-grid"></div>
 
         <select id="pagoMetodo" onchange="togglePagoExtra()">
@@ -58,24 +55,30 @@
         </select>
         <div id="extraPago" class="hidden">
             <input type="text" id="pagoBanco" placeholder="BANCO">
-            <input type="text" id="pagoCompro" placeholder="COMPROBANTE">
+            <input type="text" id="pagoCompro" placeholder="NÚMERO COMPROBANTE">
         </div>
 
-        <button class="btn btn-blue" style="background:var(--s); padding:15px;" onclick="preConfirmar()">✔️ REVISAR Y GUARDAR REGISTRO</button>
+        <button class="btn btn-green" style="padding:15px; font-size:14px;" onclick="preConfirmar()">✔️ PROCESAR REGISTRO</button>
+
+        <hr style="margin:20px 0;">
+        
+        <h2>📊 REGISTRO DE CONSUMOS DEL ALUMNO</h2>
+        <div class="tabs">
+            <div id="t-hoy" class="tab active" onclick="setPeriodo('hoy')">HOY</div>
+            <div id="t-semana" class="tab" onclick="setPeriodo('semana')">SEMANA</div>
+            <div id="t-mes" class="tab" onclick="setPeriodo('mes')">MES</div>
+        </div>
+        <div style="max-height: 200px; overflow-y: auto; border: 1px solid #EEE;">
+            <table id="tablaHistorial"><thead><tr><th>FECHA</th><th>PRODUCTO</th><th>CANT</th><th>ID</th></tr></thead><tbody id="histBody"></tbody></table>
+        </div>
+        <button id="btnDescargaInd" class="btn hidden" style="background:#2C3E50" onclick="descargarIndividual()">📥 DESCARGAR REGISTRO DE CONSUMOS</button>
     </div>
 
-    <!-- GESTIÓN Y LISTADOS -->
+    <!-- PANEL DERECHO: GESTIÓN -->
     <div class="card">
-        <h2>⚙️ GESTIÓN DE DATOS</h2>
-        
-        <button class="btn btn-blue" onclick="toggle('dropAlumnos')">▼ LISTADO DE ALUMNOS (EDITAR)</button>
-        <div id="dropAlumnos" class="hidden" style="margin-bottom:15px;">
-            <input type="text" id="fLista" placeholder="FILTRAR LISTA..." oninput="renderAlumnos()">
-            <div id="listaAlumnosCont" style="max-height:200px; overflow-y:auto; border:1px solid #EEE;"></div>
-        </div>
-
-        <button class="btn btn-green" onclick="toggle('dropNuevo')">+ REGISTRAR NUEVO ALUMNO (4 CAMPOS)</button>
-        <div id="dropNuevo" class="hidden" style="background:#F9F9F9; padding:15px; border-radius:8px;">
+        <h2>👥 GESTIÓN DE ALUMNOS</h2>
+        <button class="btn btn-blue" onclick="toggle('dropNuevo')">+ REGISTRAR NUEVO ALUMNO</button>
+        <div id="dropNuevo" class="hidden" style="background:#F9F9F9; padding:15px; border-radius:8px; border:1px solid #DDD;">
             <div style="display:flex; gap:5px;">
                 <input type="number" id="nNiv" placeholder="NIVEL">
                 <input type="text" id="nPar" placeholder="PARALELO">
@@ -83,53 +86,64 @@
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
                 <input type="text" id="nN1" placeholder="1ER NOMBRE">
                 <input type="text" id="nN2" placeholder="2DO NOMBRE">
-                <input type="text" id="nA1" placeholder="APELLIDO PATERNO">
-                <input type="text" id="nA2" placeholder="APELLIDO MATERNO">
+                <input type="text" id="nA1" placeholder="APELLIDO PAT.">
+                <input type="text" id="nA2" placeholder="APELLIDO MAT.">
             </div>
             <input type="number" id="nTelf" placeholder="TELÉFONO (10 DÍGITOS)">
             <button class="btn btn-green" onclick="crearAlumno()">GUARDAR NUEVO ALUMNO</button>
         </div>
 
-        <button class="btn btn-blue" onclick="toggle('dropPrd')">🍲 GESTIONAR MENÚ / PRECIOS</button>
+        <button class="btn btn-blue" onclick="toggle('dropLista')">📋 LISTADO Y EDICIÓN DE ALUMNOS</button>
+        <div id="dropLista" class="hidden">
+            <input type="text" id="fLista" placeholder="FILTRAR..." oninput="renderAlumnos()">
+            <div id="listaAlumnosCont" style="max-height:200px; overflow-y:auto;"></div>
+        </div>
+
+        <h2 style="margin-top:20px;">🍲 GESTIÓN DE PRODUCTOS</h2>
+        <button class="btn btn-blue" onclick="toggle('dropPrd')">📦 VER/EDITAR PRECIOS DEL MENÚ</button>
         <div id="dropPrd" class="hidden">
             <div id="listaPrdAdmin" class="prd-grid"></div>
-            <hr>
-            <input type="text" id="newPN" placeholder="NOMBRE DEL PLATO">
-            <input type="number" id="newPP" placeholder="PRECIO">
+            <h4>NUEVO PRODUCTO</h4>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="newPN" placeholder="NOMBRE">
+                <input type="number" id="newPP" placeholder="PRECIO">
+            </div>
             <button class="btn btn-blue" onclick="crearPrd()">AÑADIR AL MENÚ</button>
         </div>
     </div>
 </div>
 
-<!-- MODALES -->
+<!-- MODAL CONFIRMACIÓN -->
 <div id="modalConfirma" class="modal">
     <div class="modal-content">
-        <h3>🚨 DETALLE DEL PEDIDO</h3>
-        <div id="detalleConfirma" style="text-align:left; background:#F4F4F4; padding:15px; border-radius:8px; margin-bottom:10px;"></div>
-        <p>CÓDIGO ÚNICO: <b id="codUnicoDisplay">---</b></p>
+        <h3 style="color:var(--p)">REVISIÓN DE TRANSACCIÓN</h3>
+        <div id="detalleConfirma" style="background:#EEE; padding:15px; border-radius:8px; line-height:1.6;"></div>
+        <p>CÓDIGO ÚNICO: <b id="codUnicoDisplay" style="color:var(--d)">---</b></p>
         <div style="display:flex; gap:10px;">
             <button class="btn btn-red" onclick="toggle('modalConfirma')">CANCELAR</button>
-            <button class="btn btn-green" onclick="finalizarGuardado()">CONFIRMAR GUARDADO</button>
+            <button class="btn btn-green" onclick="finalizarGuardado()">CONFIRMAR Y GUARDAR</button>
         </div>
     </div>
 </div>
 
+<!-- MODAL ADMIN -->
 <div id="modalAdmin" class="modal">
     <div class="modal-content">
-        <h3>ADMINISTRACIÓN DE PERÍODOS</h3>
-        <input type="text" id="rangoPeriodo" placeholder="RANGO: 2026-2027">
-        <button class="btn btn-red" onclick="reestablecerPeriodo()">GENERAR NUEVO PERÍODO ACADÉMICO</button>
+        <h3>HERRAMIENTAS DE ADMINISTRADOR</h3>
         <hr>
-        <h4>DESCARGAR REPORTES</h4>
-        <input type="date" id="dDesde"> A <input type="date" id="dHasta">
-        <button class="btn" style="background:var(--p)" onclick="descargarGeneral()">DESCARGAR REPORTE GENERAL</button>
-        <button class="btn btn-blue" onclick="toggle('modalAdmin')">CERRAR</button>
+        <h4>NUEVO PERÍODO (RESET DE VENTAS)</h4>
+        <input type="text" id="rangoPeriodo" placeholder="EJ: SEPT-2026">
+        <button class="btn btn-red" onclick="reestablecerPeriodo()">ARCHIVAR Y LIMPIAR VENTAS</button>
+        <hr>
+        <h4>DESCARGA GLOBAL</h4>
+        <button class="btn btn-blue" onclick="generarCSV(dbVent, 'REGISTRO_GLOBAL_VENTAS')">DESCARGAR TODA LA DATA (CSV)</button>
+        <button class="btn btn-red" style="margin-top:20px;" onclick="toggle('modalAdmin')">CERRAR</button>
     </div>
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec"; 
-    let dbEst = [], dbVent = [], dbPrd = [], sID = "", sNom = "", itemsSeleccionados = {};
+    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec";
+    let dbEst = [], dbVent = [], dbPrd = [], sID = "", sNom = "", PERIODO = "hoy", itemsSeleccionados = {};
 
     async function cargar() {
         const r = await fetch(API);
@@ -138,48 +152,44 @@
         renderProductos();
         renderAdminPrd();
         renderAlumnos();
+        if(sID) renderHistorial();
     }
     window.onload = cargar;
 
     function buscarInteligente(el) {
-        const tokens = el.value.toUpperCase().split(" ").filter(t => t !== "");
+        const tks = el.value.toUpperCase().split(" ").filter(t => t !== "");
         const res = document.getElementById('resV');
         res.innerHTML = '';
-        if(tokens.length === 0) { res.style.display='none'; return; }
-
-        const filtrados = dbEst.filter(e => tokens.every(t => (e.id + " " + e.nombre).includes(t)));
-        filtrados.forEach(e => {
+        if(tks.length === 0) { res.style.display='none'; return; }
+        const filt = dbEst.filter(e => tks.every(t => (e.id + " " + e.nombre).includes(t)));
+        filt.forEach(e => {
             const d = document.createElement('div');
             d.className = 'res-item';
             d.innerText = `[${e.id}] ${e.nombre}`;
             d.onclick = () => {
                 sID = e.id; sNom = e.nombre;
-                document.getElementById('selLabel').innerText = "✅ " + sNom;
-                res.style.display='none'; el.value = '';
+                document.getElementById('selLabel').innerText = "✅ SELECCIONADO: " + sNom;
+                document.getElementById('btnDescargaInd').classList.remove('hidden');
+                res.style.display='none'; el.value = ''; renderHistorial();
             };
             res.appendChild(d);
         });
-        res.style.display = 'block';
+        res.style.display = filt.length > 0 ? 'block' : 'none';
     }
 
     function renderProductos() {
-        const cont = document.getElementById('contPrd');
-        cont.innerHTML = dbPrd.map(p => {
-            const f = p.fechaMod ? new Date(p.fechaMod).toLocaleDateString() : 'SIN FECHA';
-            return `
-                <div class="prd-item">
-                    <div>
-                        <input type="checkbox" id="chk_${p.nombre}" onchange="toggleItem('${p.nombre}')">
-                        <b>${p.nombre} ($${p.precio})</b>
-                        <span class="fecha-mod">Modificado: ${f}</span>
-                    </div>
-                    <div class="qty-controls">
-                        <button class="qty-btn" onclick="modQty('${p.nombre}', -1)">-</button>
-                        <b id="qty_${p.nombre}">1</b>
-                        <button class="qty-btn" onclick="modQty('${p.nombre}', 1)">+</button>
-                    </div>
-                </div>`;
-        }).join('');
+        document.getElementById('contPrd').innerHTML = dbPrd.map(p => `
+            <div class="prd-item">
+                <div>
+                    <input type="checkbox" id="chk_${p.nombre}" onchange="toggleItem('${p.nombre}')">
+                    <b>${p.nombre} ($${p.precio})</b>
+                </div>
+                <div>
+                    <button onclick="modQty('${p.nombre}', -1)">-</button>
+                    <b id="qty_${p.nombre}" style="margin:0 10px;">1</b>
+                    <button onclick="modQty('${p.nombre}', 1)">+</button>
+                </div>
+            </div>`).join('');
     }
 
     function toggleItem(n) {
@@ -189,85 +199,106 @@
 
     function modQty(n, v) {
         const el = document.getElementById(`qty_${n}`);
-        let num = Math.max(1, parseInt(el.innerText) + v);
-        el.innerText = num;
-        if(itemsSeleccionados[n]) itemsSeleccionados[n] = num;
+        let val = Math.max(1, parseInt(el.innerText) + v);
+        el.innerText = val;
+        if(itemsSeleccionados[n]) itemsSeleccionados[n] = val;
     }
 
     function preConfirmar() {
-        if(!sID) return alert("SELECCIONE ALUMNO");
+        if(!sID) return alert("SELECCIONE UN ALUMNO");
         if(Object.keys(itemsSeleccionados).length === 0) return alert("SELECCIONE PRODUCTOS");
-        let h = `ALUMNO: ${sNom}<br><br>ITEMS:<br>`;
-        for(let k in itemsSeleccionados) h += `- ${k} (x${itemsSeleccionados[k]})<br>`;
+        let h = `<b>ALUMNO:</b> ${sNom}<br><b>DETALLE:</b><br>`;
+        for(let k in itemsSeleccionados) h += `- ${k} x ${itemsSeleccionados[k]}<br>`;
         document.getElementById('detalleConfirma').innerHTML = h;
-        document.getElementById('codUnicoDisplay').innerText = 'CEIAF-' + Math.random().toString(36).substr(2, 7).toUpperCase();
+        document.getElementById('codUnicoDisplay').innerText = 'TX-' + Math.random().toString(36).substr(2, 6).toUpperCase();
         toggle('modalConfirma');
     }
 
     async function finalizarGuardado() {
-        const items = [];
-        for(let k in itemsSeleccionados) items.push({prd: k, cant: itemsSeleccionados[k]});
+        const its = [];
+        for(let k in itemsSeleccionados) its.push({prd: k, cant: itemsSeleccionados[k]});
         await fetch(API, {method:'POST', body: JSON.stringify({
-            action: 'addVentasMultiple', id: sID, nom: sNom, items: items,
+            action: 'addVentasMultiple', id: sID, nom: sNom, items: its,
             codigoUnico: document.getElementById('codUnicoDisplay').innerText,
             metodo: document.getElementById('pagoMetodo').value,
             banco: document.getElementById('pagoBanco').value,
             compro: document.getElementById('pagoCompro').value
         })});
-        alert("REGISTRO GUARDADO");
         location.reload();
     }
 
+    function setPeriodo(p) {
+        PERIODO = p;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('t-'+p).classList.add('active');
+        renderHistorial();
+    }
+
+    function renderHistorial() {
+        const hoy = new Date();
+        const filt = dbVent.filter(v => {
+            if(v.id.toString() !== sID.toString()) return false;
+            const fV = new Date(v.fecha);
+            if(PERIODO === 'hoy') return fV.toDateString() === hoy.toDateString();
+            if(PERIODO === 'semana') return (hoy - fV) / 864e5 <= 7;
+            if(PERIODO === 'mes') return (hoy - fV) / 864e5 <= 30;
+            return true;
+        });
+        document.getElementById('histBody').innerHTML = filt.reverse().map(v => `
+            <tr><td>${new Date(v.fecha).toLocaleDateString()}</td><td>${v.prd}</td><td>${v.cant}</td><td>${v.cod || '-'}</td></tr>
+        `).join('');
+    }
+
+    function descargarIndividual() {
+        const filt = dbVent.filter(v => v.id.toString() === sID.toString());
+        generarCSV(filt, `CONSUMOS_${sNom}`);
+    }
+
+    function generarCSV(datos, titulo) {
+        let csv = "FECHA,ID,ALUMNO,PRODUCTO,CANT,METODO,BANCO,COMPROBANTE,CODIGO\n";
+        datos.forEach(v => { csv += `"${v.fecha}","${v.id}","${v.nom}","${v.prd}","${v.cant}","${v.metodo}","${v.banco}","${v.compro}","${v.cod}"\n`; });
+        const b = new Blob([csv], {type:'text/csv'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = titulo + ".csv"; a.click();
+    }
+
     async function crearAlumno() {
-        const n1 = document.getElementById('nN1').value;
-        const n2 = document.getElementById('nN2').value;
-        const a1 = document.getElementById('nA1').value;
-        const a2 = document.getElementById('nA2').value;
-        const t = document.getElementById('nTelf').value;
-        const id = document.getElementById('nNiv').value + document.getElementById('nPar').value.toUpperCase();
-        if(!n1 || !n2 || !a1 || !a2 || t.length !== 10) return alert("TODOS LOS CAMPOS SON OBLIGATORIOS (10 DÍGITOS TELF)");
-        await fetch(API, {method:'POST', body: JSON.stringify({action:'addEst', n1, n2, a1, a2, telf: t, id})});
-        alert("ALUMNO CREADO"); cargar();
+        const d = { action:'addEst', n1: document.getElementById('nN1').value, n2: document.getElementById('nN2').value, a1: document.getElementById('nA1').value, a2: document.getElementById('nA2').value, telf: document.getElementById('nTelf').value, id: document.getElementById('nNiv').value + document.getElementById('nPar').value.toUpperCase() };
+        if(!d.n1 || !d.a1 || d.telf.length < 9) return alert("DATOS INCOMPLETOS");
+        await fetch(API, {method:'POST', body: JSON.stringify(d)}); cargar(); toggle('dropNuevo');
     }
 
     async function editarPrd(oldNom, oldPre) {
-        const nNom = prompt("NUEVO NOMBRE:", oldNom);
-        const nPre = prompt("NUEVO PRECIO:", oldPre);
-        if(nNom && nPre) {
-            await fetch(API, {method:'POST', body: JSON.stringify({action:'editPrd', oldNom, newNom: nNom, newPre: nPre})});
-            cargar();
-        }
+        const nN = prompt("NUEVO NOMBRE:", oldNom), nP = prompt("NUEVO PRECIO:", oldPre);
+        if(nN && nP) { await fetch(API, {method:'POST', body: JSON.stringify({action:'editPrd', oldNom, newNom:nN, newPre:nP})}); cargar(); }
     }
 
     function renderAdminPrd() {
-        document.getElementById('listaPrdAdmin').innerHTML = dbPrd.map(p => `
-            <div class="prd-item"><span>${p.nombre} ($${p.precio})</span><button onclick="editarPrd('${p.nombre}','${p.precio}')">✏️</button></div>
-        `).join('');
+        document.getElementById('listaPrdAdmin').innerHTML = dbPrd.map(p => `<div class="prd-item"><span>${p.nombre} ($${p.precio})</span><button onclick="editarPrd('${p.nombre}','${p.precio}')">EDITAR</button></div>`).join('');
     }
 
     function renderAlumnos() {
         const f = document.getElementById('fLista').value.toUpperCase();
         const l = dbEst.filter(e => e.nombre.includes(f) || e.id.includes(f));
-        document.getElementById('listaAlumnosCont').innerHTML = "<table>" + l.map(e => `<tr><td>${e.nombre}</td><td><button onclick="alert('Use la opción de edición completa para ID: ${e.id}')">✏️</button></td></tr>`).join('') + "</table>";
+        document.getElementById('listaAlumnosCont').innerHTML = "<table>" + l.map(e => `<tr><td>${e.nombre}</td><td><button onclick="editarAl('${e.id}','${e.nombre}','${e.telf}')">✏️</button></td></tr>`).join('') + "</table>";
     }
 
-    async function reestablecerPeriodo() {
-        const r = document.getElementById('rangoPeriodo').value;
-        if(!r || !confirm("¿SEGURO? ESTO ARCHIVA TODO.")) return;
-        await fetch(API, {method:'POST', body: JSON.stringify({action:'nuevoPeriodo', rango: r})});
-        location.reload();
+    async function editarAl(id, nom, tel) {
+        const nN = prompt("NOMBRE:", nom), nT = prompt("TEL:", tel);
+        if(nN && nT) { await fetch(API, {method:'POST', body: JSON.stringify({action:'editEst', oldId:id, newId:id, newNom:nN, newTelf:nT})}); cargar(); }
     }
 
-    function toggle(id) {
-        const x = document.getElementById(id);
-        x.style.display = (x.style.display === 'flex' || x.style.display === 'block') ? 'none' : (id.includes('modal') ? 'flex' : 'block');
+    function toggle(id) { 
+        const el = document.getElementById(id); 
+        el.style.display = (el.style.display==='block' || el.style.display==='flex') ? 'none' : (id.includes('modal')?'flex':'block'); 
     }
     function togglePagoExtra() { document.getElementById('extraPago').classList.toggle('hidden', document.getElementById('pagoMetodo').value !== 'TRANSFERENCIA'); }
-    function descargarGeneral() {
-        let csv = "FECHA,ID,NOMBRE,PRODUCTO,CANTIDAD,CODIGO\n";
-        dbVent.forEach(v => csv += `${v.fecha},${v.id},${v.nom},${v.prd},${v.cant},${v.cod}\n`);
-        const blob = new Blob([csv], {type: 'text/csv'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "REPORTE.csv"; a.click();
+    async function reestablecerPeriodo() { 
+        const r = document.getElementById('rangoPeriodo').value;
+        if(r && confirm("¿ARCHIVAR TODO?")) { await fetch(API, {method:'POST', body: JSON.stringify({action:'nuevoPeriodo', rango:r})}); location.reload(); }
+    }
+    async function crearPrd() {
+        const n = document.getElementById('newPN').value, p = document.getElementById('newPP').value;
+        if(n && p) { await fetch(API, {method:'POST', body: JSON.stringify({action:'addPrd', nombre:n, precio:p})}); cargar(); }
     }
 </script>
 </body>
