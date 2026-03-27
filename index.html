@@ -3,139 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEIAF SISTEMA ROBUSTO V.5</title>
+    <title>SISTEMA BAR CEIAF V6</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --p: #2C3E50; --a: #2980B9; --s: #27AE60; --d: #C0392B; --bg: #F4F7F6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); text-transform: uppercase; font-size: 11px; margin: 0; }
-        .navbar { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; max-width: 1600px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 4px solid var(--a); position: relative; }
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #DDD; border-radius: 5px; box-sizing: border-box; text-transform: uppercase; }
-        .btn { border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; margin: 3px 0; width: 100%; transition: 0.3s; }
-        .btn:disabled { background: #95A5A6 !important; cursor: not-allowed; }
-        .btn-blue { background: var(--a); } .btn-green { background: var(--s); } .btn-red { background: var(--d); }
-        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: 100%; z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #EEE; }
-        .res-item:hover { background: #E3F2FD; }
-        .hidden { display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { padding: 8px; border: 1px solid #EEE; text-align: left; }
-        th { background: #F8F9FA; }
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:2000; }
-        .modal-content { background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; }
-        .prd-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #EEE; }
-        .loading-text { font-size: 10px; color: var(--a); font-style: italic; display: none; }
+        :root { --p: #1E293B; --a: #3B82F6; --s: #10B981; --d: #EF4444; --w: #F59E0B; --bg: #F1F5F9; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; text-transform: uppercase; font-size: 12px; }
+        
+        /* Header */
+        .header { background: var(--p); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        /* Sistema de Módulos (Acordeón) */
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .module { background: white; border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #E2E8F0; }
+        
+        .module-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; color: white; }
+        .module-header i { font-size: 1.2rem; }
+        .module-content { display: none; padding: 20px; border-top: 1px solid #E2E8F0; }
+        .module.active .module-content { display: block; }
+        
+        /* Colores Modulares */
+        .mod-venta { border-left: 6px solid var(--a); } .mod-venta .module-header { background: var(--a); }
+        .mod-alum { border-left: 6px solid var(--s); } .mod-alum .module-header { background: var(--s); }
+        .mod-prd { border-left: 6px solid var(--w); } .mod-prd .module-header { background: var(--w); }
+        .mod-aud { border-left: 6px solid var(--p); } .mod-aud .module-header { background: var(--p); }
+
+        /* Inputs y Botones Profesionales */
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #CBD5E1; border-radius: 8px; box-sizing: border-box; font-size: 12px; }
+        .btn { border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; width: 100%; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { background: #94A3B8 !important; cursor: not-allowed; opacity: 0.7; }
+        
+        /* Tablas */
+        .table-container { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid #E2E8F0; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #F8FAFC; padding: 12px; text-align: left; border-bottom: 2px solid #E2E8F0; }
+        td { padding: 12px; border-bottom: 1px solid #E2E8F0; }
+
+        /* Alertas y Modales */
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); display:none; align-items:center; justify-content:center; z-index:1000; }
+        .modal-card { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        
+        .badge-alergia { background: #FEE2E2; color: #B91C1C; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <div style="font-weight: bold; font-size: 14px;">CEIAF - AUDITORÍA PROFESIONAL (SEGURIDAD ACTIVA)</div>
-    <button class="btn-blue" style="width:auto; padding:8px 15px;" onclick="toggle('modalAdmin')">⚙️ OPCIONES DUEÑO</button>
+<div class="header">
+    <div><i class="fas fa-utensils"></i> CEIAF COMEDOR <span style="font-weight: 300;">V6</span></div>
+    <button onclick="abrirAdmin()" style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-cog fa-lg"></i></button>
 </div>
 
-<div class="main-grid">
-    <!-- VENTAS -->
-    <div class="card">
-        <h2 style="color:var(--a)">🛒 PUNTO DE VENTA</h2>
-        <div style="position:relative">
-            <input type="text" id="busV" placeholder="BUSCAR ALUMNO PARA VENTA..." oninput="smartBus(this, 'resV', 'v')">
-            <div id="resV" class="search-results"></div>
+<div class="container">
+    
+    <!-- MODULO 1: VENTAS -->
+    <div class="module mod-venta active" id="m-venta">
+        <div class="module-header" onclick="toggleModulo('m-venta')">
+            <span><i class="fas fa-shopping-cart"></i> PUNTO DE VENTA</span>
+            <i class="fas fa-chevron-down"></i>
         </div>
-        <div id="selVenta" style="padding:10px; background:#EBF5FB; margin:10px 0; border-radius:5px; font-weight:bold;">SIN SELECCIÓN</div>
-        
-        <div id="boxVenta" class="hidden">
-            <div id="listaMenu" style="max-height:200px; overflow-y:auto; border:1px solid #EEE; padding:10px; margin-bottom:10px;"></div>
-            <select id="metodo" onchange="toggleTransferencia()"><option value="EFECTIVO">EFECTIVO</option><option value="TRANSFERENCIA">TRANSFERENCIA</option></select>
-            <div id="camposTrans" class="hidden">
-                <input type="text" id="vBanco" placeholder="ENTIDAD BANCARIA (OBLIGATORIO)">
-                <input type="text" id="vCompro" placeholder="N° DE COMPROBANTE (OBLIGATORIO)">
+        <div class="module-content">
+            <input type="text" id="busV" placeholder="🔍 BUSCAR ALUMNO..." oninput="smartBus(this, 'resV', 'v')">
+            <div id="resV" style="position:relative; background:white; border:1px solid #DDD; display:none;"></div>
+            
+            <div id="selVenta" style="padding:15px; background:#EFF6FF; border-radius:8px; margin:10px 0; font-weight:bold; color:var(--a);">SELECCIONE UN ALUMNO</div>
+            
+            <div id="boxVenta" class="hidden" style="display:none;">
+                <div id="listaMenu" style="max-height:250px; overflow-y:auto; margin-bottom:15px;"></div>
+                <select id="metodo" onchange="toggleTransferencia()"><option value="EFECTIVO">💵 EFECTIVO</option><option value="TRANSFERENCIA">📱 TRANSFERENCIA</option></select>
+                <div id="camposTrans" style="display:none;">
+                    <input type="text" id="vBanco" placeholder="BANCO RECEPTOR">
+                    <input type="text" id="vCompro" placeholder="N° COMPROBANTE">
+                </div>
+                <button class="btn" style="background:var(--a);" id="btnVenta" onclick="validarVenta()"><i class="fas fa-save"></i> REGISTRAR CONSUMO</button>
             </div>
-            <button class="btn btn-green" id="btnVenta" onclick="validarDuplicadoVenta()">💾 REGISTRAR CONSUMO</button>
         </div>
     </div>
 
-    <!-- AUDITORÍA -->
-    <div class="card" style="border-top-color: var(--p)">
-        <h2 style="color:var(--p)">📊 AUDITORÍA INDIVIDUAL</h2>
-        <div style="position:relative">
-            <input type="text" id="busA" placeholder="BUSCAR ALUMNO PARA REPORTE..." oninput="smartBus(this, 'resA', 'a')">
-            <div id="resA" class="search-results"></div>
+    <!-- MODULO 2: ALUMNOS -->
+    <div class="module mod-alum" id="m-alum">
+        <div class="module-header" onclick="toggleModulo('m-alum')">
+            <span><i class="fas fa-users"></i> GESTIÓN DE ALUMNOS</span>
+            <i class="fas fa-chevron-down"></i>
         </div>
-        <div id="selAudit" style="padding:10px; background:#F4F7F6; margin:10px 0; border-radius:5px; font-weight:bold;">SELECCIONE PARA AUDITAR</div>
-        
-        <div id="boxAudit" class="hidden">
-            <div style="display:flex; gap:3px; margin-bottom:10px;">
-                <button class="btn-blue" style="flex:1; font-size:9px;" onclick="filtAudit('hoy')">HOY</button>
-                <button class="btn-blue" style="flex:1; font-size:9px;" onclick="filtAudit('todo')">TODO</button>
+        <div class="module-content">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="text" id="nN1" placeholder="1ER NOMBRE"> <input type="text" id="nN2" placeholder="2DO NOMBRE">
+                <input type="text" id="nA1" placeholder="1ER APELLIDO"> <input type="text" id="nA2" placeholder="2DO APELLIDO">
+                <input type="text" id="nNiv" placeholder="CURSO (EJ: 9NO)"> <input type="text" id="nPar" placeholder="PARALELO (EJ: B)">
+                <input type="text" id="nTel" placeholder="TELÉFONO REPRE.">
+                <input type="text" id="nAlergia" placeholder="⚠️ ALERGIAS (SI TIENE)" style="grid-column: span 2; border: 1px solid var(--d);">
             </div>
-            <div style="max-height: 250px; overflow-y: auto;">
-                <table>
-                    <thead><tr><th>FECHA</th><th>PRODUCTO</th><th>ELIMINAR</th></tr></thead>
-                    <tbody id="bodyAudit"></tbody>
+            <button class="btn" style="background:var(--s); margin-top:10px;" id="btnCrearAl" onclick="crearAlumno()"><i class="fas fa-user-plus"></i> REGISTRAR ALUMNO</button>
+            
+            <hr style="margin:20px 0; border:0; border-top:1px solid #EEE;">
+            <input type="text" id="fAlum" placeholder="FILTRAR LISTADO..." oninput="renderAlumnos()">
+            <button id="btnDelMult" class="btn" style="background:var(--d); display:none; margin-bottom:10px;" onclick="borrarSeleccionados()">ELIMINAR MARCADOS</button>
+            <div class="table-container">
+                <table id="tablaAlumnos">
+                    <thead><tr><th><input type="checkbox" onclick="selTodo(this)"></th><th>NOMBRE</th><th>DETALLES</th></tr></thead>
+                    <tbody id="bodyAlum"></tbody>
                 </table>
             </div>
-            <button class="btn btn-blue" onclick="descargarAudit()">📥 DESCARGAR REPORTE</button>
         </div>
     </div>
 
-    <!-- ALUMNOS -->
-    <div class="card" style="border-top-color: var(--s)">
-        <h2 style="color:var(--s)">👥 GESTIÓN DE ALUMNOS</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; background:#FDFEFE; padding:10px; border:1px solid #EEE;">
-            <input type="text" id="nN1" placeholder="* 1ER NOMBRE"> <input type="text" id="nN2" placeholder="* 2DO NOMBRE">
-            <input type="text" id="nA1" placeholder="* APELLIDO P."> <input type="text" id="nA2" placeholder="* APELLIDO M.">
-            <input type="number" id="nNiv" placeholder="NIVEL"> <input type="text" id="nPar" placeholder="PARALELO">
-            <input type="number" id="nTel" placeholder="TELÉFONO REPRE.">
-            <button class="btn btn-green" id="btnCrearAl" style="grid-column: span 2" onclick="crearAlumno()">REGISTRAR NUEVO ALUMNO</button>
+    <!-- MODULO 3: PRODUCTOS -->
+    <div class="module mod-prd" id="m-prd">
+        <div class="module-header" onclick="toggleModulo('m-prd')">
+            <span><i class="fas fa-hamburger"></i> PRODUCTOS Y PRECIOS</span>
+            <i class="fas fa-chevron-down"></i>
         </div>
-        <input type="text" id="fAlum" placeholder="FILTRAR LISTA..." oninput="renderAlumnos()" style="margin-top:10px;">
-        <button id="btnDelMult" class="btn btn-red hidden" onclick="borrarSeleccionados()">🗑️ ELIMINAR MARCADOS</button>
-        <div style="max-height: 250px; overflow-y: auto; border:1px solid #EEE;">
-            <table>
-                <thead><tr><th><input type="checkbox" onclick="selTodo(this)"></th><th>NOMBRE</th><th>EDIT</th></tr></thead>
-                <tbody id="bodyAlum"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- PRODUCTOS -->
-    <div class="card" style="border-top-color: #F39C12">
-        <h2 style="color:#F39C12">🍲 INVENTARIO Y PRECIOS</h2>
-        <div style="background:#FEF9E7; padding:10px; border:1px solid #FAD7A0;">
+        <div class="module-content">
             <input type="text" id="pNom" placeholder="NOMBRE DEL PRODUCTO">
-            <input type="number" id="pPre" placeholder="PRECIO">
-            <button class="btn btn-green" id="btnCrearPr" style="background:#F39C12" onclick="crearPrd()">AÑADIR AL MENÚ</button>
+            <input type="number" id="pPre" step="0.01" placeholder="PRECIO (0.00)">
+            <button class="btn" style="background:var(--w);" id="btnCrearPr" onclick="crearPrd()">AÑADIR AL MENÚ</button>
+            <div id="listaPrdAdmin" style="margin-top:20px;"></div>
         </div>
-        <div id="listaPrdAdmin" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div>
+    </div>
+
+    <!-- MODULO 4: AUDITORÍA -->
+    <div class="module mod-aud" id="m-aud">
+        <div class="module-header" onclick="toggleModulo('m-aud')">
+            <span><i class="fas fa-chart-line"></i> AUDITORÍA</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="module-content">
+            <input type="text" id="busA" placeholder="🔍 BUSCAR PARA AUDITAR..." oninput="smartBus(this, 'resA', 'a')">
+            <div id="resA" style="position:relative; background:white; border:1px solid #DDD; display:none;"></div>
+            <div id="selAudit" style="padding:10px; background:#F1F5F9; margin:10px 0; border-radius:8px;">SELECCIONE ALUMNO</div>
+            
+            <div id="boxAudit" style="display:none;">
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <button class="btn" style="background:var(--p)" onclick="filtAudit('hoy')">HOY</button>
+                    <button class="btn" style="background:#64748B" onclick="filtAudit('todo')">HISTORIAL</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>FECHA</th><th>PRODUCTO</th><th>ACCION</th></tr></thead>
+                        <tbody id="bodyAudit"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- MODAL CONFIRMACIÓN VENTA -->
-<div id="modalConf" class="modal"><div class="modal-content">
-    <h3>CONFIRMAR TRANSACCIÓN</h3>
-    <div id="detConf" style="background:#F4F7F6; padding:15px; border-radius:5px;"></div>
-    <p>CÓDIGO: <b id="txCod"></b></p>
-    <button class="btn btn-green" id="btnFinalizar" onclick="saveVenta()">SÍ, GUARDAR EN BASE DE DATOS</button>
-    <button class="btn btn-red" onclick="toggle('modalConf')">CANCELAR</button>
+<!-- MODALES -->
+<div id="modalConf" class="modal"><div class="modal-card">
+    <h3 id="confTitle">CONFIRMAR REGISTRO</h3>
+    <div id="detConf" style="background:#F1F5F9; padding:15px; border-radius:8px; margin-bottom:15px;"></div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn" id="btnFinalizar" style="background:var(--s)" onclick="saveVenta()">CONFIRMAR</button>
+        <button class="btn" style="background:var(--d)" onclick="toggleM('modalConf')">CANCELAR</button>
+    </div>
 </div></div>
 
-<!-- MODAL ADMIN -->
-<div id="modalAdmin" class="modal"><div class="modal-content">
-    <h3>SISTEMA DE CONTROL</h3><hr>
-    <button class="btn btn-blue" onclick="descargarGlobal()">DESCARGAR REPORTE GLOBAL</button>
-    <div style="margin-top:20px; background:#FDEDEC; padding:10px;">
-        <h4 style="color:var(--d)">NUEVO PERÍODO</h4>
-        <input type="text" id="periodoNom" placeholder="NOMBRE PERÍODO">
-        <button class="btn btn-red" onclick="archivarPeriodo()">ARCHIVAR Y LIMPIAR VENTAS</button>
+<div id="modalAdmin" class="modal"><div class="modal-card">
+    <h3 style="color:var(--d)"><i class="fas fa-shield-alt"></i> PANEL DE CONTROL</h3>
+    <button class="btn" style="background:var(--a); margin-bottom:10px;" onclick="descargarGlobal()">EXCEL GLOBAL (VENTAS)</button>
+    <hr>
+    <div style="background:#FFF1F2; padding:15px; border-radius:8px; border:1px solid #FECACA;">
+        <h4 style="margin:0; color:var(--d)">ZONA DE PELIGRO</h4>
+        <p style="font-size:10px;">ESTO BORRARÁ TODA LA DATA PARA INICIAR EL USO PROFESIONAL.</p>
+        <button class="btn" style="background:var(--d);" onclick="resetMaestro()">LIMPIEZA TOTAL (RESET)</button>
     </div>
-    <button class="btn btn-blue" style="margin-top:20px;" onclick="toggle('modalAdmin')">CERRAR</button>
+    <br>
+    <button class="btn" style="background:var(--p)" onclick="toggleM('modalAdmin')">CERRAR</button>
 </div></div>
 
 <script>
-    window.onbeforeunload = () => "¿SALIR? SE PERDERÁN DATOS NO GUARDADOS.";
-    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec"; // REEMPLAZAR CON TU URL
-    let dbEst = [], dbVent = [], dbPrd = [], sV = {}, sA = {}, fA = "todo", itemsV = {};
+    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec"; // DEBES PEGAR TU URL AQUÍ
+    let dbEst = [], dbVent = [], dbPrd = [], sV = {}, sA = {}, itemsV = {};
 
     async function cargar() {
         const r = await fetch(API); const d = await r.json();
@@ -144,193 +182,143 @@
     }
     window.onload = cargar;
 
-    // BLOQUEO DE BOTONES
-    function bloquearBoton(id, texto) {
-        const btn = document.getElementById(id);
-        btn.disabled = true;
-        btn.innerText = texto || "PROCESANDO, ESPERE...";
-    }
-    function desbloquearBoton(id, texto) {
-        const btn = document.getElementById(id);
-        btn.disabled = false;
-        btn.innerText = texto;
-    }
-
-    // BUSCADORES
-    function smartBus(el, target, modo) {
-        const bus = el.value.toUpperCase();
-        const res = document.getElementById(target);
-        res.innerHTML = '';
-        if(!bus) { res.style.display='none'; return; }
-        const filt = dbEst.filter(e => e.nombre.includes(bus) || e.id.includes(bus));
-        filt.forEach(e => {
-            const d = document.createElement('div'); d.className = 'res-item';
-            d.innerHTML = `<b>${e.nombre}</b> <small>(${e.id})</small>`;
-            d.onclick = () => {
-                if(modo === 'v') {
-                    sV = e; document.getElementById('selVenta').innerText = "🛒 CLIENTE: " + e.nombre;
-                    document.getElementById('boxVenta').classList.remove('hidden');
-                } else {
-                    sA = e; document.getElementById('selAudit').innerText = "📊 AUDITANDO: " + e.nombre;
-                    document.getElementById('boxAudit').classList.remove('hidden');
-                    renderAudit();
-                }
-                res.style.display='none'; el.value = '';
-            };
-            res.appendChild(d);
+    // SISTEMA DE ACORDEÓN
+    function toggleModulo(id) {
+        document.querySelectorAll('.module').forEach(m => {
+            if(m.id === id) m.classList.add('active');
+            else m.classList.remove('active');
         });
-        res.style.display = filt.length > 0 ? 'block' : 'none';
     }
 
-    // AUDITORÍA
-    function filtAudit(f) { fA = f; renderAudit(); }
-    function renderAudit() {
-        if(!sA.id) return;
-        const hoy = new Date().toDateString();
-        const filt = dbVent.filter(v => {
-            if(v.id !== sA.id) return false;
-            return fA === 'hoy' ? new Date(v.fecha).toDateString() === hoy : true;
-        });
-        document.getElementById('bodyAudit').innerHTML = filt.reverse().map(v => `
-            <tr><td>${new Date(v.fecha).toLocaleDateString()}</td><td>${v.prd}</td>
-            <td><button class="btn-red" style="padding:2px 5px" onclick="borrarVent('${v.cod}')">🗑️</button></td></tr>`).join('');
-    }
+    // GESTIÓN DE BOTONES (ANTI-DUPLICADOS)
+    function lock(id, txt) { const b = document.getElementById(id); b.disabled = true; b.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${txt}`; }
+    function unlock(id, txt) { const b = document.getElementById(id); b.disabled = false; b.innerHTML = txt; }
 
-    // VENTAS Y DUPLICADOS
+    // VENTAS
     function toggleTransferencia() {
-        document.getElementById('camposTrans').classList.toggle('hidden', document.getElementById('metodo').value !== 'TRANSFERENCIA');
+        document.getElementById('camposTrans').style.display = document.getElementById('metodo').value === 'TRANSFERENCIA' ? 'block' : 'none';
     }
 
-    function validarDuplicadoVenta() {
-        if(Object.keys(itemsV).length === 0) return alert("ELIJA PRODUCTOS");
+    function validarVenta() {
+        if(Object.keys(itemsV).length === 0) return alert("ELIJA AL MENOS UN PRODUCTO");
         if(document.getElementById('metodo').value === 'TRANSFERENCIA') {
-            if(!v('vBanco') || !v('vCompro')) return alert("LLENE ENTIDAD BANCARIA Y COMPROBANTE");
+            if(!v('vBanco') || !v('vCompro')) return alert("BANCO Y COMPROBANTE SON OBLIGATORIOS");
         }
 
         const hoy = new Date().toDateString();
-        let productosHoy = dbVent.filter(v => v.id === sV.id && new Date(v.fecha).toDateString() === hoy).map(v => v.prd);
+        let historialHoy = dbVent.filter(v => v.id === sV.id && new Date(v.fecha).toDateString() === hoy).map(v => v.prd);
         
-        let advertencia = "";
-        for(let k in itemsV) {
-            if(productosHoy.includes(k)) advertencia += `• ${k} YA FUE REGISTRADO HOY.\n`;
-        }
+        let dup = "";
+        for(let k in itemsV) if(historialHoy.includes(k)) dup += `• ${k} YA FUE REGISTRADO HOY.\n`;
+        if(dup && !confirm(dup + "\n¿DESEAS REGISTRARLO OTRA VEZ?")) return;
 
-        if(advertencia) {
-            if(!confirm(advertencia + "\n¿DESEAS AGREGARLO NUEVAMENTE?")) return;
-        }
-
-        let h = `CLIENTE: ${sV.nombre}<br>`;
-        for(let k in itemsV) h += `• ${k} x ${itemsV[k]}<br>`;
-        document.getElementById('detConf').innerHTML = h;
-        document.getElementById('txCod').innerText = "OP-"+new Date().getTime();
-        toggle('modalConf');
+        let resumen = `<b>CLIENTE:</b> ${sV.nombre}<br>`;
+        if(sV.alergia) resumen += `<span class="badge-alergia">⚠️ ALERGIA: ${sV.alergia}</span><br>`;
+        for(let k in itemsV) resumen += `• ${k} x ${itemsV[k]}<br>`;
+        
+        document.getElementById('detConf').innerHTML = resumen;
+        toggleM('modalConf');
     }
 
     async function saveVenta() {
-        bloquearBoton('btnFinalizar', "GUARDANDO...");
+        lock('btnFinalizar', "GUARDANDO...");
         const its = []; for(let k in itemsV) its.push({prd:k, cant:itemsV[k]});
+        const cod = "TX-" + new Date().getTime();
+        
         await post({
             action:'addVentas', id:sV.id, nom:sV.nombre, items:its, 
-            cod:document.getElementById('txCod').innerText, 
-            metodo:document.getElementById('metodo').value,
+            cod: cod, metodo:document.getElementById('metodo').value,
             banco: v('vBanco'), compro: v('vCompro')
         });
-        alert("REGISTRO EXITOSO");
-        toggle('modalConf');
-        desbloquearBoton('btnFinalizar', "SÍ, GUARDAR");
-        resetVenta();
-    }
-
-    function resetVenta() {
-        itemsV = {}; sV = {};
-        document.getElementById('boxVenta').classList.add('hidden');
-        document.getElementById('selVenta').innerText = "SIN SELECCIÓN";
-        cargar();
+        
+        alert("REGISTRADO CON ÉXITO");
+        toggleM('modalConf');
+        unlock('btnFinalizar', "CONFIRMAR");
+        resetUI();
     }
 
     // ALUMNOS
     async function crearAlumno() {
-        const d = {n1:v('nN1'), n2:v('nN2'), a1:v('nA1'), a2:v('nA2'), telf:v('nTel'), nv:v('nNiv')+v('nPar')};
-        if(!d.n1 || !d.a1) return alert("FALTAN CAMPOS OBLIGATORIOS");
+        const d = { n1:v('nN1'), n2:v('nN2'), a1:v('nA1'), a2:v('nA2'), telf:v('nTel'), nv:v('nNiv')+v('nPar'), alergia:v('nAlergia') };
+        if(!d.n1 || !d.a1) return alert("NOMBRE Y APELLIDO SON MÍNIMOS");
         
-        bloquearBoton('btnCrearAl', "REGISTRANDO, ESPERE...");
+        lock('btnCrearAl', "REGISTRANDO...");
         await post({action:'addEst', ...d});
-        alert("ALUMNO REGISTRADO");
-        desbloquearBoton('btnCrearAl', "REGISTRAR NUEVO ALUMNO");
-        ['nN1','nN2','nA1','nA2','nTel','nNiv','nPar'].forEach(i => document.getElementById(i).value = "");
+        unlock('btnCrearAl', '<i class="fas fa-user-plus"></i> REGISTRAR ALUMNO');
+        ['nN1','nN2','nA1','nA2','nTel','nNiv', 'nPar', 'nAlergia'].forEach(i => document.getElementById(i).value="");
         cargar();
     }
 
-    // PRODUCTOS
-    async function crearPrd() {
-        const n = v('pNom'), p = v('pPre');
-        if(!n || !p) return alert("LLENE NOMBRE Y PRECIO");
-        bloquearBoton('btnCrearPr', "AÑADIENDO...");
-        await post({action:'addPrd', nombre:n, precio:p});
-        desbloquearBoton('btnCrearPr', "AÑADIR AL MENÚ");
-        document.getElementById('pNom').value = ""; document.getElementById('pPre').value = "";
-        cargar();
-    }
-
-    // HELPERS
-    function renderMenu() {
-        document.getElementById('listaMenu').innerHTML = dbPrd.map(p => `
-            <div class="prd-row">
-                <span><input type="checkbox" onchange="updIt('${p.nombre}', this)"> ${p.nombre} ($${p.precio})</span>
-                <input type="number" value="1" id="q_${p.nombre}" style="width:50px" oninput="updQ('${p.nombre}')">
-            </div>`).join('');
-    }
-    function updIt(n, el) { if(el.checked) itemsV[n] = parseInt(document.getElementById('q_'+n).value); else delete itemsV[n]; }
-    function updQ(n) { if(itemsV[n]) itemsV[n] = parseInt(document.getElementById('q_'+n).value); }
-
-    function renderAlumnos() {
-        const f = document.getElementById('fAlum').value.toUpperCase();
-        const l = dbEst.filter(e => e.nombre.includes(f));
-        document.getElementById('bodyAlum').innerHTML = l.map(e => `
-            <tr><td><input type="checkbox" class="chk-a" value="${e.id}" onchange="chkDel()"></td>
-            <td>${e.nombre}</td><td><button onclick="editAl('${e.id}','${e.nombre}','${e.telf}')">✏️</button></td></tr>`).join('');
-    }
-
-    function renderAdminPrd() {
-        document.getElementById('listaPrdAdmin').innerHTML = dbPrd.map(p => `
-            <div class="prd-row">
-                <span><b>${p.nombre}</b> ($${p.precio})</span>
-                <div><button onclick="editPrd('${p.nombre}','${p.precio}')">✏️</button>
-                <button onclick="delPrd('${p.nombre}')">🗑️</button></div>
-            </div>`).join('');
-    }
-
-    async function post(d) { 
-        try {
-            await fetch(API, {method:'POST', body:JSON.stringify(d)});
-        } catch(e) { alert("ERROR DE CONEXIÓN"); }
-    }
-    function toggle(id) { const el = document.getElementById(id); el.style.display = (el.style.display==='flex'?'none':'flex'); }
-    function v(id) { return document.getElementById(id).value.trim(); }
-    function selTodo(s) { document.querySelectorAll('.chk-a').forEach(c => c.checked = s.checked); chkDel(); }
-    function chkDel() { document.getElementById('btnDelMult').classList.toggle('hidden', document.querySelectorAll('.chk-a:checked').length === 0); }
-    async function borrarSeleccionados() {
-        const ids = Array.from(document.querySelectorAll('.chk-a:checked')).map(c => c.value);
-        if(confirm("¿ELIMINAR "+ids.length+" ALUMNOS?")) { 
-            bloquearBoton('btnDelMult', "BORRANDO...");
-            await post({action:'delEstMult', ids}); 
-            desbloquearBoton('btnDelMult', "🗑️ ELIMINAR MARCADOS");
-            cargar(); 
+    // RESET MAESTRO
+    async function resetMaestro() {
+        if(confirm("¡ATENCIÓN! ESTO BORRARÁ ESTUDIANTES, PRODUCTOS Y VENTAS PARA INICIAR DE CERO. ¿ESTÁS SEGURO?")) {
+            if(confirm("¿ESTÁS REALMENTE SEGURO? NO HAY VUELTA ATRÁS.")) {
+                lock('modalAdmin', "LIMPIANDO..."); // Bloqueamos contexto
+                await post({action:'resetGeneral'});
+                alert("SISTEMA DEPURADO. LA APP SE REINICIARÁ.");
+                location.reload();
+            }
         }
     }
-    async function borrarVent(cod) { if(confirm("¿BORRAR CONSUMO?")) { await post({action:'delVent', cod}); cargar(); } }
-    function descargarAudit() { csv(dbVent.filter(v => v.id === sA.id), "REPORTE_"+sA.nombre); }
-    function descargarGlobal() { csv(dbVent, "GLOBAL_CEIAF"); }
-    function csv(d, t) {
-        let c = "FECHA,ALUMNO,PRODUCTO,CANT,METODO,BANCO,COMPROBANTE,CODIGO\n";
-        d.forEach(v => c += `"${v.fecha}","${v.nom}","${v.prd}","${v.cant}","${v.metodo}","${v.banco}","${v.compro}","${v.cod}"\n`);
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(["\uFEFF"+c], {type:'text/csv'}));
-        a.download = t+".csv"; a.click();
+
+    // RENDERIZADO
+    function renderAlumnos() {
+        const f = v('fAlum').toUpperCase();
+        const filt = dbEst.filter(e => e.nombre.includes(f));
+        document.getElementById('bodyAlum').innerHTML = filt.map(e => `
+            <tr>
+                <td><input type="checkbox" class="chk-a" value="${e.id}" onchange="toggleDelBtn()"></td>
+                <td style="font-size:10px;"><b>${e.nombre}</b></td>
+                <td>
+                    <div style="font-size:9px;">${e.nivel}</div>
+                    ${e.alergia ? `<span class="badge-alergia">⚠️ ${e.alergia}</span>` : ''}
+                </td>
+            </tr>`).join('');
     }
-    async function archivarPeriodo() {
-        const n = v('periodoNom');
-        if(n && confirm("¿ARCHIVAR TODO?")) { await post({action:'nuevoPeriodo', rango:n}); location.reload(); }
+
+    function renderMenu() {
+        document.getElementById('listaMenu').innerHTML = dbPrd.map(p => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #EEE;">
+                <span><input type="checkbox" onchange="updIt('${p.nombre}', this)"> ${p.nombre} ($${p.precio})</span>
+                <input type="number" value="1" id="q_${p.nombre}" style="width:50px; margin:0;" oninput="updQ('${p.nombre}')">
+            </div>`).join('');
     }
+
+    function smartBus(el, target, modo) {
+        const b = el.value.toUpperCase();
+        const res = document.getElementById(target);
+        res.innerHTML = '';
+        if(!b) { res.style.display='none'; return; }
+        const filt = dbEst.filter(e => e.nombre.includes(b) || e.id.includes(b));
+        filt.forEach(e => {
+            const d = document.createElement('div');
+            d.style.padding = '10px'; d.style.cursor='pointer'; d.style.borderBottom='1px solid #EEE';
+            d.innerHTML = `<b>${e.nombre}</b> <small>${e.nivel}</small> ${e.alergia ? '⚠️':''}`;
+            d.onclick = () => {
+                if(modo==='v') { 
+                    sV = e; document.getElementById('selVenta').innerHTML = `🛒 CLIENTE: ${e.nombre} ${e.alergia ? `<br><span class="badge-alergia">⚠️ ${e.alergia}</span>`:''}`;
+                    document.getElementById('boxVenta').style.display='block';
+                } else {
+                    sA = e; document.getElementById('selAudit').innerText = `📊 AUDITANDO: ${e.nombre}`;
+                    document.getElementById('boxAudit').style.display='block';
+                    renderAudit();
+                }
+                res.style.display='none'; el.value='';
+            };
+            res.appendChild(d);
+        });
+        res.style.display = filt.length ? 'block' : 'none';
+    }
+
+    // AUXILIARES
+    function resetUI() { itemsV = {}; sV = {}; document.getElementById('boxVenta').style.display='none'; document.getElementById('selVenta').innerText="SELECCIONE UN ALUMNO"; cargar(); }
+    async function post(d) { try { await fetch(API, {method:'POST', body:JSON.stringify(d)}); } catch(e) { alert("ERROR DE RED"); } }
+    function v(id) { return document.getElementById(id).value.trim(); }
+    function toggleM(id) { const m = document.getElementById(id); m.style.display = m.style.display==='flex'?'none':'flex'; }
+    function toggleDelBtn() { document.getElementById('btnDelMult').style.display = document.querySelectorAll('.chk-a:checked').length ? 'block' : 'none'; }
+    function updIt(n, el) { if(el.checked) itemsV[n] = v('q_'+n); else delete itemsV[n]; }
+    function updQ(n) { if(itemsV[n]) itemsV[n] = v('q_'+n); }
+    function abrirAdmin() { toggleM('modalAdmin'); }
 </script>
 </body>
 </html>
