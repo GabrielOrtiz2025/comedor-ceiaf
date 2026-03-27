@@ -3,305 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA PROFESIONAL CEIAF V4</title>
+    <title>CEIAF SISTEMA ROBUSTO V.FINAL</title>
     <style>
-        :root { --p: #1A252F; --a: #2980B9; --s: #27AE60; --d: #C0392B; --bg: #EBEDEF; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); text-transform: uppercase; font-size: 11px; margin: 0; color: #333; }
-        .navbar { background: var(--p); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .container { max-width: 1500px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--a); }
-        
-        /* Buscadores */
-        .search-container { position: relative; margin-bottom: 15px; }
-        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: 100%; z-index: 100; max-height: 250px; overflow-y: auto; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
-        .res-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #EEE; }
-        .res-item:hover { background: #E3F2FD; }
-
-        .btn { border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; width: 100%; margin: 4px 0; }
+        :root { --p: #2C3E50; --a: #2980B9; --s: #27AE60; --d: #C0392B; --bg: #F4F7F6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); text-transform: uppercase; font-size: 11px; margin: 0; }
+        .navbar { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; max-width: 1600px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 4px solid var(--a); }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #DDD; border-radius: 5px; box-sizing: border-box; text-transform: uppercase; }
+        .btn { border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; margin: 3px 0; width: 100%; transition: 0.3s; }
         .btn-blue { background: var(--a); } .btn-green { background: var(--s); } .btn-red { background: var(--d); }
+        .search-results { border: 1px solid #DDD; display: none; background: white; position: absolute; width: 100%; z-index: 100; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .res-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #EEE; }
+        .res-item:hover { background: #E3F2FD; }
         .hidden { display: none; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #FFF; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
         th, td { padding: 8px; border: 1px solid #EEE; text-align: left; }
-        th { background: #F4F7F6; }
+        th { background: #F8F9FA; }
         .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:2000; }
-        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 600px; }
-        .filter-bar { display: flex; gap: 5px; margin: 10px 0; }
-        .checked-row { background-color: #fff4f4 !important; }
+        .modal-content { background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; }
+        .prd-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #EEE; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
-    <div style="font-weight: bold;">CEIAF - GESTIÓN FINANCIERA PROFESIONAL</div>
-    <button class="btn-blue" style="width:auto; padding:8px 20px;" onclick="toggle('modalAdmin')">⚙️ ADMINISTRACIÓN</button>
+    <div style="font-weight: bold; font-size: 14px;">SISTEMA BAR CEIAF - AUDITORÍA Y CONTROL PROFESIONAL</div>
+    <button class="btn-blue" style="width:auto; padding:8px 15px;" onclick="toggle('modalAdmin')">⚙️ OPCIONES DUEÑO</button>
 </div>
 
-<div class="container">
-    <!-- BLOQUE 1: VENTAS -->
+<div class="main-grid">
+    <!-- PANEL 1: VENTAS (IDÉNTICO A LO ANTERIOR) -->
     <div class="card">
-        <h2 style="color:var(--a)">🛒 REGISTRO DE CONSUMO DIARIO</h2>
-        <div class="search-container">
-            <input type="text" id="busV" placeholder="BUSCAR ALUMNO PARA VENTA..." oninput="buscadorSmart(this, 'resV', 'venta')">
+        <h2 style="color:var(--a)">🛒 PUNTO DE VENTA</h2>
+        <div style="position:relative">
+            <input type="text" id="busV" placeholder="BUSCAR ALUMNO PARA VENTA..." oninput="smartBus(this, 'resV', 'v')">
             <div id="resV" class="search-results"></div>
         </div>
-        <div id="labelVenta" style="padding:10px; background:#E8F4FD; margin-bottom:10px; border-radius:5px; font-weight:bold;">CLIENTE NO SELECCIONADO</div>
+        <div id="selVenta" style="padding:10px; background:#EBF5FB; margin:10px 0; border-radius:5px; font-weight:bold;">SIN SELECCIÓN</div>
         
-        <div id="areaVenta" class="hidden">
-            <div id="contPrd" style="max-height:200px; overflow-y:auto; border:1px solid #EEE; padding:5px; margin-bottom:10px;"></div>
-            <select id="pagoMetodo"><option value="EFECTIVO">EFECTIVO</option><option value="TRANSFERENCIA">TRANSFERENCIA</option></select>
-            <button class="btn btn-green" onclick="preConfirmar()">PROCESAR VENTA</button>
+        <div id="boxVenta" class="hidden">
+            <div id="listaMenu" style="max-height:200px; overflow-y:auto; border:1px solid #EEE; padding:10px; margin-bottom:10px;"></div>
+            <select id="metodo"><option value="EFECTIVO">EFECTIVO</option><option value="TRANSFERENCIA">TRANSFERENCIA</option></select>
+            <button class="btn btn-green" onclick="confirmarVenta()">💾 REGISTRAR CONSUMO</button>
         </div>
     </div>
 
-    <!-- BLOQUE 2: AUDITORÍA INDIVIDUAL (FILTROS Y ELIMINACIÓN) -->
-    <div class="card" style="border-top-color: var(--p);">
+    <!-- PANEL 2: AUDITORÍA INDIVIDUAL (SOLICITADO) -->
+    <div class="card" style="border-top-color: var(--p)">
         <h2 style="color:var(--p)">📊 AUDITORÍA INDIVIDUAL</h2>
-        <div class="search-container">
-            <input type="text" id="busA" placeholder="BUSCAR ALUMNO PARA AUDITAR..." oninput="buscadorSmart(this, 'resA', 'auditoria')">
+        <div style="position:relative">
+            <input type="text" id="busA" placeholder="BUSCAR ALUMNO PARA REPORTE..." oninput="smartBus(this, 'resA', 'a')">
             <div id="resA" class="search-results"></div>
         </div>
-        <div id="labelAuditoria" style="padding:10px; background:#F4F7F6; margin-bottom:10px; border-radius:5px; font-weight:bold;">SELECCIONE UN ALUMNO PARA VER SU REPORTE</div>
+        <div id="selAudit" style="padding:10px; background:#F4F7F6; margin:10px 0; border-radius:5px; font-weight:bold;">SELECCIONE PARA AUDITAR</div>
         
-        <div id="areaAuditoria" class="hidden">
-            <div class="filter-bar">
-                <button class="btn btn-blue" onclick="setFiltroAuditoria('hoy')">HOY</button>
-                <button class="btn btn-blue" onclick="setFiltroAuditoria('semana')">SEMANA</button>
-                <button class="btn btn-blue" onclick="setFiltroAuditoria('mes')">MES</button>
-                <button class="btn btn-blue" onclick="setFiltroAuditoria('todo')">TODO</button>
+        <div id="boxAudit" class="hidden">
+            <div style="display:flex; gap:3px; margin-bottom:10px;">
+                <button class="btn-blue" style="flex:1; font-size:9px;" onclick="filtAudit('hoy')">HOY</button>
+                <button class="btn-blue" style="flex:1; font-size:9px;" onclick="filtAudit('semana')">SEMANA</button>
+                <button class="btn-blue" style="flex:1; font-size:9px;" onclick="filtAudit('mes')">MES</button>
+                <button class="btn-blue" style="flex:1; font-size:9px;" onclick="filtAudit('todo')">TODO</button>
             </div>
             <div style="max-height: 250px; overflow-y: auto;">
-                <table id="tablaAuditoria">
-                    <thead><tr><th>FECHA</th><th>PRODUCTO</th><th>CANT</th><th>CÓDIGO</th><th>ELIMINAR</th></tr></thead>
-                    <tbody id="bodyAuditoria"></tbody>
+                <table>
+                    <thead><tr><th>FECHA</th><th>PRODUCTO</th><th>CANT</th><th>ELIMINAR</th></tr></thead>
+                    <tbody id="bodyAudit"></tbody>
                 </table>
             </div>
-            <button class="btn" style="background:var(--p)" onclick="descargarAuditoria()">📥 DESCARGAR ESTA VISTA (CSV)</button>
+            <button class="btn btn-blue" onclick="descargarAudit()">📥 DESCARGAR REPORTE ALUMNO</button>
         </div>
     </div>
 
-    <!-- BLOQUE 3: GESTIÓN DE ALUMNOS (EDICIÓN Y ELIMINACIÓN MÚLTIPLE) -->
-    <div class="card" style="border-top-color: var(--s);">
-        <h2>👥 REGISTRO DE NUEVO ALUMNO</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-            <input type="number" id="nNiv" placeholder="NIVEL">
-            <input type="text" id="nPar" placeholder="PARALELO">
-            <input type="text" id="nN1" placeholder="* 1ER NOMBRE">
-            <input type="text" id="nN2" placeholder="* 2DO NOMBRE">
-            <input type="text" id="nA1" placeholder="* APELLIDO P.">
-            <input type="text" id="nA2" placeholder="* APELLIDO M.">
+    <!-- PANEL 3: GESTIÓN ALUMNOS (4 NOMBRES + ELIMINACIÓN MÚLTIPLE) -->
+    <div class="card" style="border-top-color: var(--s)">
+        <h2 style="color:var(--s)">👥 GESTIÓN DE ALUMNOS</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; background:#FDFEFE; padding:10px; border:1px solid #EEE;">
+            <input type="text" id="nN1" placeholder="* 1ER NOMBRE"> <input type="text" id="nN2" placeholder="* 2DO NOMBRE">
+            <input type="text" id="nA1" placeholder="* APELLIDO P."> <input type="text" id="nA2" placeholder="* APELLIDO M.">
+            <input type="number" id="nNiv" placeholder="NIVEL"> <input type="text" id="nPar" placeholder="PARALELO">
+            <input type="number" id="nTel" placeholder="TELÉFONO REPRE.">
+            <button class="btn btn-green" style="grid-column: span 2" onclick="crearAlumno()">REGISTRAR NUEVO ALUMNO</button>
         </div>
-        <input type="number" id="nTelf" placeholder="TELÉFONO">
-        <button class="btn btn-green" onclick="crearAlumno()">REGISTRAR ALUMNO</button>
         
-        <hr>
-        <h2>📂 GESTIÓN DE BASE DE DATOS</h2>
-        <input type="text" id="fLista" placeholder="FILTRAR LISTA..." oninput="renderAlumnos()">
-        <div style="display:flex; gap:10px; margin: 5px 0;">
-            <button class="btn btn-red" id="btnDelMult" style="display:none;" onclick="eliminarAlumnosSeleccionados()">🗑️ ELIMINAR SELECCIONADOS</button>
-        </div>
-        <div style="max-height:300px; overflow-y:auto; border:1px solid #EEE;">
-            <table id="tablaAlumnos">
-                <thead><tr><th><input type="checkbox" onclick="seleccionarTodoAlumnos(this)"></th><th>ALUMNO</th><th>OPCIONES</th></tr></thead>
-                <tbody id="bodyAlumnos"></tbody>
+        <h3 style="margin-top:20px;">LISTADO Y EDICIÓN</h3>
+        <input type="text" id="fAlum" placeholder="FILTRAR..." oninput="renderAlumnos()">
+        <button id="btnDelMult" class="btn btn-red hidden" onclick="borrarSeleccionados()">🗑️ ELIMINAR MARCADOS</button>
+        <div style="max-height: 250px; overflow-y: auto; border:1px solid #EEE;">
+            <table>
+                <thead><tr><th><input type="checkbox" onclick="selTodo(this)"></th><th>NOMBRE</th><th>EDIT</th></tr></thead>
+                <tbody id="bodyAlum"></tbody>
             </table>
         </div>
     </div>
+
+    <!-- PANEL 4: GESTIÓN DE PRODUCTOS (RECUPERADO) -->
+    <div class="card" style="border-top-color: #F39C12">
+        <h2 style="color:#F39C12">🍲 INVENTARIO Y PRECIOS</h2>
+        <div style="background:#FEF9E7; padding:10px; border:1px solid #FAD7A0;">
+            <input type="text" id="pNom" placeholder="NOMBRE DEL PRODUCTO">
+            <input type="number" id="pPre" placeholder="PRECIO (EJ: 2.50)">
+            <button class="btn btn-green" style="background:#F39C12" onclick="crearPrd()">AÑADIR AL MENÚ</button>
+        </div>
+        <div id="listaPrdAdmin" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div>
+    </div>
 </div>
 
-<!-- MODALES -->
-<div id="modalConfirma" class="modal"><div class="modal-content">
-    <h2>REVISIÓN DE VENTA</h2><div id="detConf" style="background:#EEE; padding:15px; border-radius:8px;"></div>
-    <p>CÓDIGO: <b id="codUnico"></b></p>
-    <button class="btn btn-green" onclick="finalizarVenta()">CONFIRMAR GUARDADO</button>
-    <button class="btn btn-red" onclick="toggle('modalConfirma')">CANCELAR</button>
+<!-- MODAL CONFIRMACIÓN VENTA -->
+<div id="modalConf" class="modal"><div class="modal-content">
+    <h3>CONFIRMAR TRANSACCIÓN</h3>
+    <div id="detConf" style="background:#F4F7F6; padding:15px; border-radius:5px;"></div>
+    <p>CÓDIGO ÚNICO: <b id="txCod" style="color:var(--d)"></b></p>
+    <button class="btn btn-green" onclick="saveVenta()">SÍ, GUARDAR EN BASE DE DATOS</button>
+    <button class="btn btn-red" onclick="toggle('modalConf')">CANCELAR</button>
 </div></div>
 
+<!-- MODAL ADMIN -->
 <div id="modalAdmin" class="modal"><div class="modal-content">
-    <h2>PANEL DE DUEÑO</h2><hr>
-    <button class="btn btn-blue" onclick="descargarGeneral()">DESCARGAR REPORTE GLOBAL</button>
-    <div style="background:#FFF5F5; padding:10px; margin-top:15px; border-radius:8px;">
-        <h3 style="color:var(--d)">CERRAR PERÍODO ACADÉMICO</h3>
-        <input type="text" id="nomPeriodo" placeholder="NOMBRE (EJ: 2025-2026)">
-        <button class="btn btn-red" onclick="resetearPeriodo()">ARCHIVAR Y LIMPIAR TODO</button>
+    <h3>CONTROL DE SEGURIDAD</h3><hr>
+    <button class="btn btn-blue" onclick="descargarGlobal()">DESCARGAR REPORTE GLOBAL (TODOS)</button>
+    <div style="margin-top:20px; background:#FDEDEC; padding:10px; border-radius:5px;">
+        <h4 style="color:var(--d)">NUEVO PERÍODO ACADÉMICO</h4>
+        <input type="text" id="periodoNom" placeholder="NOMBRE (EJ: QUIMESTRE 1)">
+        <button class="btn btn-red" onclick="archivarPeriodo()">⚠️ ARCHIVAR Y LIMPIAR VENTAS</button>
     </div>
-    <button class="btn btn-blue" onclick="toggle('modalAdmin')">CERRAR</button>
+    <button class="btn btn-blue" style="margin-top:20px;" onclick="toggle('modalAdmin')">CERRAR</button>
 </div></div>
 
 <script>
-    window.onbeforeunload = () => "¡CUIDADO! TIENE CAMBIOS SIN GUARDAR.";
-    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec"; 
-    let dbEst = [], dbVent = [], dbPrd = [], sVentaID = "", sVentaNom = "", sAuditID = "", sAuditNom = "", filtAudit = "todo", itemsSel = {};
+    window.onbeforeunload = () => "¿SALIR? SE PERDERÁN DATOS NO GUARDADOS.";
+    const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec";
+    let dbEst = [], dbVent = [], dbPrd = [], sV = {}, sA = {}, fA = "todo", itemsV = {};
 
     async function cargar() {
         const r = await fetch(API); const d = await r.json();
         dbEst = d.est; dbVent = d.vent; dbPrd = d.prd;
-        renderAlumnos(); renderMenuVenta();
+        renderAlumnos(); renderMenu(); renderAdminPrd();
     }
     window.onload = cargar;
 
-    // BUSCADOR SMART ÚNICO
-    function buscadorSmart(el, target, modo) {
+    // BUSCADORES INTELIGENTES
+    function smartBus(el, target, modo) {
         const bus = el.value.toUpperCase();
         const res = document.getElementById(target);
         res.innerHTML = '';
         if(!bus) { res.style.display='none'; return; }
-        const f = dbEst.filter(e => e.nombre.includes(bus) || e.id.includes(bus));
-        f.forEach(e => {
+        const filt = dbEst.filter(e => e.nombre.includes(bus) || e.id.includes(bus));
+        filt.forEach(e => {
             const d = document.createElement('div'); d.className = 'res-item';
             d.innerHTML = `<b>${e.nombre}</b> <small>(${e.id})</small>`;
             d.onclick = () => {
-                if(modo === 'venta') {
-                    sVentaID = e.id; sVentaNom = e.nombre;
-                    document.getElementById('labelVenta').innerText = "✅ SELECCIONADO: " + sVentaNom;
-                    document.getElementById('areaVenta').classList.remove('hidden');
+                if(modo === 'v') {
+                    sV = e; document.getElementById('selVenta').innerText = "🛒 CLIENTE: " + e.nombre;
+                    document.getElementById('boxVenta').classList.remove('hidden');
                 } else {
-                    sAuditID = e.id; sAuditNom = e.nombre;
-                    document.getElementById('labelAuditoria').innerText = "📊 AUDITANDO A: " + sAuditNom;
-                    document.getElementById('areaAuditoria').classList.remove('hidden');
-                    renderAuditoria();
+                    sA = e; document.getElementById('selAudit').innerText = "📊 AUDITANDO: " + e.nombre;
+                    document.getElementById('boxAudit').classList.remove('hidden');
+                    renderAudit();
                 }
-                res.style.display='none'; el.value='';
+                res.style.display='none'; el.value = '';
             };
             res.appendChild(d);
         });
-        res.style.display = f.length > 0 ? 'block' : 'none';
+        res.style.display = filt.length > 0 ? 'block' : 'none';
     }
 
     // AUDITORÍA
-    function setFiltroAuditoria(f) { filtAudit = f; renderAuditoria(); }
-    function renderAuditoria() {
-        const h = new Date();
-        const f = dbVent.filter(v => {
-            if(v.id !== sAuditID) return false;
+    function filtAudit(f) { fA = f; renderAudit(); }
+    function renderAudit() {
+        if(!sA.id) return;
+        const hoy = new Date();
+        const filt = dbVent.filter(v => {
+            if(v.id !== sA.id) return false;
             const fv = new Date(v.fecha);
-            if(filtAudit === 'hoy') return fv.toDateString() === h.toDateString();
-            if(filtAudit === 'semana') return (h-fv)/864e5 <= 7;
-            if(filtAudit === 'mes') return fv.getMonth() === h.getMonth();
+            if(fA === 'hoy') return fv.toDateString() === hoy.toDateString();
+            if(fA === 'semana') return (hoy - fv)/864e5 <= 7;
+            if(fA === 'mes') return fv.getMonth() === hoy.getMonth();
             return true;
         });
-        document.getElementById('bodyAuditoria').innerHTML = f.reverse().map(v => `
-            <tr>
-                <td>${new Date(v.fecha).toLocaleDateString()}</td>
-                <td>${v.prd}</td><td>${v.cant}</td>
-                <td><small>${v.cod}</small></td>
-                <td><button class="btn-red" style="padding:2px 5px;" onclick="eliminarConsumo('${v.cod}')">🗑️</button></td>
-            </tr>`).join('');
+        document.getElementById('bodyAudit').innerHTML = filt.reverse().map(v => `
+            <tr><td>${new Date(v.fecha).toLocaleDateString()}</td><td>${v.prd}</td><td>${v.cant}</td>
+            <td><button class="btn-red" style="padding:2px 5px" onclick="borrarVent('${v.cod}')">🗑️</button></td></tr>`).join('');
     }
 
-    async function eliminarConsumo(cod) {
-        if(!confirm("¿BORRAR ESTE REGISTRO LEGAL?")) return;
-        await fetch(API, {method:'POST', body:JSON.stringify({action:'delVent', cod:cod})});
-        cargar();
+    // GESTIÓN PRODUCTOS (RECUPERADO)
+    async function crearPrd() {
+        const n = document.getElementById('pNom').value, p = document.getElementById('pPre').value;
+        if(!n || !p) return alert("LLENE NOMBRE Y PRECIO");
+        await post({action:'addPrd', nombre:n, precio:p}); cargar();
     }
-
-    // GESTIÓN DE ALUMNOS
-    async function crearAlumno() {
-        const d = { 
-            action:'addEst', n1:v('nN1'), n2:v('nN2'), a1:v('nA1'), a2:v('nA2'), 
-            telf:v('nTelf'), nivelParalelo: v('nNiv')+v('nPar')
-        };
-        if(!d.n1||!d.n2||!d.a1||!d.a2) return alert("LOS 4 CAMPOS DE NOMBRE SON OBLIGATORIOS.");
-        await fetch(API, {method:'POST', body:JSON.stringify(d)});
-        location.reload();
-    }
-
-    function renderAlumnos() {
-        const f = document.getElementById('fLista').value.toUpperCase();
-        const l = dbEst.filter(e => e.nombre.includes(f));
-        document.getElementById('bodyAlumnos').innerHTML = l.map(e => `
-            <tr id="row-${e.id}">
-                <td><input type="checkbox" class="chk-alum" value="${e.id}" onchange="actBtnDel()"></td>
-                <td>${e.nombre}</td>
-                <td>
-                    <button class="btn-blue" style="width:auto; padding:2px 5px;" onclick="editarAl('${e.id}','${e.nombre}','${e.telf}')">✏️</button>
-                    <button class="btn-red" style="width:auto; padding:2px 5px;" onclick="eliminarAlumnosSeleccionados(['${e.id}'])">🗑️</button>
-                </td>
-            </tr>`).join('');
-    }
-
-    async function editarAl(id, nom, tel) {
-        const nn = prompt("NUEVO NOMBRE COMPLETO:", nom);
-        const nt = prompt("NUEVO TELÉFONO:", tel);
-        if(nn && nt) {
-            await fetch(API, {method:'POST', body:JSON.stringify({action:'editEst', id:id, nom:nn, telf:nt})});
-            cargar();
-        }
-    }
-
-    async function eliminarAlumnosSeleccionados(especifico = null) {
-        const ids = especifico || Array.from(document.querySelectorAll('.chk-alum:checked')).map(c => c.value);
-        if(ids.length === 0) return;
-        if(!confirm(`¿ELIMINAR ${ids.length} ESTUDIANTE(S) DE LA BASE DE DATOS?`)) return;
-        await fetch(API, {method:'POST', body:JSON.stringify({action:'delEstMultiple', ids:ids})});
-        cargar();
-    }
-
-    function actBtnDel() {
-        const count = document.querySelectorAll('.chk-alum:checked').length;
-        document.getElementById('btnDelMult').style.display = count > 0 ? 'block' : 'none';
-    }
-
-    function seleccionarTodoAlumnos(source) {
-        document.querySelectorAll('.chk-alum').forEach(c => c.checked = source.checked);
-        actBtnDel();
-    }
-
-    // FUNCIONES DE VENTA Y CONFIRMACIÓN
-    function renderMenuVenta() {
-        document.getElementById('contPrd').innerHTML = dbPrd.map(p => `
-            <div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #EEE;">
-                <span><input type="checkbox" onchange="toggleItem('${p.nombre}', this)"> ${p.nombre} ($${p.precio})</span>
-                <span>Cant: <input type="number" value="1" id="q_${p.nombre}" style="width:40px;" oninput="updCant('${p.nombre}')"></span>
+    function renderAdminPrd() {
+        document.getElementById('listaPrdAdmin').innerHTML = dbPrd.map(p => `
+            <div class="prd-row">
+                <span><b>${p.nombre}</b> ($${p.precio})</span>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-blue" style="width:auto; padding:5px" onclick="editPrd('${p.nombre}','${p.precio}')">✏️</button>
+                    <button class="btn-red" style="width:auto; padding:5px" onclick="delPrd('${p.nombre}')">🗑️</button>
+                </div>
             </div>`).join('');
     }
+    async function editPrd(on, op) {
+        const nn = prompt("NUEVO NOMBRE:", on), np = prompt("NUEVO PRECIO:", op);
+        if(nn && np) { await post({action:'editPrd', oldN:on, newN:nn, newP:np}); cargar(); }
+    }
+    async function delPrd(n) { if(confirm("¿BORRAR "+n+"?")) { await post({action:'delPrd', n:n}); cargar(); } }
 
-    function toggleItem(n, el) { if(el.checked) itemsSel[n] = parseInt(document.getElementById('q_'+n).value); else delete itemsSel[n]; }
-    function updCant(n) { if(itemsSel[n]) itemsSel[n] = parseInt(document.getElementById('q_'+n).value); }
+    // VENTAS
+    function renderMenu() {
+        document.getElementById('listaMenu').innerHTML = dbPrd.map(p => `
+            <div class="prd-row">
+                <span><input type="checkbox" onchange="updIt('${p.nombre}', this)"> ${p.nombre} ($${p.precio})</span>
+                <input type="number" value="1" id="q_${p.nombre}" style="width:50px" oninput="updQ('${p.nombre}')">
+            </div>`).join('');
+    }
+    function updIt(n, el) { if(el.checked) itemsV[n] = parseInt(document.getElementById('q_'+n).value); else delete itemsV[n]; }
+    function updQ(n) { if(itemsV[n]) itemsV[n] = parseInt(document.getElementById('q_'+n).value); }
 
-    function preConfirmar() {
-        if(Object.keys(itemsSel).length === 0) return alert("SELECCIONE PRODUCTOS");
-        let h = `ALUMNO: ${sVentaNom}<br>DETALLE:<br>`;
-        for(let k in itemsSel) h += `- ${k} x ${itemsSel[k]}<br>`;
+    function confirmarVenta() {
+        if(Object.keys(itemsV).length === 0) return alert("ELIJA PRODUCTOS");
+        let h = `CLIENTE: ${sV.nombre}<br>`;
+        for(let k in itemsV) h += `• ${k} x ${itemsV[k]}<br>`;
         document.getElementById('detConf').innerHTML = h;
-        document.getElementById('codUnico').innerText = 'TX-' + new Date().getTime();
-        toggle('modalConfirma');
+        document.getElementById('txCod').innerText = "OP-"+new Date().getTime();
+        toggle('modalConf');
     }
 
-    async function finalizarVenta() {
-        const its = []; for(let k in itemsSel) its.push({prd:k, cant:itemsSel[k]});
-        await fetch(API, {method:'POST', body:JSON.stringify({
-            action:'addVentasMultiple', id:sVentaID, nom:sVentaNom, items:its,
-            codigoUnico: document.getElementById('codUnico').innerText,
-            metodo: document.getElementById('pagoMetodo').value
-        })});
+    async function saveVenta() {
+        const its = []; for(let k in itemsV) its.push({prd:k, cant:itemsV[k]});
+        await post({action:'addVentas', id:sV.id, nom:sV.nombre, items:its, cod:document.getElementById('txCod').innerText, metodo:document.getElementById('metodo').value});
         location.reload();
     }
 
-    // EXPORTACIÓN CSV
-    function descargarAuditoria() {
-        const f = dbVent.filter(v => v.id === sAuditID);
-        generarCSV(f, `AUDITORIA_${sAuditNom}`);
+    // ALUMNOS
+    async function crearAlumno() {
+        const d = {n1:v('nN1'), n2:v('nN2'), a1:v('nA1'), a2:v('nA2'), telf:v('nTel'), nv:v('nNiv')+v('nPar')};
+        if(!d.n1 || !d.a1) return alert("LLENE LOS CAMPOS OBLIGATORIOS");
+        await post({action:'addEst', ...d}); location.reload();
+    }
+    function renderAlumnos() {
+        const f = document.getElementById('fAlum').value.toUpperCase();
+        const l = dbEst.filter(e => e.nombre.includes(f));
+        document.getElementById('bodyAlum').innerHTML = l.map(e => `
+            <tr><td><input type="checkbox" class="chk-a" value="${e.id}" onchange="chkDel()"></td>
+            <td>${e.nombre}</td><td><button onclick="editAl('${e.id}','${e.nombre}','${e.telf}')">✏️</button></td></tr>`).join('');
+    }
+    function chkDel() { document.getElementById('btnDelMult').classList.toggle('hidden', document.querySelectorAll('.chk-a:checked').length === 0); }
+    async function borrarSeleccionados() {
+        const ids = Array.from(document.querySelectorAll('.chk-a:checked')).map(c => c.value);
+        if(confirm("¿ELIMINAR "+ids.length+" ALUMNOS?")) { await post({action:'delEstMult', ids}); cargar(); }
     }
 
-    function descargarGeneral() { generarCSV(dbVent, "REPORTE_GLOBAL_CEIAF"); }
-
-    function generarCSV(datos, titulo) {
-        let csv = "\uFEFFFECHA,ID_INTERNO,ALUMNO,PRODUCTO,CANT,METODO,COMPROBANTE,CODIGO\n";
-        datos.forEach(v => { csv += `"${v.fecha}","${v.id}","${v.nom}","${v.prd}","${v.cant}","${v.metodo}","${v.compro}","${v.cod}"\n`; });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
-        a.download = titulo + ".csv"; a.click();
-    }
-
-    async function resetearPeriodo() {
-        const n = document.getElementById('nomPeriodo').value;
-        if(!n || !confirm("¿ESTÁ SEGURO DE INICIAR UN NUEVO PERÍODO ACADÉMICO? LAS VENTAS ACTUALES SE ARCHIVARÁN.")) return;
-        await fetch(API, {method:'POST', body:JSON.stringify({action:'nuevoPeriodo', rango:n})});
-        location.reload();
-    }
-
+    // HELPERS
+    async function post(d) { await fetch(API, {method:'POST', body:JSON.stringify(d)}); }
     function toggle(id) { const el = document.getElementById(id); el.style.display = (el.style.display==='flex'?'none':'flex'); }
     function v(id) { return document.getElementById(id).value.trim(); }
+    function selTodo(s) { document.querySelectorAll('.chk-a').forEach(c => c.checked = s.checked); chkDel(); }
+    async function borrarVent(cod) { if(confirm("¿BORRAR CONSUMO?")) { await post({action:'delVent', cod}); cargar(); } }
+
+    function descargarAudit() {
+        const f = dbVent.filter(v => v.id === sA.id);
+        csv(f, "REPORTE_"+sA.nombre);
+    }
+    function descargarGlobal() { csv(dbVent, "GLOBAL_CEIAF"); }
+    function csv(d, t) {
+        let c = "FECHA,ALUMNO,PRODUCTO,CANT,METODO,CODIGO\n";
+        d.forEach(v => c += `"${v.fecha}","${v.nom}","${v.prd}","${v.cant}","${v.metodo}","${v.cod}"\n`);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(["\uFEFF"+c], {type:'text/csv'}));
+        a.download = t+".csv"; a.click();
+    }
+    async function archivarPeriodo() {
+        const n = document.getElementById('periodoNom').value;
+        if(n && confirm("¿ARCHIVAR TODO?")) { await post({action:'nuevoPeriodo', rango:n}); location.reload(); }
+    }
 </script>
 </body>
 </html>
