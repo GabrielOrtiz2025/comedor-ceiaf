@@ -3,242 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA BAR CEIAF V7</title>
+    <title>SISTEMA BAR CEIAF V8</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --p: #1E293B; --a: #3B82F6; --s: #10B981; --d: #EF4444; --w: #F59E0B; --bg: #F1F5F9; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; text-transform: uppercase; font-size: 11px; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; text-transform: uppercase; font-size: 11px; color: #334155; }
         
-        /* Layout Modular */
         .container { max-width: 1000px; margin: 15px auto; padding: 0 10px; }
-        .module { background: white; border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .module-header { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: white; font-weight: bold; }
-        .module-content { display: none; padding: 15px; border-top: 1px solid #E2E8F0; }
+        .module { background: white; border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-left: 6px solid #CBD5E1; }
+        .module-header { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: white; font-weight: 800; font-size: 13px; }
+        .module-content { display: none; padding: 15px; }
         .module.active .module-content { display: block; }
         
-        .mod-venta { border-left: 5px solid var(--a); } .mod-venta .module-header { background: var(--a); }
-        .mod-alum { border-left: 5px solid var(--s); } .mod-alum .module-header { background: var(--s); }
-        .mod-aud { border-left: 5px solid var(--p); } .mod-aud .module-header { background: var(--p); }
+        /* Colores por Módulo */
+        .mod-venta { border-color: var(--a); } .mod-venta .module-header { background: var(--a); }
+        .mod-alum { border-color: var(--s); } .mod-alum .module-header { background: var(--s); }
+        .mod-menu { border-color: var(--w); } .mod-menu .module-header { background: var(--w); }
+        .mod-aud { border-color: var(--p); } .mod-aud .module-header { background: var(--p); }
 
-        /* Cuadrícula de Productos Optimizado */
-        .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin: 15px 0; }
-        .prd-card { border: 1px solid #E2E8F0; padding: 10px; border-radius: 8px; background: #F8FAFC; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .prd-card input[type="number"] { width: 60px; text-align: center; margin-top: 5px; }
+        /* Cuadrícula de Productos */
+        .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 15px 0; }
+        .prd-card { border: 2px solid #F1F5F9; padding: 10px; border-radius: 10px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .prd-card:hover { border-color: var(--a); }
+        .prd-card input[type="number"] { width: 50px; text-align: center; border: 1px solid #DDD; border-radius: 4px; }
 
-        /* Inputs y Botones */
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #CBD5E1; border-radius: 6px; box-sizing: border-box; font-size: 11px; text-transform: uppercase; }
-        .btn { border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-mini { width: auto; padding: 5px 10px; font-size: 10px; }
-
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:1000; }
-        .modal-card { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 450px; }
-        .danger-zone { border: 2px dashed var(--d); padding: 15px; border-radius: 10px; margin-top: 15px; }
+        /* Formularios */
+        input, select { width: 100%; padding: 11px; margin: 5px 0; border: 1px solid #E2E8F0; border-radius: 8px; box-sizing: border-box; font-size: 11px; text-transform: uppercase; font-weight: 600; }
+        .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 800; color: white; transition: 0.3s; width: 100%; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:active { transform: scale(0.98); }
+        
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.9); display:none; align-items:center; justify-content:center; z-index:1000; }
+        .modal-card { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; }
+        .danger-zone { border: 2px dashed var(--d); padding: 15px; border-radius: 12px; margin-top: 15px; background: #FFF1F2; }
+        
+        /* Tabla resumida */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10px; }
+        th, td { border: 1px solid #E2E8F0; padding: 8px; text-align: left; }
+        th { background: #F8FAFC; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- MODULO: VENTAS -->
+    <h2 style="text-align: center; color: var(--p); letter-spacing: 2px;">🏫 SISTEMA INTEGRAL BAR CEIAF</h2>
+
+    <!-- VENTAS -->
     <div class="module mod-venta active" id="m-venta">
         <div class="module-header" onclick="toggleModulo('m-venta')">
-            <span><i class="fas fa-cash-register"></i> VENTAS Y CONSUMO</span>
+            <span><i class="fas fa-shopping-cart"></i> PUNTO DE VENTA (CONSUMOS)</span>
             <i class="fas fa-chevron-down"></i>
         </div>
         <div class="module-content">
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <div style="display:flex; gap:10px;">
                 <div style="flex:2">
                     <input type="text" id="busV" placeholder="🔍 BUSCAR ALUMNO..." oninput="smartBus(this, 'resV', 'v')">
-                    <div id="resV" style="position:absolute; z-index:10; background:white; border:1px solid #CCC; width:50%; display:none;"></div>
+                    <div id="resV" style="position:absolute; z-index:100; background:white; border:1px solid #CCC; width:50%; display:none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);"></div>
                 </div>
                 <div style="flex:1">
-                    <label style="font-size:9px;">FECHA DE CONSUMO:</label>
                     <input type="date" id="fechaManual">
                 </div>
             </div>
 
-            <div id="selVenta" style="padding:10px; background:#DBEAFE; border-radius:8px; font-weight:bold; color:var(--a); margin-bottom:10px;">SELECCIONE UN ALUMNO</div>
+            <div id="selVenta" style="padding:15px; background:#EFF6FF; border: 1px dashed var(--a); border-radius:10px; font-weight:bold; color:var(--a); margin:10px 0; text-align:center;">SELECCIONE UN ALUMNO PARA EMPEZAR</div>
             
             <div id="boxVenta" style="display:none;">
                 <div class="grid-productos" id="listaMenu"></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <select id="metodo" onchange="toggleTransferencia()"><option value="EFECTIVO">💵 EFECTIVO</option><option value="TRANSFERENCIA">📱 TRANSFERENCIA</option></select>
-                    <div id="camposTrans" style="display:none; grid-column: span 2;">
-                        <input type="text" id="vBanco" placeholder="BANCO RECEPTOR">
-                        <input type="text" id="vCompro" placeholder="N° COMPROBANTE">
+                <div style="background:#F8FAFC; padding:15px; border-radius:12px;">
+                    <select id="metodo" onchange="toggleTrans()"><option value="EFECTIVO">💵 PAGO EN EFECTIVO</option><option value="TRANSFERENCIA">📱 PAGO TRANSFERENCIA</option></select>
+                    <div id="camposTrans" style="display:none;">
+                        <input type="text" id="vBanco" placeholder="BANCO (EJ: PICHINCHA)">
+                        <input type="text" id="vCompro" placeholder="N° DE COMPROBANTE / REFERENCIA">
                     </div>
+                    <button class="btn" style="background:var(--a); margin-top:10px;" id="btnVenta" onclick="validarVenta()">REGISTRAR CONSUMO</button>
                 </div>
-                <button class="btn" style="background:var(--a); margin-top:10px;" id="btnVenta" onclick="validarVenta()">REGISTRAR CONSUMO</button>
             </div>
         </div>
     </div>
 
-    <!-- MODULO: ALUMNOS -->
+    <!-- GESTIÓN DE ALUMNOS -->
     <div class="module mod-alum" id="m-alum">
         <div class="module-header" onclick="toggleModulo('m-alum')">
-            <span><i class="fas fa-user-graduate"></i> NUEVO ALUMNO</span>
+            <span><i class="fas fa-users"></i> GESTIÓN DE ALUMNOS</span>
             <i class="fas fa-chevron-down"></i>
         </div>
         <div class="module-content">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <input type="text" id="nN1" placeholder="* 1ER NOMBRE"> 
-                <input type="text" id="nN2" placeholder="* 2DO NOMBRE">
-                <input type="text" id="nA1" placeholder="* 1ER APELLIDO"> 
-                <input type="text" id="nA2" placeholder="* 2DO APELLIDO">
-                <input type="text" id="nNiv" placeholder="* CURSO (EJ: 10MO)"> 
-                <input type="text" id="nPar" placeholder="* PARALELO (EJ: A)">
-                <input type="number" id="nTel" placeholder="* CELULAR (10 DÍGITOS)" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10)">
-                <input type="text" id="nAlergia" placeholder="ALERGIAS (O PONER NINGUNA)">
+                <input type="text" id="nN1" placeholder="* 1ER NOMBRE"> <input type="text" id="nN2" placeholder="* 2DO NOMBRE">
+                <input type="text" id="nA1" placeholder="* 1ER APELLIDO"> <input type="text" id="nA2" placeholder="* 2DO APELLIDO">
+                <input type="text" id="nNiv" placeholder="* CURSO (EJ: 10MO)"> <input type="text" id="nPar" placeholder="* PARALELO (EJ: A)">
+                <input type="number" id="nTel" placeholder="* CELULAR (10 DÍGITOS)">
+                <input type="text" id="nAlergia" placeholder="* ALERGIAS (O 'NINGUNA')">
             </div>
-            <p style="font-size:9px; color:var(--d);">* TODOS LOS CAMPOS SON OBLIGATORIOS</p>
-            <button class="btn" style="background:var(--s);" id="btnCrearAl" onclick="crearAlumno()">GUARDAR ALUMNO</button>
+            <button class="btn" style="background:var(--s); margin-top:10px;" onclick="crearAlumno()">GUARDAR NUEVO ALUMNO</button>
         </div>
     </div>
 
-    <!-- MODULO: AUDITORÍA -->
-    <div class="module mod-aud" id="m-aud">
-        <div class="module-header" onclick="toggleModulo('m-aud')">
-            <span><i class="fas fa-file-invoice-dollar"></i> AUDITORÍA Y REPORTES</span>
+    <!-- GESTIÓN DE PRODUCTOS (RECUPERADO) -->
+    <div class="module mod-menu" id="m-menu">
+        <div class="module-header" onclick="toggleModulo('m-menu')">
+            <span><i class="fas fa-utensils"></i> GESTIÓN DE MENÚ (PRODUCTOS)</span>
             <i class="fas fa-chevron-down"></i>
         </div>
         <div class="module-content">
-            <input type="text" id="busA" placeholder="🔍 BUSCAR ALUMNO PARA REPORTE..." oninput="smartBus(this, 'resA', 'a')">
-            <div id="resA" style="position:absolute; z-index:10; background:white; border:1px solid #CCC; width:80%; display:none;"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="pNom" placeholder="NOMBRE DEL PRODUCTO" style="flex:2">
+                <input type="number" id="pPre" placeholder="PRECIO (EJ: 1.50)" style="flex:1">
+                <button class="btn" style="background:var(--w); width:auto;" onclick="crearProducto()">AÑADIR</button>
+            </div>
+            <table id="tablaPrd" style="margin-top:15px;">
+                <thead><tr><th>PRODUCTO</th><th>PRECIO</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- AUDITORÍA -->
+    <div class="module mod-aud" id="m-aud">
+        <div class="module-header" onclick="toggleModulo('m-aud')">
+            <span><i class="fas fa-chart-bar"></i> AUDITORÍA Y REPORTES</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="module-content">
+            <input type="text" placeholder="🔍 BUSCAR ALUMNO PARA HISTORIAL..." oninput="smartBus(this, 'resA', 'a')">
+            <div id="resA" style="position:absolute; z-index:100; background:white; border:1px solid #CCC; width:80%; display:none;"></div>
             
-            <div id="boxAudit" style="display:none; margin-top:15px;">
-                <div style="background:#F8FAFC; padding:10px; border-radius:8px; margin-bottom:10px;">
-                    <h4 id="nomAudit" style="margin:0 0 10px 0;">ALUMNO SELECCIONADO</h4>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div><label>DESDE:</label><input type="date" id="fDesde"></div>
-                        <div><label>HASTA:</label><input type="date" id="fHasta"></div>
-                    </div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn btn-mini" style="background:var(--s)" onclick="descargarReporte('excel')"><i class="fas fa-file-excel"></i> EXCEL RANGO</button>
-                        <button class="btn btn-mini" style="background:var(--d)" onclick="descargarReporte('pdf')"><i class="fas fa-file-pdf"></i> PDF RANGO</button>
-                    </div>
+            <div id="boxAudit" style="display:none; margin-top:15px; border-top: 2px solid #EEE; padding-top:15px;">
+                <h3 id="nomAudit" style="color:var(--p); margin-top:0;">ALUMNO</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><label>DESDE:</label><input type="date" id="fDesde"></div>
+                    <div><label>HASTA:</label><input type="date" id="fHasta"></div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="btn" style="background:#1D6F42;" onclick="descargarReporte('excel')"><i class="fas fa-file-excel"></i> DESCARGAR EXCEL</button>
+                    <button class="btn" style="background:#B91C1C;" onclick="descargarReporte('pdf')"><i class="fas fa-file-pdf"></i> DESCARGAR PDF</button>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- CONFIGURACIÓN -->
-    <button class="btn" style="background:var(--p); margin-top:20px;" onclick="toggleM('modalAdmin')"><i class="fas fa-cogs"></i> CONFIGURACIÓN DE ADMINISTRADOR</button>
+    <button class="btn" style="background:var(--p); margin-top:10px;" onclick="toggleM('modalAdmin')"><i class="fas fa-user-shield"></i> CONFIGURACIÓN DE ADMINISTRADOR</button>
 </div>
 
-<!-- MODAL ADMINISTRADOR -->
+<!-- MODAL ADMIN -->
 <div id="modalAdmin" class="modal"><div class="modal-card">
-    <h3><i class="fas fa-shield-alt"></i> PANEL DE CONTROL</h3>
-    <p>Seleccione una acción de depuración:</p>
+    <h3 style="margin-top:0;"><i class="fas fa-exclamation-triangle"></i> PANEL DE ADMINISTRADOR</h3>
+    <p style="font-size:10px;">PARA REALIZAR CUALQUIER RESET, PRIMERO DEBE DESCARGAR EL RESPALDO GENERAL.</p>
     
+    <button class="btn" style="background:var(--a); margin-bottom:10px;" onclick="descargarTodo()">1. DESCARGAR REPORTE DE RESPALDO TOTAL</button>
+
     <div class="danger-zone">
-        <button class="btn" style="background:var(--a); margin-bottom:5px;" onclick="descargarTodo()">1. DESCARGAR TODO EL RESPALDO</button>
-        <p style="font-size:9px; margin-bottom:15px;">Obligatorio antes de cualquier reset.</p>
-        
-        <button class="btn btn-mini" style="background:var(--d); margin-bottom:5px;" onclick="resetGeneral('resetAlumnos')">RESET TOTAL ALUMNOS</button>
-        <button class="btn btn-mini" style="background:var(--d); margin-bottom:5px;" onclick="resetGeneral('resetMenu')">RESET TOTAL MENÚ</button>
-        <button class="btn btn-mini" style="background:var(--w);" onclick="resetGeneral('nuevoPeriodo')">INICIAR NUEVO PERIODO (SEPT-JUN)</button>
+        <button class="btn" style="background:var(--d); margin-bottom:8px; font-size:10px;" onclick="resetSistema('resetAlumnos')">LIMPIEZA TOTAL RESET (ALUMNOS)</button>
+        <button class="btn" style="background:var(--d); margin-bottom:8px; font-size:10px;" onclick="resetSistema('resetMenu')">LIMPIEZA TOTAL RESET (MENÚ)</button>
+        <button class="btn" style="background:var(--w); font-size:10px; color:black;" onclick="resetSistema('nuevoPeriodo')">INICIAR NUEVO PERIODO ESCOLAR (SEPT-JUN)</button>
     </div>
     
-    <button class="btn" style="background:var(--p); margin-top:15px;" onclick="toggleM('modalAdmin')">CERRAR</button>
+    <button class="btn" style="background:#64748B; margin-top:15px;" onclick="toggleM('modalAdmin')">CANCELAR / CERRAR</button>
 </div></div>
 
 <script>
     const API = "https://script.google.com/macros/s/AKfycbyJ9SLVbw0InuSMoAOlzUoIQGNCj3NjV0QLyR2BNTZS5q4EfsjgbF7LvWuyj4TTrwwJ/exec";
     let dbEst = [], dbVent = [], dbPrd = [], sV = {}, sA = {}, itemsV = {};
-    let respaldoDescargado = false;
+    let respaldoListo = false;
 
-    // Inicializar fecha de hoy
     document.getElementById('fechaManual').valueAsDate = new Date();
 
     async function cargar() {
         const r = await fetch(API); const d = await r.json();
         dbEst = d.est; dbVent = d.vent; dbPrd = d.prd;
         renderMenu();
+        renderTablaPrd();
     }
     window.onload = cargar;
 
     function toggleModulo(id) {
-        document.querySelectorAll('.module').forEach(m => {
-            if(m.id === id) m.classList.add('active');
-            else m.classList.remove('active');
-        });
+        document.querySelectorAll('.module').forEach(m => m.id === id ? m.classList.toggle('active') : m.classList.remove('active'));
     }
 
-    // Registro Alumno con Validaciones
-    async function crearAlumno() {
-        const d = { 
-            n1:v('nN1'), n2:v('nN2'), a1:v('nA1'), a2:v('nA2'), 
-            telf:v('nTel'), nv:v('nNiv'), par:v('nPar'), alergia:v('nAlergia') 
-        };
-
-        if(!d.n1 || !d.n2 || !d.a1 || !d.a2 || !d.telf || !d.nv || !d.par || !d.alergia) {
-            return alert("ERROR: TODOS LOS CAMPOS DEBEN ESTAR LLENOS.");
-        }
-        if(d.telf.length !== 10) {
-            return alert("EL TELÉFONO DEBE TENER EXACTAMENTE 10 DÍGITOS.");
-        }
-
-        const b = document.getElementById('btnCrearAl');
-        b.disabled = true; b.innerText = "GUARDANDO...";
-        
-        const resp = await fetch(API, {method:'POST', body:JSON.stringify({action:'addEst', ...d})});
-        const txt = await resp.text();
-        
-        if(txt === "DUPLICADO") {
-            alert("ESTE ALUMNO YA EXISTE EN LA BASE DE DATOS.");
-        } else {
-            alert("ALUMNO REGISTRADO.");
-            location.reload();
-        }
-        b.disabled = false; b.innerText = "GUARDAR ALUMNO";
-    }
-
-    // Renderizar Productos en Cuadrícula
     function renderMenu() {
         document.getElementById('listaMenu').innerHTML = dbPrd.map(p => `
             <div class="prd-card">
-                <input type="checkbox" style="width:20px; height:20px;" onchange="updIt('${p.nombre}', this)">
-                <span style="font-weight:bold; margin-top:5px;">${p.nombre}</span>
-                <span style="color:var(--s);">$${p.precio}</span>
+                <input type="checkbox" style="width:18px; height:18px;" onchange="updIt('${p.nombre}', this)">
+                <span style="font-weight:bold; margin:5px 0;">${p.nombre}</span>
+                <span style="color:var(--s);">$${parseFloat(p.precio).toFixed(2)}</span>
                 <input type="number" value="1" min="1" id="q_${p.nombre}" oninput="updQ('${p.nombre}')">
             </div>`).join('');
     }
 
-    // Funciones de Reset con Advertencia
-    function descargarTodo() {
-        // Simulación de descarga de Excel Global
-        alert("DESCARGANDO REPORTE GLOBAL DE RESPALDO...");
-        respaldoDescargado = true;
+    function renderTablaPrd() {
+        const tbody = document.querySelector('#tablaPrd tbody');
+        tbody.innerHTML = dbPrd.map(p => `<tr><td>${p.nombre}</td><td>$${parseFloat(p.precio).toFixed(2)}</td></tr>`).join('');
     }
 
-    async function resetGeneral(tipo) {
-        if(!respaldoDescargado) {
-            return alert("ERROR: DEBE DESCARGAR EL REPORTE DE RESPALDO ANTES DE CONTINUAR.");
-        }
+    async function crearAlumno() {
+        const d = { 
+            n1:v('nN1'), n2:v('nN2'), a1:v('nA1'), a2:v('nA2'), 
+            telf:v('nTel'), nv:v('nNiv'), par:v('nPar'), alergia:v('nAlergia'),
+            action: 'addEst'
+        };
+        if(!d.n1 || !d.n2 || !d.a1 || !d.a2 || !d.telf || !d.nv || !d.par || !d.alergia) return alert("TODOS LOS CAMPOS SON OBLIGATORIOS");
+        if(d.telf.length !== 10) return alert("EL CELULAR DEBE TENER 10 DÍGITOS");
         
-        let msg = "¿ESTÁ SEGURO? ESTA ACCIÓN ELIMINARÁ LOS DATOS PERMANENTEMENTE.";
-        if(tipo === 'nuevoPeriodo') msg = "ESTO ELIMINARÁ TODOS LOS ALUMNOS Y VENTAS PARA EL NUEVO AÑO LECTIVO. ¿CONTINUAR?";
+        await fetch(API, {method:'POST', body:JSON.stringify(d)});
+        alert("ALUMNO GUARDADO"); location.reload();
+    }
+
+    async function crearProducto() {
+        const n = v('pNom'), p = v('pPre');
+        if(!n || !p) return alert("COMPLETE DATOS DEL PRODUCTO");
+        await fetch(API, {method:'POST', body:JSON.stringify({action:'addPrd', nombre:n, precio:p})});
+        alert("PRODUCTO AÑADIDO"); location.reload();
+    }
+
+    async function validarVenta() {
+        if(Object.keys(itemsV).length === 0) return alert("SELECCIONE PRODUCTOS");
+        const its = []; for(let k in itemsV) its.push({prd:k, cant:itemsV[k]});
         
-        if(confirm(msg) && confirm("ESTA ES LA ÚLTIMA ADVERTENCIA. ¿PROCEDER?")) {
-            await fetch(API, {method:'POST', body:JSON.stringify({action: tipo})});
-            alert("SISTEMA RESETEADO.");
-            location.reload();
+        await fetch(API, {method:'POST', body:JSON.stringify({
+            action:'addVentas', id:sV.id, nom:sV.nombre, items:its, 
+            fechaManual: document.getElementById('fechaManual').value,
+            metodo: document.getElementById('metodo').value,
+            banco: v('vBanco'), compro: v('vCompro'), cod: "TX"+Date.now()
+        })});
+        alert("CONSUMO REGISTRADO CORRECTAMENTE"); location.reload();
+    }
+
+    function descargarTodo() { 
+        alert("GENERANDO REPORTE DE RESPALDO COMPLETO... (SIMULADO)"); 
+        respaldoListo = true; 
+    }
+
+    async function resetSistema(accion) {
+        if(!respaldoListo) return alert("ADVERTENCIA: DEBE DESCARGAR EL REPORTE GENERAL PRIMERO.");
+        if(confirm("¿ESTÁ TOTALMENTE SEGURO? ESTA ACCIÓN NO SE PUEDE DESHACER.")) {
+            await fetch(API, {method:'POST', body:JSON.stringify({action: accion})});
+            alert("OPERACIÓN EXITOSA"); location.reload();
         }
     }
 
-    // Buscador Inteligente
     function smartBus(el, target, modo) {
         const b = el.value.toUpperCase();
         const res = document.getElementById(target);
         res.innerHTML = '';
         if(!b) { res.style.display='none'; return; }
-        const filt = dbEst.filter(e => e.nombre.includes(b));
-        filt.forEach(e => {
+        dbEst.filter(e => e.nombre.includes(b)).forEach(e => {
             const d = document.createElement('div');
             d.style.padding = '10px'; d.style.cursor='pointer'; d.style.borderBottom='1px solid #EEE';
             d.innerHTML = `<b>${e.nombre}</b> <small>${e.nivel}</small>`;
             d.onclick = () => {
                 if(modo==='v') { 
-                    sV = e; document.getElementById('selVenta').innerHTML = `🛒 CLIENTE: ${e.nombre} <br> <small>⚠️ ALERGIA: ${e.alergia}</small>`;
+                    sV = e; document.getElementById('selVenta').innerHTML = `👤 ALUMNO: ${e.nombre} | ⚠️ ALERGIAS: ${e.alergia}`;
                     document.getElementById('boxVenta').style.display='block';
                 } else {
                     sA = e; document.getElementById('nomAudit').innerText = e.nombre;
@@ -248,35 +262,15 @@
             };
             res.appendChild(d);
         });
-        res.style.display = filt.length ? 'block' : 'none';
+        res.style.display = 'block';
     }
 
-    // Venta con Fecha Manual
-    async function validarVenta() {
-        if(Object.keys(itemsV).length === 0) return alert("ELIJA PRODUCTOS");
-        const fManual = document.getElementById('fechaManual').value;
-        
-        const b = document.getElementById('btnVenta');
-        b.disabled = true; b.innerText = "PROCESANDO...";
-
-        const its = []; for(let k in itemsV) its.push({prd:k, cant:itemsV[k]});
-        await fetch(API, {method:'POST', body:JSON.stringify({
-            action:'addVentas', id:sV.id, nom:sV.nombre, items:its, 
-            fechaManual: fManual, cod: "TX-"+new Date().getTime(),
-            metodo: document.getElementById('metodo').value,
-            banco: v('vBanco'), compro: v('vCompro')
-        })});
-
-        alert("VENTA REGISTRADA.");
-        location.reload();
-    }
-
-    // Auxiliares
-    function v(id) { return document.getElementById(id).value.trim().toUpperCase(); }
+    function v(id) { return document.getElementById(id).value.toUpperCase().trim(); }
     function toggleM(id) { const m = document.getElementById(id); m.style.display = m.style.display==='flex'?'none':'flex'; }
     function updIt(n, el) { if(el.checked) itemsV[n] = document.getElementById('q_'+n).value; else delete itemsV[n]; }
     function updQ(n) { if(itemsV[n]) itemsV[n] = document.getElementById('q_'+n).value; }
-    function toggleTransferencia() { document.getElementById('camposTrans').style.display = document.getElementById('metodo').value === 'TRANSFERENCIA' ? 'block' : 'none'; }
+    function toggleTrans() { document.getElementById('camposTrans').style.display = document.getElementById('metodo').value === 'TRANSFERENCIA' ? 'block' : 'none'; }
+    function descargarReporte(tipo) { alert("GENERANDO REPORTE " + tipo.toUpperCase() + " PARA: " + sA.nombre); }
 </script>
 </body>
 </html>
